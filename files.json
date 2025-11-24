@@ -1,0 +1,112 @@
+{
+  "files": [
+    {
+      "name": "loading_bar.bat",
+      "type": "batch",
+      "info": "Creates a folder and a log file while showing a progress loading bar.",
+      "author": "Luis"
+    },
+    {
+      "name": "password_gen.bat",
+      "type": "batch",
+      "info": "Generates a random secure password using character indexing.",
+      "author": "Luis"
+    },
+    {
+      "name": "system_info.bat",
+      "type": "batch",
+      "info": "Shows basic system information including OS, CPU and uptime.",
+      "author": "Luis"
+    },
+    {
+      "name": "network_tools.bat",
+      "type": "batch",
+      "info": "Checks internet connectivity and displays IP information.",
+      "author": "Luis"
+    },
+    {
+      "name": "cleanup_temp.bat",
+      "type": "batch",
+      "info": "Deletes Windows temporary files to free disk space.",
+      "author": "Luis"
+    },
+    {
+      "name": "file_backup.bat",
+      "type": "batch",
+      "info": "Backs up user-selected folders into a backup directory.",
+      "author": "Luis"
+    },
+    {
+      "name": "drive_speed_test.bat",
+      "type": "batch",
+      "info": "Quick checks disk speed using basic file operations.",
+      "author": "Luis"
+    },
+    {
+      "name": "login_logger.bat",
+      "type": "batch",
+      "info": "Logs username, date and device info into a log file.",
+      "author": "Luis"
+    },
+    {
+      "name": "app_launcher_menu.bat",
+      "type": "batch",
+      "info": "Displays a menu to open different common installed programs.",
+      "author": "Luis"
+    },
+    {
+      "name": "sound_beep_alert.bat",
+      "type": "batch",
+      "info": "Makes the system speaker beep as a basic alarm.",
+      "author": "Luis"
+    },
+    {
+      "name": "cleanup.ps1",
+      "type": "powershell",
+      "info": "Cleans temp directories, cache and Windows leftover files.",
+      "author": "Luis"
+    },
+    {
+      "name": "FileSecurity.ps1",
+      "type": "powershell",
+      "info": "Checks folder permissions and reports security access warnings.",
+      "author": "Luis"
+    },
+    {
+      "name": "SystemReport.ps1",
+      "type": "powershell",
+      "info": "Generates a detailed system info and outputs to file.",
+      "author": "Luis"
+    },
+    {
+      "name": "InstallTools.ps1",
+      "type": "powershell",
+      "info": "Automatically installs useful Windows utilities.",
+      "author": "Luis"
+    },
+    {
+      "name": "LuisToolkit.ps1",
+      "type": "powershell",
+      "info": "Main menu-based toolkit to run multiple maintenance operations.",
+      "author": "Luis"
+    },
+    {
+      "name": "Luis_Control_Center_Installer.ps1",
+      "type": "powershell",
+      "info": "Installer script that creates folders and installs toolkit on desktop.",
+      "author": "Luis"
+    },
+    {
+      "name": "Luis_Control_Center.ps1",
+      "type": "powershell",
+      "info": "Main executable PowerShell control center launcher.",
+      "author": "Luis"
+    },
+    {
+      "name": "uninstall.ps1",
+      "type": "powershell",
+      "info": "Uninstalls Luis Control Center and deletes files from desktop.",
+      "author": "Luis"
+    }
+  ]
+}
