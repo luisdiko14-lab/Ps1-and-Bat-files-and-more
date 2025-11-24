@@ -30,6 +30,6 @@
 
 1. Clone or download the repository:  
 ```bash
-git clone https://github.com/your-username/Luis-Toolkit.git
+https://github.com/luisdiko14-lab/Ps1-and-Bat-files-and-more
 
 ## Some files don't work. sorry
