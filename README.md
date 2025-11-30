@@ -31,4 +31,4 @@ some files don't work. sorry!
 1. Clone or download the repository:  
 ```bash
 git clone https://github.com/luisdiko14-lab/Ps1-and-Bat-files-and-more
-use the realease that is on this repo to clone the repo.
+-## use the realease that is on this repo to clone the repo.
