@@ -1,7 +1,7 @@
 # Luis Toolkit
 
 **Luis Toolkit** is a collection of fun, practical, and interactive Windows scripts written in **PowerShell (.ps1)** and **Batch (.bat)**. It includes tools for system info, animations, password generation, website monitoring, cleanup, and more — all accessible via easy-to-use menus.
-
+some files don't work. sorry!
 ---
 
 ## Features
@@ -31,5 +31,4 @@
 1. Clone or download the repository:  
 ```bash
 git clone https://github.com/luisdiko14-lab/Ps1-and-Bat-files-and-more
-
-## Some files don't work. sorry
+use the realease that is on this repo to clone the repo.
