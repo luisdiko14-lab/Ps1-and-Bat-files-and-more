@@ -1,0 +1,56 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+.Python
+venv/
+.env/
+.env.*
+pip-wheel-metadata/
+
+# =========================
+# Discord / Bot Secrets
+# =========================
+*.env
+config.json
+secrets.json
+
+# =========================
+# Logs
+# =========================
+*.log
+logs/
+log.txt
+
+# =========================
+# OS Files
+# =========================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# =========================
+# VS Code / IDE
+# =========================
+.vscode/
+.idea/
+*.swp
+
+# =========================
+# Node (just in case)
+# =========================
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# =========================
+# Build / Temp
+# =========================
+dist/
+build/
+tmp/
+temp/
