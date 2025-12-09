@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Win10-ish Demo</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="desktop">
+    <!-- Background "hero" -->
+    <div id="hero">
+      <div class="sunburst"></div>
+    </div>
+
+    <!-- Desktop icons / tiles area -->
+    <div id="tiles">
+      <div class="tile" data-app="explorer">
+        <div class="tile-icon">🗂️</div>
+        <div class="tile-label">Files</div>
+      </div>
+      <div class="tile" data-app="browser">
+        <div class="tile-icon">🌐</div>
+        <div class="tile-label">Browser</div>
+      </div>
+      <div class="tile wide" data-app="music">
+        <div class="tile-icon">🎵</div>
+        <div class="tile-label">Groove</div>
+      </div>
+      <div class="tile" data-app="settings">
+        <div class="tile-icon">⚙️</div>
+        <div class="tile-label">Settings</div>
+      </div>
+    </div>
+
+    <!-- Floating app windows container -->
+    <div id="windows"></div>
+
+    <!-- Taskbar -->
+    <div id="taskbar">
+      <button id="start-btn" aria-label="Start menu">⊞</button>
+      <div id="task-quick">
+        <button class="tb-btn" data-app="browser">🌐</button>
+        <button class="tb-btn" data-app="explorer">🗂️</button>
+      </div>
+      <div id="task-tray">
+        <div id="clock"></div>
+      </div>
+    </div>
+
+    <!-- Start menu -->
+    <div id="start-menu" aria-hidden="true">
+      <div class="start-panel">
+        <div class="profile">
+          <div class="avatar">L</div>
+          <div>
+            <div class="name">Guest</div>
+            <div class="email">guest@demo</div>
+          </div>
+        </div>
+        <div class="start-tiles">
+          <div class="sm-tile" data-app="browser">Browser</div>
+          <div class="sm-tile" data-app="explorer">Explorer</div>
+          <div class="sm-tile" data-app="music">Groove</div>
+          <div class="sm-tile" data-app="settings">Settings</div>
+        </div>
+        <div class="start-links">
+          <button id="shutdown">Shut down</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
