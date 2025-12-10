@@ -1,0 +1,6 @@
+| Platform      | Supported |
+| ------------- | --------- |
+| Windows 10/11 | ✅        |
+| macOS X       | ❌        |
+| Ubuntu X      | ❌        |
+| Others        | ❌        |
