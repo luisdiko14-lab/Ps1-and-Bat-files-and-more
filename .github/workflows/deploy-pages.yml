@@ -1,4 +1,4 @@
-name: Deploy GitHub Pages with License & System Specs
+name: Deploy GitHub Pages
 
 on:
   push:
@@ -21,32 +21,35 @@ jobs:
       - name: Prepare public folder
         run: |
           rm -rf public
-          mkdir public
-          # copy only files (exclude public folder itself and workflow)
-          find . -maxdepth 1 ! -name '.' ! -name 'public' ! -name '.git' ! -name '.github' -exec cp -r {} public/ \;
+          mkdir -p public
+          # copy everything except public, .git, .github, node_modules
+          rsync -av --exclude='public' --exclude='.git' --exclude='.github' --exclude='node_modules' ./ public/
 
-      - name: Add LICENSE, CREDITS, SYSTEM_SPECS
+      - name: Add CREDITS.md
         run: |
-          echo "Adding LICENSE, CREDITS, and SYSTEM_SPECS"
+          echo "**Authors:** Luisdiko14-lab, koen-mods" > public/CREDITS.md
 
-          cat > public/CREDITS.md <<'EOF'
-**Authors:** Luisdiko14-lab, koen-mods
-EOF
-
+      - name: Add LICENSE_CUSTOM_OPEN.md
+        run: |
           cat > public/LICENSE_CUSTOM_OPEN.md <<'EOF'
 # Custom Open License
-... (paste your license text here)
+**Copyright (c) 2025**
+**Authors:** Luisdiko14-lab, koen-mods
+
+Permission is hereby granted, free of charge, to any person obtaining a copy...
 EOF
 
+      - name: Add SYSTEM_SPECS.txt
+        run: |
           cat > public/SYSTEM_SPECS.txt <<'EOF'
-System Specs:
-Generated: $(date -u +"%Y-%m-%d %H:%M:%SZ")
+System Specs / Build Info
+Generated (UTC): $(date -u +"%Y-%m-%d %H:%M:%SZ")
 Runner OS: $RUNNER_OS
 Runner Name: $RUNNER_NAME
 GITHUB_REPOSITORY: $GITHUB_REPOSITORY
 EOF
 
-      - name: Upload artifact
+      - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: public
