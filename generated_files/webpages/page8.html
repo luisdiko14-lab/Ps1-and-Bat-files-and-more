@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Web Page 8</title>
+<style>
+body { font-family: Arial; background: #111; color: #eee; padding: 20px; }
+button { padding: 10px; margin: 5px; }
+pre { background: #222; padding: 10px; }
+</style>
+</head>
+<body>
+
+<h1>Auto Webpage 8</h1>
+<p>This page generates data by itself.</p>
+
+<button onclick="generate()">Generate Data</button>
+<button onclick="download()">Download File</button>
+
+<pre id="output"></pre>
+
+<script>
+let data = [];
+
+function generate() {
+    data = [];
+    for (let i = 0; i < 60; i++) {
+        let line = "Generated line " + i + " at " + new Date().toLocaleTimeString();
+        data.push(line);
+    }
+    document.getElementById("output").textContent = data.join("\n");
+}
+
+function download() {
+    const blob = new Blob([data.join("\n")], {type: "text/plain"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "page8-output.txt";
+    a.click();
+}
+</script>
+
+</body>
+</html>
