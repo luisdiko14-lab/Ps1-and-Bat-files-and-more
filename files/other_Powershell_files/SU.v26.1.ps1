@@ -1,19 +1,18 @@
 <#
-    ULTIMATE SYSTEM UTILITY v26.1 - THE CHOICE UPDATE
+    ULTIMATE SYSTEM UTILITY v26.2 - STABLE LINK UPDATE
     -------------------------------------------------
-    - PRE-BOOT: Theme Selection (Dark/Light/Exit)
-    - PRE-BOOT: Download Confirmation
-    - PHASE 1: GitHub Downloader (luisdiko14-lab/Repo-1)
-    - PHASE 2: Math-Based Loading Bar (Real %)
-    - PHASE 3: Infinity Dashboard (6 Tabs, 40+ Tools)
+    - UPDATED: Downloads specific tag 'a' from luisdiko14-lab/Repo-1
+    - PRE-BOOT: Theme Selection & Download Confirmation
+    - CORE: Math-Based Loader & Anti-Freeze Architecture
+    - UI: 6-Tab Infinity Dashboard with Dark/Light Mode
 #>
 
 # ==============================================================================
-# 1. ADMIN CHECK & PRE-BOOT CHOICES
+# 1. KERNEL PRE-FLIGHT (ADMIN CHECK & SETUP)
 # ==============================================================================
 $ErrorActionPreference = "SilentlyContinue"
-Write-Host "Loading..."
-# Admin Check
+
+# Check Admin
 if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     try {
         Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
@@ -26,34 +25,26 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 
 Add-Type -AssemblyName System.Windows.Forms, System.Drawing, System.IO.Compression.FileSystem
 
-# --- STEP 1: THEME SELECTION ---
+# --- STEP 1: THEME SELECTOR ---
 $themeResult = [System.Windows.Forms.MessageBox]::Show(
     "Choose Theme:`n`nYES = Dark Mode`nNO = Light Mode`nCANCEL = Exit Program", 
-    "System Utility v26.1 Setup", 
+    "System Utility v26.2 Setup", 
     [System.Windows.Forms.MessageBoxButtons]::YesNoCancel, 
     [System.Windows.Forms.MessageBoxIcon]::Question
 )
 
 if ($themeResult -eq "Cancel") { Exit }
 
-# Set Theme Colors based on choice
+# Define Colors
 if ($themeResult -eq "Yes") {
-    $Global:BgColor = "#202020"
-    $Global:FgColor = "White"
-    $Global:PanelColor = "#1e1e1e"
-    $Global:TxtColor = "Lime"
-    $Global:BoxColor = "Black"
+    $Global:BgColor = "#202020"; $Global:FgColor = "White"; $Global:PanelColor = "#1e1e1e"; $Global:TxtColor = "Lime"; $Global:BoxColor = "Black"
 } else {
-    $Global:BgColor = "#F0F0F0"
-    $Global:FgColor = "Black"
-    $Global:PanelColor = "White"
-    $Global:TxtColor = "Black"
-    $Global:BoxColor = "White"
+    $Global:BgColor = "#F0F0F0"; $Global:FgColor = "Black"; $Global:PanelColor = "White"; $Global:TxtColor = "Black"; $Global:BoxColor = "White"
 }
 
 # --- STEP 2: DOWNLOAD CONFIRMATION ---
 $dlResult = [System.Windows.Forms.MessageBox]::Show(
-    "Do you want to download system utility v26.1?", 
+    "Do you want to download system utility v26.2 data from GitHub?", 
     "Download Confirmation", 
     [System.Windows.Forms.MessageBoxButtons]::YesNo, 
     [System.Windows.Forms.MessageBoxIcon]::Information
@@ -61,50 +52,63 @@ $dlResult = [System.Windows.Forms.MessageBox]::Show(
 
 if ($dlResult -eq "No") { Exit }
 
-# Paths
+# Global Paths
 $Global:BaseDir = "C:\Users\$env:USERNAME\Downloads\USU_Config"
 $Global:RepoDir = "C:\Users\$env:USERNAME\Downloads\USU_Repo_Download"
+$Global:CpuName = "Detecting..."; $Global:GpuName = "Detecting..."; $Global:RamTotal = 0
 
-# Ensure Paths
+# Create Directories
 if (-not (Test-Path $Global:BaseDir)) { New-Item -Path $Global:BaseDir -ItemType Directory -Force | Out-Null }
 if (-not (Test-Path $Global:RepoDir)) { New-Item -Path $Global:RepoDir -ItemType Directory -Force | Out-Null }
 
 # ==============================================================================
-# 2. PHASE 1: GITHUB DOWNLOADER
+# 2. PHASE 1: GITHUB DOWNLOADER (UPDATED LINK)
 # ==============================================================================
 $dlForm = New-Object System.Windows.Forms.Form
 $dlForm.Size = "600,300"; $dlForm.StartPosition = "CenterScreen"; $dlForm.FormBorderStyle = "None"; $dlForm.BackColor = $Global:BgColor
 
-$lblD = New-Object System.Windows.Forms.Label; $lblD.Text = "DOWNLOADING REPOSITORY..."; $lblD.ForeColor = "Cyan"; $lblD.Font = "Segoe UI, 14, style=Bold"; $lblD.Location = "20,20"; $lblD.AutoSize = $true
+$lblD = New-Object System.Windows.Forms.Label; $lblD.Text = "DOWNLOADING REPO DATA..."; $lblD.ForeColor = "Cyan"; $lblD.Font = "Segoe UI, 14, style=Bold"; $lblD.Location = "20,20"; $lblD.AutoSize = $true
 $txtLog = New-Object System.Windows.Forms.TextBox; $txtLog.Location = "20,60"; $txtLog.Size = "560,200"; $txtLog.Multiline = $true; $txtLog.BackColor = $Global:BoxColor; $txtLog.ForeColor = $Global:TxtColor; $txtLog.Font = "Consolas, 9"; $txtLog.ReadOnly = $true
 
 $dlForm.Controls.AddRange(@($lblD, $txtLog))
 $dlForm.Show(); $dlForm.Refresh()
 
-# Download Logic
-$owner = "luisdiko14-lab"; $repo = "Repo-1"; $tag = "Test"
-$url = "https://github.com/$owner/$repo/archive/refs/tags/$tag.zip"
+# --- NEW URL LOGIC ---
+$owner = "luisdiko14-lab"
+$repo  = "Repo-1"
+$tag   = "a"   # <--- UPDATED TAG
+$url   = "https://github.com/$owner/$repo/archive/refs/tags/$tag.zip" # <--- UPDATED URL
+
 $zipFile = "$Global:RepoDir\$repo-$tag.zip"
 $extractFolder = "$Global:RepoDir\$repo-$tag"
 
 try {
-    $txtLog.AppendText("Connecting to $url...`r`n"); $dlForm.Refresh()
-    Invoke-WebRequest -Uri $url -OutFile $zipFile
-    $txtLog.AppendText("Download Complete.`r`nExtracting...`r`n"); $dlForm.Refresh()
+    $txtLog.AppendText("Target: $url`r`n")
+    $txtLog.AppendText("Connecting... ")
+    $dlForm.Refresh()
     
-    if (-not (Test-Path $extractFolder)) { New-Item -ItemType Directory -Path $extractFolder | Out-Null }
-    Expand-Archive -Path $zipFile -DestinationPath $extractFolder -Force
+    # Download
+    Invoke-WebRequest -Uri $url -OutFile $zipFile -ErrorAction Stop
+    $txtLog.AppendText("SUCCESS.`r`n")
+    $dlForm.Refresh()
     
-    $txtLog.AppendText("Extraction Success!`r`n"); $dlForm.Refresh()
-    Start-Sleep -Seconds 1
+    # Extract
+    $txtLog.AppendText("Extracting Package... ")
+    $dlForm.Refresh()
+    if (-not (Test-Path $extractFolder)) { New-Item -ItemType Directory -Path $extractFolder -Force | Out-Null }
+    
+    Expand-Archive -Path $zipFile -DestinationPath $extractFolder -Force -ErrorAction Stop
+    $txtLog.AppendText("DONE.`r`nSaved to: $extractFolder`r`n")
+    $dlForm.Refresh(); Start-Sleep -Milliseconds 800
+
 } catch {
-    $txtLog.AppendText("Download Failed (Check Internet). Continuing...`r`n"); $dlForm.Refresh()
-    Start-Sleep -Seconds 2
+    $txtLog.AppendText("ERROR: Download failed or Link invalid. Continuing safely...`r`n")
+    $dlForm.Refresh(); Start-Sleep -Seconds 2
 }
 $dlForm.Close()
 
 # ==============================================================================
-# 3. PHASE 2: MATH-BASED LOADER (Percentage Calculation)
+# 3. PHASE 2: MATH-BASED LOADER (REAL %)
 # ==============================================================================
 $splash = New-Object System.Windows.Forms.Form
 $splash.Size = "600,400"; $splash.StartPosition = "CenterScreen"; $splash.FormBorderStyle = "None"; $splash.BackColor = "Black"
@@ -120,56 +124,51 @@ $avatarBox.SizeMode = "Zoom"; $avatarBox.Size = "110,110"; $avatarBox.Location =
 $splash.Controls.Add($avatarBox)
 
 $lblTitle = New-Object System.Windows.Forms.Label
-$lblTitle.Text = "SYSTEM UTILITY v26.1"; $lblTitle.ForeColor = "LimeGreen"; $lblTitle.Font = "Segoe UI, 18, style=Bold"; $lblTitle.Location = "165,160"; $lblTitle.AutoSize = $true
+$lblTitle.Text = "SYSTEM UTILITY v26.2"; $lblTitle.ForeColor = "LimeGreen"; $lblTitle.Font = "Segoe UI, 18, style=Bold"; $lblTitle.Location = "165,160"; $lblTitle.AutoSize = $true
 
 $lblStatus = New-Object System.Windows.Forms.Label
-$lblStatus.Text = "Calculated Boot Sequence..."; $lblStatus.ForeColor = "White"; $lblStatus.Font = "Consolas, 10"; $lblStatus.Location = "30,220"; $lblStatus.Size = "540,30"; $lblStatus.TextAlign = "MiddleCenter"
+$lblStatus.Text = "Boot Sequence..."; $lblStatus.ForeColor = "White"; $lblStatus.Font = "Consolas, 10"; $lblStatus.Location = "30,220"; $lblStatus.Size = "540,30"; $lblStatus.TextAlign = "MiddleCenter"
 
-# The Math Progress Bar
 $pbLoad = New-Object System.Windows.Forms.ProgressBar; $pbLoad.Location = "50,260"; $pbLoad.Size = "500,30"
 $lblPerc = New-Object System.Windows.Forms.Label; $lblPerc.Text = "0%"; $lblPerc.ForeColor = "White"; $lblPerc.Font = "Segoe UI, 12"; $lblPerc.Location = "270,300"; $lblPerc.AutoSize = $true
 
 $splash.Controls.AddRange(@($lblTitle, $lblStatus, $pbLoad, $lblPerc))
 $splash.Show(); $splash.Refresh()
 
-# Tasks Definition
-$tasks = @("Generating Configs", "Generating INI", "Scanning CPU", "Scanning GPU", "Mapping RAM", "Checking Battery", "Loading Tools", "Applying Theme", "Finalizing GUI", "Ready")
+# Tasks
+$tasks = @("Generating Configs", "Optimizing GUI", "Scanning CPU ID", "Scanning GPU ID", "Mapping RAM", "Checking Battery", "Loading Net Tools", "Loading Admin Suite", "Applying Theme", "Ready")
 $totalTasks = $tasks.Count
 
-# Loop through tasks and calculate percentage
 for ($i=0; $i -lt $totalTasks; $i++) {
     $lblStatus.Text = $tasks[$i]
     
-    # Math: (Current Step / Total Steps) * 100
+    # Calculate %
     $percentage = [math]::Round((($i + 1) / $totalTasks) * 100)
     $pbLoad.Value = $percentage
     $lblPerc.Text = "$percentage%"
     
-    # Perform Background Work
     switch ($i) {
         0 { "RUNAS=ADMIN" | Out-File "$Global:BaseDir\sys.config" -Force }
-        1 { "THEME=$themeResult" | Out-File "$Global:BaseDir\sys.ini" -Force }
+        1 { Start-Sleep -Milliseconds 100 }
         2 { $Global:CpuName = (Get-CimInstance Win32_Processor).Name.Trim() }
         3 { $Global:GpuName = (Get-CimInstance Win32_VideoController).Name.Trim() }
         4 { $Global:RamTotal = [math]::Round((Get-CimInstance Win32_OperatingSystem).TotalVisibleMemorySize / 1048576, 1) }
         5 { try { $Global:Batt = Get-CimInstance Win32_Battery -ErrorAction SilentlyContinue } catch {} }
-        6 { Start-Sleep -Milliseconds 200 }
-        7 { Start-Sleep -Milliseconds 200 }
-        8 { Start-Sleep -Milliseconds 500 }
+        6 { Start-Sleep -Milliseconds 100 }
+        7 { Start-Sleep -Milliseconds 100 }
+        8 { Start-Sleep -Milliseconds 200 }
     }
-    
-    $splash.Refresh(); Start-Sleep -Milliseconds 600
+    $splash.Refresh(); Start-Sleep -Milliseconds 500
 }
 $splash.Close()
 
 # ==============================================================================
-# 4. PHASE 3: MAIN GUI (Themed)
+# 4. PHASE 3: MAIN GUI (THEMED)
 # ==============================================================================
 $main = New-Object System.Windows.Forms.Form
-$main.Text = "Ultimate System Utility v26.1"; $main.Size = "950,850"; $main.StartPosition = "CenterScreen"
+$main.Text = "Ultimate System Utility v26.2"; $main.Size = "950,850"; $main.StartPosition = "CenterScreen"
 $main.BackColor = $Global:BgColor; $main.ForeColor = $Global:FgColor
 
-# Button Generator
 function New-Btn ($txt, $w, $h, $col, $act) {
     $b = New-Object System.Windows.Forms.Button
     $b.Text = $txt; $b.Size = "$w,$h"; $b.FlatStyle = "Flat"
@@ -180,7 +179,6 @@ function New-Btn ($txt, $w, $h, $col, $act) {
 
 $tabs = New-Object System.Windows.Forms.TabControl; $tabs.Dock = "Fill"; $main.Controls.Add($tabs)
 
-# Create 6 Tabs
 $tp1 = New-Object System.Windows.Forms.TabPage("PROCESS MANAGER")
 $tp2 = New-Object System.Windows.Forms.TabPage("REPO FILES")
 $tp3 = New-Object System.Windows.Forms.TabPage("NETWORK")
@@ -191,7 +189,7 @@ $tp6 = New-Object System.Windows.Forms.TabPage("DASHBOARD")
 $tabs.Controls.AddRange(@($tp1,$tp2,$tp3,$tp4,$tp5,$tp6))
 foreach($t in $tabs.TabPages) { $t.BackColor = $Global:PanelColor; $t.ForeColor = $Global:FgColor }
 
-# --- TAB 1: PROCESSES ---
+# --- TAB 1: PROCESS ---
 $pHead = New-Object System.Windows.Forms.Panel; $pHead.Dock = "Top"; $pHead.Height = 60; $tp1.Controls.Add($pHead)
 $txtProc = New-Object System.Windows.Forms.TextBox; $txtProc.Dock = "Fill"; $txtProc.Multiline=$true; $txtProc.ScrollBars="Vertical"; 
 $txtProc.Font="Consolas,9"; $txtProc.BackColor=$Global:BoxColor; $txtProc.ForeColor=$Global:TxtColor; $tp1.Controls.Add($txtProc)
@@ -205,7 +203,7 @@ $btnRef.Location = "10,10"; $pHead.Controls.Add($btnRef)
 $txtKill = New-Object System.Windows.Forms.TextBox; $txtKill.Location = "150,18"; $txtKill.Size = "150,25"; $pHead.Controls.Add($txtKill)
 $btnKill = New-Btn "KILL" 100 40 "Red" { if($txtKill.Text){ try{ Stop-Process -Name $txtKill.Text -Force; $btnRef.PerformClick() }catch{} } }; $btnKill.Location = "310,10"; $pHead.Controls.Add($btnKill)
 
-# --- TAB 2: REPO ---
+# --- TAB 2: REPO FILES ---
 $lstRepo = New-Object System.Windows.Forms.ListBox; $lstRepo.Location="20,50"; $lstRepo.Size="880,600"; $lstRepo.BackColor=$Global:BoxColor; $lstRepo.ForeColor=$Global:FgColor; $tp2.Controls.Add($lstRepo)
 $btnScan = New-Btn "SCAN FOLDER" 200 50 "Lime" { $lstRepo.Items.Clear(); if(Test-Path $Global:RepoDir){ Get-ChildItem $Global:RepoDir -Recurse | ForEach { $lstRepo.Items.Add($_.FullName) } } }; $btnScan.Location="20,660"; $tp2.Controls.Add($btnScan)
 $btnOpen = New-Btn "EXPLORER" 200 50 "Yellow" { Invoke-Item $Global:RepoDir }; $btnOpen.Location="240,660"; $tp2.Controls.Add($btnOpen)
@@ -230,7 +228,7 @@ foreach($s in $sysCmds) {
 
 # --- TAB 5: GOD MODE ---
 $flowGod = New-Object System.Windows.Forms.FlowLayoutPanel; $flowGod.Dock="Fill"; $flowGod.AutoScroll=$true; $tp5.Controls.Add($flowGod)
-$godCmds = @(@("DISM Repair", "DISM /Online /Cleanup-Image /RestoreHealth"), @("SFC Scan", "sfc /scannow"), @("Sys Info", "systeminfo"), @("Registry", "regedit"))
+$godCmds = @(@("DISM Restore", "DISM /Online /Cleanup-Image /RestoreHealth"), @("SFC Scan", "sfc /scannow"), @("Sys Info", "systeminfo"), @("Registry", "regedit"))
 foreach($g in $godCmds) { $flowGod.Controls.Add((New-Btn $g[0] 400 50 "Violet" { Start-Process cmd "/k $($g[1])" -Verb RunAs })) }
 
 # --- TAB 6: DASHBOARD ---
