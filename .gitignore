@@ -44,6 +44,7 @@ desktop.ini
 # Node (just in case)
 # =========================
 npm-debug.log*
+node_modules/
 yarn-error.log*
 
 # =========================
