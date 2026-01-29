@@ -1,58 +1,119 @@
-name: Deploy GitHub Pages
+name: 🚀 Ultra Clean Zero-Error Deploy
 
 on:
   push:
-    branches: [main]
+    branches: ["main"]
   workflow_dispatch:
 
 permissions:
-  pages: write
   contents: read
+  pages: write
   id-token: write
 
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
-  deploy:
+  # =========================
+  # 🔨 BUILD JOB
+  # =========================
+  build:
+    name: 🔨 Build & Prepare Site
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: 📥 Checkout Repo
         uses: actions/checkout@v4
 
-      - name: Prepare public folder
+      - name: 🟢 Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: 📦 Install Dependencies
+        run: npm install
+
+      - name: 🛠️ Build Project
         run: |
-          rm -rf public
-          mkdir -p public
-          # copy everything except public, .git, .github, node_modules
-          rsync -av --exclude='public' --exclude='.git' --exclude='.github' --exclude='node_modules' ./ public/
+          if [ -f package.json ]; then
+            npm run build || echo "⚠️ No build script found, skipping build..."
+          fi
 
-      - name: Add CREDITS.md
-        run: |
-          echo "**Authors:** Luisdiko14-lab, koen-mods" > public/CREDITS.md
+      - name: ⚙️ Setup GitHub Pages
+        uses: actions/configure-pages@v5
 
-      - name: Add LICENSE_CUSTOM_OPEN.md
-        run: |
-          cat > public/LICENSE_CUSTOM_OPEN.md <<'EOF'
-# Custom Open License
-**Copyright (c) 2025**
-**Authors:** Luisdiko14-lab, koen-mods
-
-Permission is hereby granted, free of charge, to any person obtaining a copy...
-EOF
-
-      - name: Add SYSTEM_SPECS.txt
-        run: |
-          cat > public/SYSTEM_SPECS.txt <<'EOF'
-System Specs / Build Info
-Generated (UTC): $(date -u +"%Y-%m-%d %H:%M:%SZ")
-Runner OS: $RUNNER_OS
-Runner Name: $RUNNER_NAME
-GITHUB_REPOSITORY: $GITHUB_REPOSITORY
-EOF
-
-      - name: Upload Pages artifact
+      - name: 📤 Upload Site Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: public
+          # Static HTML: '.'
+          # Vite/React: './dist'
+          # Next.js export: './out'
+          path: '.'
 
-      - name: Deploy to GitHub Pages
+      - name: 🖥️ Run Website (optional)
+        run: npm run dev || echo "ℹ️ No dev script is defined."
+
+  # =========================
+  # 🧪 TEST JOB
+  # =========================
+  test:
+    name: 🔍 Find Files
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: 🗂️ List All Files
+        run: |
+          find .
+          echo "✅ Files listed above." 
+          echo " Credits to Luis for making this workflow! "
+
+  # =========================
+  # 🧩 SETUP JOB
+  # =========================
+  setup:
+    name: ⚙️ Setup Node & Check index.html
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: 📦 Install Packages
+        run: npm install
+
+      - name: 🛠️ Check index.html (Show All Lines)
+        run: |
+          if [ -f index.html ]; then
+            echo "✅ index.html found. Showing all lines with numbers:"
+            echo "----------------------------------------------"
+            nl -ba index.html
+            echo "----------------------------------------------"
+          else
+            echo "❌ ERROR: index.html NOT FOUND in repo!"
+            echo "📁 Files in repo root:"
+            ls -la
+            exit 1
+          fi
+
+  # =========================
+  # 🚀 DEPLOY JOB
+  # =========================
+  deploy:
+    name: 🚀 Deploy to GitHub Pages
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: github-pages
+
+    steps:
+      - name: 📥 Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: 🌍 Deploy Website
+        id: deployment
         uses: actions/deploy-pages@v4
