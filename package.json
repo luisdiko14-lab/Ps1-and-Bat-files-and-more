@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "discord": "^0.8.2",
+    "web": "^0.0.2"
+  }
+}
