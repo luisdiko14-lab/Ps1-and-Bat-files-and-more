@@ -80,8 +80,7 @@ jobs:
         run: |
           if (Test-Path "index.html") {
             Write-Host "index.html found"
-            Get-Content index.html
-
+          
   # =========================
   # 🚀 DEPLOY JOB
   # =========================
