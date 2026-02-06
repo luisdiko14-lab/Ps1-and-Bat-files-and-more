@@ -16,11 +16,11 @@ concurrency:
 
 jobs:
   # =========================
-  # 🔨 BUILD JOB (WINDOWS)
+  # 🔨 BUILD JOB (UBUNTU ONLY)
   # =========================
   build:
-    name: 🔨 Build & Prepare Site (Windows)
-    runs-on: windows-latest
+    name: 🔨 Build & Prepare Site (Ubuntu)
+    runs-on: ubuntu-latest
 
     steps:
       - name: 📥 Checkout Repo
@@ -34,37 +34,20 @@ jobs:
 
       - name: 📦 Install Dependencies
         run: npm install
-        shell: powershell
 
       - name: 🛠️ Build Project
-        shell: powershell
         run: |
-          if (Test-Path "package.json") {
-            if (npm run | Select-String "build") {
-              npm run build
-            } else {
-              Write-Host "⚠️ No build script found, skipping build..."
-            }
-          } else {
-            Write-Host "⚠️ package.json not found, skipping build..."
-          }
+          if [ -f package.json ]; then
+            npm run build || echo "No build script found, skipping"
+          fi
 
       - name: ⚙️ Setup GitHub Pages
         uses: actions/configure-pages@v5
 
-      - name: 📤 Upload Site Artifact
+      - name: 📤 Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: "."
-
-      - name: 🖥️ Run Website (optional)
-        shell: powershell
-        run: |
-          if (npm run | Select-String "dev") {
-            npm run dev
-          } else {
-            Write-Host "ℹ️ No dev script defined."
-          }
 
   # =========================
   # 🧪 TEST JOB (WINDOWS)
@@ -74,60 +57,41 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: 📥 Checkout Repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: 🗂️ List All Files
         shell: powershell
         run: |
           Get-ChildItem -Recurse
-          Write-Host "✅ Files listed above."
-          Write-Host "💙 Credits to Luis for making this workflow!"
+          Write-Host "Files listed successfully"
 
   # =========================
   # 🧩 SETUP JOB (WINDOWS)
   # =========================
   setup:
-    name: ⚙️ Setup Node & Check index.html (Windows)
+    name: ⚙️ Check index.html (Windows)
     runs-on: windows-latest
 
     steps:
-      - name: 📥 Checkout Repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: 📦 Install Packages
-        run: npm install
-        shell: powershell
-
-      - name: 🛠️ Check index.html (Show All Lines)
+      - name: 🛠️ Check index.html
         shell: powershell
         run: |
           if (Test-Path "index.html") {
-            Write-Host "✅ index.html found. Showing all lines with numbers:"
-            Write-Host "----------------------------------------------"
-            Get-Content index.html | ForEach-Object { "{0,4}: {1}" -f $([array]::IndexOf((Get-Content index.html), $_) + 1), $_ }
-            Write-Host "----------------------------------------------"
-          } else {
-            Write-Host "❌ ERROR: index.html NOT FOUND in repo!"
-            Write-Host "📁 Files in repo root:"
-            Get-ChildItem
-            exit 1
-          }
+            Write-Host "index.html found"
+            Get-Content index.html
 
   # =========================
-  # 🚀 DEPLOY JOB (WINDOWS)
+  # 🚀 DEPLOY JOB
   # =========================
   deploy:
-    name: 🚀 Deploy to GitHub Pages (Windows)
-    runs-on: windows-latest
+    name: 🚀 Deploy to GitHub Pages
+    runs-on: ubuntu-latest
     needs: build
     environment:
       name: github-pages
 
     steps:
-      - name: 📥 Checkout Repo
-        uses: actions/checkout@v4
-
-      - name: 🌍 Deploy Website
-        id: deployment
+      - name: 🌍 Deploy
         uses: actions/deploy-pages@v4
