@@ -16,11 +16,11 @@ concurrency:
 
 jobs:
   # =========================
-  # 🔨 BUILD JOB
+  # 🔨 BUILD JOB (WINDOWS)
   # =========================
   build:
-    name: 🔨 Build & Prepare Site
-    runs-on: ubuntu-latest
+    name: 🔨 Build & Prepare Site (Windows)
+    runs-on: windows-latest
 
     steps:
       - name: 📥 Checkout Repo
@@ -34,12 +34,20 @@ jobs:
 
       - name: 📦 Install Dependencies
         run: npm install
+        shell: powershell
 
       - name: 🛠️ Build Project
+        shell: powershell
         run: |
-          if [ -f package.json ]; then
-            npm run build || echo "⚠️ No build script found, skipping build..."
-          fi
+          if (Test-Path "package.json") {
+            if (npm run | Select-String "build") {
+              npm run build
+            } else {
+              Write-Host "⚠️ No build script found, skipping build..."
+            }
+          } else {
+            Write-Host "⚠️ package.json not found, skipping build..."
+          }
 
       - name: ⚙️ Setup GitHub Pages
         uses: actions/configure-pages@v5
@@ -47,19 +55,22 @@ jobs:
       - name: 📤 Upload Site Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Static HTML: '.'
-          # Vite/React: './dist'
-          # Next.js export: './out'
-          path: '.'
+          path: "."
 
       - name: 🖥️ Run Website (optional)
-        run: npm run dev || echo "ℹ️ No dev script is defined."
+        shell: powershell
+        run: |
+          if (npm run | Select-String "dev") {
+            npm run dev
+          } else {
+            Write-Host "ℹ️ No dev script defined."
+          }
 
   # =========================
-  # 🧪 TEST JOB
+  # 🧪 TEST JOB (WINDOWS)
   # =========================
   test:
-    name: 🔍 Find Files
+    name: 🔍 Find Files (Windows)
     runs-on: windows-latest
 
     steps:
@@ -67,16 +78,17 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 🗂️ List All Files
+        shell: powershell
         run: |
-          find .
-          echo "✅ Files listed above." 
-          echo " Credits to Luis for making this workflow! "
+          Get-ChildItem -Recurse
+          Write-Host "✅ Files listed above."
+          Write-Host "💙 Credits to Luis for making this workflow!"
 
   # =========================
-  # 🧩 SETUP JOB
+  # 🧩 SETUP JOB (WINDOWS)
   # =========================
   setup:
-    name: ⚙️ Setup Node & Check index.html
+    name: ⚙️ Setup Node & Check index.html (Windows)
     runs-on: windows-latest
 
     steps:
@@ -85,27 +97,29 @@ jobs:
 
       - name: 📦 Install Packages
         run: npm install
+        shell: powershell
 
       - name: 🛠️ Check index.html (Show All Lines)
+        shell: powershell
         run: |
-          if [ -f index.html ]; then
-            echo "✅ index.html found. Showing all lines with numbers:"
-            echo "----------------------------------------------"
-            nl -ba index.html
-            echo "----------------------------------------------"
-          else
-            echo "❌ ERROR: index.html NOT FOUND in repo!"
-            echo "📁 Files in repo root:"
-            ls -la
+          if (Test-Path "index.html") {
+            Write-Host "✅ index.html found. Showing all lines with numbers:"
+            Write-Host "----------------------------------------------"
+            Get-Content index.html | ForEach-Object { "{0,4}: {1}" -f $([array]::IndexOf((Get-Content index.html), $_) + 1), $_ }
+            Write-Host "----------------------------------------------"
+          } else {
+            Write-Host "❌ ERROR: index.html NOT FOUND in repo!"
+            Write-Host "📁 Files in repo root:"
+            Get-ChildItem
             exit 1
-          fi
+          }
 
   # =========================
-  # 🚀 DEPLOY JOB
+  # 🚀 DEPLOY JOB (WINDOWS)
   # =========================
   deploy:
-    name: 🚀 Deploy to GitHub Pages
-    runs-on: ubuntu-latest
+    name: 🚀 Deploy to GitHub Pages (Windows)
+    runs-on: windows-latest
     needs: build
     environment:
       name: github-pages
