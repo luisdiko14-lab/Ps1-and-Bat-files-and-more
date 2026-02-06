@@ -1,4 +1,4 @@
-name: 🚀 Ultra Clean Zero-Error Deploy
+name: 🚀 Windows Powershell & Batch & EXE & HTML deploy deluxe pro v2.4 ⚒️
 
 on:
   push:
@@ -60,7 +60,7 @@ jobs:
   # =========================
   test:
     name: 🔍 Find Files
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
       - name: 📥 Checkout Repo
@@ -77,7 +77,7 @@ jobs:
   # =========================
   setup:
     name: ⚙️ Setup Node & Check index.html
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
       - name: 📥 Checkout Repo
