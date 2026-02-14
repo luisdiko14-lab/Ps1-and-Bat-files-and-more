@@ -1,42 +1,97 @@
+/* Base styles */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #121212;
-    color: #ffffff;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    text-align: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
+  color: #fff;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
 }
 
 .container {
-    max-width: 600px;
+  max-width: 600px;
+  padding: 40px;
+  background-color: rgba(255,255,255,0.05);
+  border-radius: 15px;
+  box-shadow: 0 0 40px rgba(0, 255, 0, 0.2);
+  backdrop-filter: blur(10px);
 }
 
 h1 {
-    color: #4caf50;
-    font-size: 2.5rem;
-    margin-bottom: 20px;
+  color: #4caf50;
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  text-shadow: 0 0 10px #4caf50;
 }
 
 p {
-    font-size: 1.2rem;
-    margin-bottom: 40px;
+  font-size: 1.2rem;
+  margin-bottom: 40px;
+  color: #ccc;
 }
 
-button {
-    background-color: #4caf50;
-    border: none;
-    padding: 15px 30px;
-    font-size: 1.2rem;
-    color: #fff;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.3s;
+/* Buttons */
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-button:hover {
-    background-color: #45a049;
-    transform: scale(1.05);
+.btn {
+  position: relative;
+  background-color: #4caf50;
+  border: none;
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  color: #fff;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 300%;
+  height: 300%;
+  background: rgba(255, 255, 255, 0.1);
+  transform: translate(-50%, -50%) scale(0);
+  border-radius: 50%;
+  transition: transform 0.5s ease;
+}
+
+.btn:hover::before {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.btn:hover {
+  transform: scale(1.05);
+  background-color: #45a049;
+  box-shadow: 0 0 20px #4caf50;
+}
+
+/* Loader */
+.loader {
+  margin: 30px auto 0;
+  border: 6px solid #4caf50;
+  border-top: 6px solid transparent;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+.hidden {
+  display: none;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg);}
+  100% { transform: rotate(360deg);}
 }
