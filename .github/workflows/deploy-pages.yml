@@ -66,20 +66,7 @@ jobs:
           Write-Host "Files listed successfully"
 
   # =========================
-  # 🧩 SETUP JOB (WINDOWS)
-  # =========================
-  setup:
-    name: ⚙️ Check index.html (Windows)
-    runs-on: windows-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: 🛠️ Check index.html
-        shell: powershell
-        run: |
-          if (Test-Path "index.html") {
-            Write-Host "index.html found"
+  
           
   # =========================
   # 🚀 DEPLOY JOB
