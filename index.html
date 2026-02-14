@@ -1,21 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Download Files From Repo</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Download Files From Repo</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Welcome to The Luis PS1-and-BAT Files Repo!</h1>
-        <p>Download any files you want. Click the button below to access the folder with all the cool scripts.</p>
+  <div class="container">
+    <h1>Welcome to The Luis PS1-and-BAT Files Repo!</h1>
+    <p>Download scripts, explore the repo, or check compatibility. Click any button below to proceed.</p>
 
-        <button id="downloadBtn">Download Files</button>
-        <button id="viewRepo">View the Repo!</button>
-        <button id="compatibility">Check Compatibility!</button>
+    <div class="buttons">
+      <button class="btn" id="downloadBtn">Download Files</button>
+      <button class="btn" id="viewRepo">View the Repo!</button>
+      <button class="btn" id="compatibility">Check Compatibility!</button>
     </div>
 
-    <script src="script.js"></script>
+    <div id="loader" class="loader hidden"></div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
