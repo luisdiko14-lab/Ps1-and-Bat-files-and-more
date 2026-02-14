@@ -4,3 +4,4 @@
 | macOS X       | ❌        |
 | Ubuntu X      | ❌        |
 | Others        | ❌        |
+| Ubuntu        | ℹ️ (comming soon  |
