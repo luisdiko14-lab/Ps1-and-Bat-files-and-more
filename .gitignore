@@ -8,7 +8,7 @@ __pycache__/
 *.pyd
 *.so
 .Python
-venv/
+venv
 .env/
 .env.*
 pip-wheel-metadata/
@@ -45,7 +45,7 @@ desktop.ini
 # Node (just in case)
 # =========================
 npm-debug.log*
-node_modules/
+node_modules
 yarn-error.log*
 
 # =========================
