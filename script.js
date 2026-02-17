@@ -9,7 +9,7 @@ function handleClick(url) {
   setTimeout(() => {
     window.location.href = url;
     loader.classList.add("hidden");
-  }, 5000); // simulate loading
+  }, 30000); // simulate loading
 }
 
 downloadBtn.addEventListener("click", () => {
