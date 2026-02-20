@@ -1,4 +1,5 @@
 # =========================
+node_modules/
 # Python
 # =========================
 __pycache__/
@@ -7,7 +8,7 @@ __pycache__/
 *.pyd
 *.so
 .Python
-venv/
+venv
 .env/
 .env.*
 pip-wheel-metadata/
@@ -43,9 +44,10 @@ desktop.ini
 # =========================
 # Node (just in case)
 # =========================
-node_modules/
 npm-debug.log*
+node_modules
 yarn-error.log*
+
 
 # =========================
 # Build / Temp
@@ -54,3 +56,7 @@ dist/
 build/
 tmp/
 temp/
+
+s/torage*
+node_modules
+node_modules

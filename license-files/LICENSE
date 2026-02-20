@@ -1,0 +1,131 @@
+# Custom Open License (PS1, Batch, and Other Files)
+
+**Copyright (c) 2025**
+**Authors:** Luisdiko14-lab, koen-mods
+
+---
+
+## Permission
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated files (including but not limited to **PowerShell (.ps1)** scripts, **Batch (.bat/.cmd)** files, configuration files, and documentation), to deal in the Software without restriction, including without limitation the rights to:
+
+* Use
+* Copy
+* Modify
+* Merge
+* Publish
+* Distribute
+* Sublicense
+* Sell copies of the Software
+
+subject to the conditions below.
+
+---
+
+## Conditions
+
+1. **Attribution Required**
+   You must give clear credit to **koen-mods** and **Luisdiko14-lab** in:
+
+   * Source code headers, or
+   * A `CREDITS` or `LICENSE` file, or
+   * Project documentation / README
+
+2. **License Inclusion**
+   This license text must be included with all copies or substantial portions of the Software.
+
+3. **No Misrepresentation**
+   You may not claim that you are the original author of this Software.
+
+---
+
+## Disclaimer
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON‑INFRINGEMENT.
+
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+---
+
+## Supported File Types & Usage
+
+This license applies to **all file types** included in the project, including but not limited to:
+
+* **PowerShell:** `.ps1`
+* **Batch / CMD:** `.bat`, `.cmd`
+* **JavaScript / TypeScript:** `.js`, `.ts`
+* **Node.js Projects**
+* **Ruby:** `.rb`
+* **Python:** `.py`
+* **Shell Scripts:** `.sh`
+* **Config / Data:** `.json`, `.yml`, `.env`, `.txt`
+* **Compiled Outputs:** `.exe`, packaged builds
+
+---
+
+## How to Run (General Guidance)
+
+> These are general examples. Each project may include a README with more specific steps.
+
+### PowerShell (.ps1)
+
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+./script.ps1
+```
+
+### Batch / CMD (.bat / .cmd)
+
+```bat
+script.bat
+```
+
+(Double‑click or run from Command Prompt)
+
+### Node.js / TypeScript (.js / .ts)
+
+```bash
+npm install
+npm run start
+```
+
+(or `node index.js` after build)
+
+### Ruby (.rb)
+
+```bash
+ruby script.rb
+```
+
+### Python (.py)
+
+```bash
+python script.py
+```
+
+### Shell (.sh)
+
+```bash
+chmod +x script.sh
+./script.sh
+```
+
+---
+
+## Distribution & Builds
+
+* You may distribute **source code or compiled builds (EXE)**
+* You may modify scripts for personal or commercial use
+* You must keep **credit to Luisdiko14-lab & koen-mods**
+
+---
+
+## Notes
+
+* This license is **simple, permissive, and creator‑friendly**
+* Suitable for scripts, automation tools, installers, bots, and utilities
+* Compatible with **GitHub public repositories**
+
+---
+
+**Made with ❤️ by Luisdiko14-lab & koen-mods**
