@@ -23,3 +23,11 @@ viewRepoBtn.addEventListener("click", () => {
 compatibilityBtn.addEventListener("click", () => {
   handleClick("https://github.com/luisdiko14-lab/Ps1-and-Bat-files-and-more/blob/main/compatibility.md");
 });
+
+document.getElementById("viewRepo").addEventListener("click", function() {
+    window.location.href = "https://github.com/luisdiko14-lab/Ps1-and-Bat-files-and-more";
+});
+
+document.getElementById("compatibility").addEventListener("click", function() {
+    window.location.href = "https://github.com/luisdiko14-lab/Ps1-and-Bat-files-and-more/blob/main/compatibility.md";
+});
