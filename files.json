@@ -107,6 +107,24 @@
       "type": "powershell",
       "info": "Uninstalls Luis Control Center and deletes files from desktop.",
       "author": "Luis"
+    },
+    {
+      "name": "NetworkDiagnostics.ps1",
+      "type": "powershell",
+      "info": "Displays active adapter IP details and tests connectivity to a target host.",
+      "author": "Luis"
+    },
+    {
+      "name": "ProcessTopMemory.ps1",
+      "type": "powershell",
+      "info": "Shows the top memory-consuming processes with memory in MB.",
+      "author": "Luis"
+    },
+    {
+      "name": "FolderSizeReport.ps1",
+      "type": "powershell",
+      "info": "Reports the largest subfolders in a path by total file size.",
+      "author": "Luis"
     }
   ]
 }
