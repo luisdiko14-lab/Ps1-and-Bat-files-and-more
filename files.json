@@ -125,6 +125,217 @@
       "type": "powershell",
       "info": "Reports the largest subfolders in a path by total file size.",
       "author": "Luis"
+
+    },
+    {
+      "name": "QuickPingSweep.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "FileOrganizerByExt.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "DiskUsageSummary.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "FastBackupMirror.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "GitQuickStatus.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "OpenCommonToolsMenu.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "EnvSnapshot.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "RandomQuote.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "FolderTreeExport.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "CountdownTimer.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "PortCheckNetstat.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "QuickHashFile.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "CleanEmptyFolders.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "SystemUptimeQuick.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "NotesAppender.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "CPUInfoView.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "MemoryInfoView.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "NetworkResetHints.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "TodoListManager.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "SafeDeletePrompt.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "BatteryHealthCheck.ps1",
+      "type": "powershell",
+      "info": "Utility PowerShell script for diagnostics, automation, or reporting.",
+      "author": "Luis"
+    },
+    {
+      "name": "EventLogQuickView.ps1",
+      "type": "powershell",
+      "info": "Utility PowerShell script for diagnostics, automation, or reporting.",
+      "author": "Luis"
+    },
+    {
+      "name": "JsonPrettyPrint.ps1",
+      "type": "powershell",
+      "info": "Utility PowerShell script for diagnostics, automation, or reporting.",
+      "author": "Luis"
+    },
+    {
+      "name": "DirectoryWatcher.ps1",
+      "type": "powershell",
+      "info": "Utility PowerShell script for diagnostics, automation, or reporting.",
+      "author": "Luis"
+    },
+    {
+      "name": "HttpStatusCheck.ps1",
+      "type": "powershell",
+      "info": "Utility PowerShell script for diagnostics, automation, or reporting.",
+      "author": "Luis"
+    },
+    {
+      "name": "DuplicateFileFinder.ps1",
+      "type": "powershell",
+      "info": "Utility PowerShell script for diagnostics, automation, or reporting.",
+      "author": "Luis"
+    },
+    {
+      "name": "ServiceRestartSafe.ps1",
+      "type": "powershell",
+      "info": "Utility PowerShell script for diagnostics, automation, or reporting.",
+      "author": "Luis"
+    },
+    {
+      "name": "PowerPlanSwitcher.ps1",
+      "type": "powershell",
+      "info": "Utility PowerShell script for diagnostics, automation, or reporting.",
+      "author": "Luis"
+    },
+    {
+      "name": "ClipboardHistoryLite.ps1",
+      "type": "powershell",
+      "info": "Utility PowerShell script for diagnostics, automation, or reporting.",
+      "author": "Luis"
+    },
+    {
+      "name": "ZipLogsArchive.ps1",
+      "type": "powershell",
+      "info": "Utility PowerShell script for diagnostics, automation, or reporting.",
+      "author": "Luis"
+    },
+    {
+      "name": "GitRepoQuickAudit.ps1",
+      "type": "powershell",
+      "info": "Utility PowerShell script for diagnostics, automation, or reporting.",
+      "author": "Luis"
+    },
+    {
+      "name": "LargeFileScanner.ps1",
+      "type": "powershell",
+      "info": "Utility PowerShell script for diagnostics, automation, or reporting.",
+      "author": "Luis"
+    },
+    {
+      "name": "ApiGetTemplate.ps1",
+      "type": "powershell",
+      "info": "Utility PowerShell script for diagnostics, automation, or reporting.",
+      "author": "Luis"
+    },
+    {
+      "name": "ScheduleTaskCreatorLite.ps1",
+      "type": "powershell",
+      "info": "Utility PowerShell script for diagnostics, automation, or reporting.",
+      "author": "Luis"
+    },
+    {
+      "name": "ColorConsoleDemo.ps1",
+      "type": "powershell",
+      "info": "Utility PowerShell script for diagnostics, automation, or reporting.",
+      "author": "Luis"
     }
   ]
 }
