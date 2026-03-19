@@ -107,6 +107,834 @@
       "type": "powershell",
       "info": "Uninstalls Luis Control Center and deletes files from desktop.",
       "author": "Luis"
+    },
+    {
+      "name": "NetworkDiagnostics.ps1",
+      "type": "powershell",
+      "info": "Displays active adapter IP details and tests connectivity to a target host.",
+      "author": "Luis"
+    },
+    {
+      "name": "ProcessTopMemory.ps1",
+      "type": "powershell",
+      "info": "Shows the top memory-consuming processes with memory in MB.",
+      "author": "Luis"
+    },
+    {
+      "name": "FolderSizeReport.ps1",
+      "type": "powershell",
+      "info": "Reports the largest subfolders in a path by total file size.",
+      "author": "Luis"
+    },
+    {
+      "name": "QuickPingSweep.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "FileOrganizerByExt.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "DiskUsageSummary.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "FastBackupMirror.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "GitQuickStatus.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "OpenCommonToolsMenu.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "EnvSnapshot.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "RandomQuote.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "FolderTreeExport.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "CountdownTimer.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "PortCheckNetstat.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "QuickHashFile.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "CleanEmptyFolders.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "SystemUptimeQuick.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "NotesAppender.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "CPUInfoView.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "MemoryInfoView.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "NetworkResetHints.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "TodoListManager.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "SafeDeletePrompt.bat",
+      "type": "batch",
+      "info": "Utility batch script for quick automation and system tasks.",
+      "author": "Luis"
+    },
+    {
+      "name": "BatteryHealthCheck.ps1",
+      "type": "powershell",
+      "info": "Utility PowerShell script for diagnostics, automation, or reporting.",
+      "author": "Luis"
+    },
+    {
+      "name": "EventLogQuickView.ps1",
+      "type": "powershell",
+      "info": "Utility PowerShell script for diagnostics, automation, or reporting.",
+      "author": "Luis"
+    },
+    {
+      "name": "JsonPrettyPrint.ps1",
+      "type": "powershell",
+      "info": "Utility PowerShell script for diagnostics, automation, or reporting.",
+      "author": "Luis"
+    },
+    {
+      "name": "DirectoryWatcher.ps1",
+      "type": "powershell",
+      "info": "Utility PowerShell script for diagnostics, automation, or reporting.",
+      "author": "Luis"
+    },
+    {
+      "name": "HttpStatusCheck.ps1",
+      "type": "powershell",
+      "info": "Utility PowerShell script for diagnostics, automation, or reporting.",
+      "author": "Luis"
+    },
+    {
+      "name": "DuplicateFileFinder.ps1",
+      "type": "powershell",
+      "info": "Utility PowerShell script for diagnostics, automation, or reporting.",
+      "author": "Luis"
+    },
+    {
+      "name": "ServiceRestartSafe.ps1",
+      "type": "powershell",
+      "info": "Utility PowerShell script for diagnostics, automation, or reporting.",
+      "author": "Luis"
+    },
+    {
+      "name": "PowerPlanSwitcher.ps1",
+      "type": "powershell",
+      "info": "Utility PowerShell script for diagnostics, automation, or reporting.",
+      "author": "Luis"
+    },
+    {
+      "name": "ClipboardHistoryLite.ps1",
+      "type": "powershell",
+      "info": "Utility PowerShell script for diagnostics, automation, or reporting.",
+      "author": "Luis"
+    },
+    {
+      "name": "ZipLogsArchive.ps1",
+      "type": "powershell",
+      "info": "Utility PowerShell script for diagnostics, automation, or reporting.",
+      "author": "Luis"
+    },
+    {
+      "name": "GitRepoQuickAudit.ps1",
+      "type": "powershell",
+      "info": "Utility PowerShell script for diagnostics, automation, or reporting.",
+      "author": "Luis"
+    },
+    {
+      "name": "LargeFileScanner.ps1",
+      "type": "powershell",
+      "info": "Utility PowerShell script for diagnostics, automation, or reporting.",
+      "author": "Luis"
+    },
+    {
+      "name": "ApiGetTemplate.ps1",
+      "type": "powershell",
+      "info": "Utility PowerShell script for diagnostics, automation, or reporting.",
+      "author": "Luis"
+    },
+    {
+      "name": "ScheduleTaskCreatorLite.ps1",
+      "type": "powershell",
+      "info": "Utility PowerShell script for diagnostics, automation, or reporting.",
+      "author": "Luis"
+    },
+    {
+      "name": "ColorConsoleDemo.ps1",
+      "type": "powershell",
+      "info": "Utility PowerShell script for diagnostics, automation, or reporting.",
+      "author": "Luis"
+    },
+    {
+      "name": "clock_display_plus.bat",
+      "type": "batch",
+      "info": "Displays the current date and time in a loop.",
+      "author": "Luis"
+    },
+    {
+      "name": "drive_free_report_plus.bat",
+      "type": "batch",
+      "info": "Reports free space for local disks.",
+      "author": "Luis"
+    },
+    {
+      "name": "recent_dir_list_plus.bat",
+      "type": "batch",
+      "info": "Lists newest files in a folder.",
+      "author": "Luis"
+    },
+    {
+      "name": "project_scaffold_mini_plus.bat",
+      "type": "batch",
+      "info": "Creates a small project folder scaffold.",
+      "author": "Luis"
+    },
+    {
+      "name": "text_search_all_plus.bat",
+      "type": "batch",
+      "info": "Searches recursively for a text pattern.",
+      "author": "Luis"
+    },
+    {
+      "name": "extension_count_plus.bat",
+      "type": "batch",
+      "info": "Counts files by extension using dir output.",
+      "author": "Luis"
+    },
+    {
+      "name": "empty_file_check_plus.bat",
+      "type": "batch",
+      "info": "Finds empty files under current directory.",
+      "author": "Luis"
+    },
+    {
+      "name": "copy_with_timestamp_plus.bat",
+      "type": "batch",
+      "info": "Copies a file to a backup name.",
+      "author": "Luis"
+    },
+    {
+      "name": "json_backup_plus.bat",
+      "type": "batch",
+      "info": "Copies a JSON file to a .bak file.",
+      "author": "Luis"
+    },
+    {
+      "name": "line_count_report_plus.bat",
+      "type": "batch",
+      "info": "Counts lines in a text file.",
+      "author": "Luis"
+    },
+    {
+      "name": "echo_box_plus.bat",
+      "type": "batch",
+      "info": "Prints text inside a simple box.",
+      "author": "Luis"
+    },
+    {
+      "name": "random_color_echo_plus.bat",
+      "type": "batch",
+      "info": "Prints a random color code hint.",
+      "author": "Luis"
+    },
+    {
+      "name": "tasklist_filter_plus.bat",
+      "type": "batch",
+      "info": "Shows tasklist lines matching a filter.",
+      "author": "Luis"
+    },
+    {
+      "name": "net_info_card_plus.bat",
+      "type": "batch",
+      "info": "Shows hostname and ipconfig summary.",
+      "author": "Luis"
+    },
+    {
+      "name": "temp_count_plus.bat",
+      "type": "batch",
+      "info": "Counts items in TEMP.",
+      "author": "Luis"
+    },
+    {
+      "name": "markdown_todo_template_plus.bat",
+      "type": "batch",
+      "info": "Creates a markdown todo template.",
+      "author": "Luis"
+    },
+    {
+      "name": "csv_preview_plus.bat",
+      "type": "batch",
+      "info": "Prints a few lines of a CSV.",
+      "author": "Luis"
+    },
+    {
+      "name": "make_demo_log_plus.bat",
+      "type": "batch",
+      "info": "Creates a small demo log file.",
+      "author": "Luis"
+    },
+    {
+      "name": "append_timestamp_note_plus.bat",
+      "type": "batch",
+      "info": "Appends a timestamped note to notes.txt.",
+      "author": "Luis"
+    },
+    {
+      "name": "guid_like_string_plus.bat",
+      "type": "batch",
+      "info": "Builds a pseudo GUID-like token from RANDOM.",
+      "author": "Luis"
+    },
+    {
+      "name": "port_probe_hint_plus.bat",
+      "type": "batch",
+      "info": "Shows netstat results for a given port.",
+      "author": "Luis"
+    },
+    {
+      "name": "service_query_card_plus.bat",
+      "type": "batch",
+      "info": "Queries a Windows service.",
+      "author": "Luis"
+    },
+    {
+      "name": "ip_ping_combo_plus.bat",
+      "type": "batch",
+      "info": "Shows ipconfig snippet then pings a host.",
+      "author": "Luis"
+    },
+    {
+      "name": "sysinfo_mini_plus.bat",
+      "type": "batch",
+      "info": "Runs a mini systeminfo filter.",
+      "author": "Luis"
+    },
+    {
+      "name": "path_dump_plus.bat",
+      "type": "batch",
+      "info": "Writes PATH entries to a file.",
+      "author": "Luis"
+    },
+    {
+      "name": "calc_sum_args_plus.bat",
+      "type": "batch",
+      "info": "Adds two numeric args.",
+      "author": "Luis"
+    },
+    {
+      "name": "fancy_separator_plus.bat",
+      "type": "batch",
+      "info": "Prints a nice separator line.",
+      "author": "Luis"
+    },
+    {
+      "name": "menu_demo_tools_plus.bat",
+      "type": "batch",
+      "info": "Tiny menu demo with echo choices.",
+      "author": "Luis"
+    },
+    {
+      "name": "folder_size_hint_plus.bat",
+      "type": "batch",
+      "info": "Shows dir summary for a folder.",
+      "author": "Luis"
+    },
+    {
+      "name": "rename_spaces_preview_plus.bat",
+      "type": "batch",
+      "info": "Previews names with spaces replaced by underscores.",
+      "author": "Luis"
+    },
+    {
+      "name": "extension_move_preview_plus.bat",
+      "type": "batch",
+      "info": "Previews extension folder moves.",
+      "author": "Luis"
+    },
+    {
+      "name": "history_log_stub_plus.bat",
+      "type": "batch",
+      "info": "Creates a command history stub file.",
+      "author": "Luis"
+    },
+    {
+      "name": "simple_alarm_beep_plus.bat",
+      "type": "batch",
+      "info": "Runs a short timeout based alarm.",
+      "author": "Luis"
+    },
+    {
+      "name": "ascii_art_hi_plus.bat",
+      "type": "batch",
+      "info": "Prints a mini ASCII greeting.",
+      "author": "Luis"
+    },
+    {
+      "name": "branch_name_echo_plus.bat",
+      "type": "batch",
+      "info": "Echoes current git branch if git exists.",
+      "author": "Luis"
+    },
+    {
+      "name": "repo_last_commit_plus.bat",
+      "type": "batch",
+      "info": "Shows the last git commit line.",
+      "author": "Luis"
+    },
+    {
+      "name": "file_exists_check_plus.bat",
+      "type": "batch",
+      "info": "Checks whether a file exists.",
+      "author": "Luis"
+    },
+    {
+      "name": "dir_snapshot_to_file_plus.bat",
+      "type": "batch",
+      "info": "Writes a directory listing to a file.",
+      "author": "Luis"
+    },
+    {
+      "name": "make_readme_stub_plus.bat",
+      "type": "batch",
+      "info": "Creates a README stub.",
+      "author": "Luis"
+    },
+    {
+      "name": "reverse_args_echo_plus.bat",
+      "type": "batch",
+      "info": "Echoes the first three args in reverse order.",
+      "author": "Luis"
+    },
+    {
+      "name": "compare_strings_plus.bat",
+      "type": "batch",
+      "info": "Compares two strings.",
+      "author": "Luis"
+    },
+    {
+      "name": "username_card_plus.bat",
+      "type": "batch",
+      "info": "Shows username and computer name.",
+      "author": "Luis"
+    },
+    {
+      "name": "list_hidden_files_plus.bat",
+      "type": "batch",
+      "info": "Lists hidden files in current dir.",
+      "author": "Luis"
+    },
+    {
+      "name": "open_url_hint_plus.bat",
+      "type": "batch",
+      "info": "Prints start command for a URL.",
+      "author": "Luis"
+    },
+    {
+      "name": "make_temp_workspace_plus.bat",
+      "type": "batch",
+      "info": "Creates a temp workspace folder structure.",
+      "author": "Luis"
+    },
+    {
+      "name": "batch_color_presets_plus.bat",
+      "type": "batch",
+      "info": "Prints common color presets.",
+      "author": "Luis"
+    },
+    {
+      "name": "show_errorlevel_demo_plus.bat",
+      "type": "batch",
+      "info": "Shows current errorlevel after a command.",
+      "author": "Luis"
+    },
+    {
+      "name": "make_json_stub_plus.bat",
+      "type": "batch",
+      "info": "Creates a tiny JSON stub file.",
+      "author": "Luis"
+    },
+    {
+      "name": "weekday_echo_plus.bat",
+      "type": "batch",
+      "info": "Echoes today information.",
+      "author": "Luis"
+    },
+    {
+      "name": "files_counter_plus.bat",
+      "type": "batch",
+      "info": "Counts files recursively.",
+      "author": "Luis"
+    },
+    {
+      "name": "UptimeReportPlus.ps1",
+      "type": "powershell",
+      "info": "Shows local time, boot time, and uptime span.",
+      "author": "Luis"
+    },
+    {
+      "name": "DiskFreeTop.ps1",
+      "type": "powershell",
+      "info": "Lists logical disks with size and free space percentages.",
+      "author": "Luis"
+    },
+    {
+      "name": "RecentFilesDigest.ps1",
+      "type": "powershell",
+      "info": "Prints recently modified files from a target path.",
+      "author": "Luis"
+    },
+    {
+      "name": "ProcessCpuPulse.ps1",
+      "type": "powershell",
+      "info": "Shows the top CPU consuming processes.",
+      "author": "Luis"
+    },
+    {
+      "name": "EnvInspector.ps1",
+      "type": "powershell",
+      "info": "Displays selected environment variables in a tidy table.",
+      "author": "Luis"
+    },
+    {
+      "name": "ServiceStateMatrix.ps1",
+      "type": "powershell",
+      "info": "Displays service counts grouped by status.",
+      "author": "Luis"
+    },
+    {
+      "name": "FileAgeBuckets.ps1",
+      "type": "powershell",
+      "info": "Groups files in a folder into age buckets.",
+      "author": "Luis"
+    },
+    {
+      "name": "FolderCatalogMaker.ps1",
+      "type": "powershell",
+      "info": "Exports a simple JSON catalog of files in a directory.",
+      "author": "Luis"
+    },
+    {
+      "name": "TextSearchPreview.ps1",
+      "type": "powershell",
+      "info": "Searches text and shows file, line number, and line.",
+      "author": "Luis"
+    },
+    {
+      "name": "PathLengthChecker.ps1",
+      "type": "powershell",
+      "info": "Finds long file paths over a threshold.",
+      "author": "Luis"
+    },
+    {
+      "name": "ManifestEntryBuilder.ps1",
+      "type": "powershell",
+      "info": "Creates a manifest entry object for a file name.",
+      "author": "Luis"
+    },
+    {
+      "name": "ConfigTemplateWriter.ps1",
+      "type": "powershell",
+      "info": "Writes a simple config template.",
+      "author": "Luis"
+    },
+    {
+      "name": "CsvColumnPeek.ps1",
+      "type": "powershell",
+      "info": "Shows the first few rows from a CSV file.",
+      "author": "Luis"
+    },
+    {
+      "name": "JsonArrayCounter.ps1",
+      "type": "powershell",
+      "info": "Counts objects in a JSON array file.",
+      "author": "Luis"
+    },
+    {
+      "name": "ExtensionSummaryPlus.ps1",
+      "type": "powershell",
+      "info": "Summarizes files by extension in a folder.",
+      "author": "Luis"
+    },
+    {
+      "name": "EmptyFileFinderPlus.ps1",
+      "type": "powershell",
+      "info": "Finds zero-byte files.",
+      "author": "Luis"
+    },
+    {
+      "name": "FileNameNormalizerPreview.ps1",
+      "type": "powershell",
+      "info": "Shows a preview of normalized file names.",
+      "author": "Luis"
+    },
+    {
+      "name": "ReportTimestampMaker.ps1",
+      "type": "powershell",
+      "info": "Creates a timestamp string for report naming.",
+      "author": "Luis"
+    },
+    {
+      "name": "DateRangeGeneratorNice.ps1",
+      "type": "powershell",
+      "info": "Generates dates between a start and end date.",
+      "author": "Luis"
+    },
+    {
+      "name": "RandomPasswordNice.ps1",
+      "type": "powershell",
+      "info": "Generates a friendly random password.",
+      "author": "Luis"
+    },
+    {
+      "name": "NetworkProfileViewPlus.ps1",
+      "type": "powershell",
+      "info": "Displays network connection profiles.",
+      "author": "Luis"
+    },
+    {
+      "name": "DnsCachePeekLite.ps1",
+      "type": "powershell",
+      "info": "Shows a sample of DNS client cache entries.",
+      "author": "Luis"
+    },
+    {
+      "name": "RouteTableLitePlus.ps1",
+      "type": "powershell",
+      "info": "Shows a short route table snapshot.",
+      "author": "Luis"
+    },
+    {
+      "name": "AdapterSpeedViewPlus.ps1",
+      "type": "powershell",
+      "info": "Lists adapters and link speeds.",
+      "author": "Luis"
+    },
+    {
+      "name": "PortListenerReportPlus.ps1",
+      "type": "powershell",
+      "info": "Lists listening TCP ports.",
+      "author": "Luis"
+    },
+    {
+      "name": "PingLatencyAveragePlus.ps1",
+      "type": "powershell",
+      "info": "Pings a host and computes average response time.",
+      "author": "Luis"
+    },
+    {
+      "name": "HostsFilePreviewLite.ps1",
+      "type": "powershell",
+      "info": "Shows the hosts file if present.",
+      "author": "Luis"
+    },
+    {
+      "name": "TempUsageReportPlus.ps1",
+      "type": "powershell",
+      "info": "Reports item counts in temp folders.",
+      "author": "Luis"
+    },
+    {
+      "name": "LogTailViewerLite.ps1",
+      "type": "powershell",
+      "info": "Shows the last lines of a text log.",
+      "author": "Luis"
+    },
+    {
+      "name": "MarkdownLinkListPlus.ps1",
+      "type": "powershell",
+      "info": "Extracts markdown links from a file.",
+      "author": "Luis"
+    },
+    {
+      "name": "TodoSummaryBoardPlus.ps1",
+      "type": "powershell",
+      "info": "Summarizes checkboxes in a todo markdown file.",
+      "author": "Luis"
+    },
+    {
+      "name": "SimpleHttpDownloadLite.ps1",
+      "type": "powershell",
+      "info": "Downloads a URL to a file.",
+      "author": "Luis"
+    },
+    {
+      "name": "TopCommandsHistoryLite.ps1",
+      "type": "powershell",
+      "info": "Shows recent PowerShell history if available.",
+      "author": "Luis"
+    },
+    {
+      "name": "CurrentUserProfilePlus.ps1",
+      "type": "powershell",
+      "info": "Shows current user profile details.",
+      "author": "Luis"
+    },
+    {
+      "name": "ComputerInfoMiniPlus.ps1",
+      "type": "powershell",
+      "info": "Shows a mini computer info summary.",
+      "author": "Luis"
+    },
+    {
+      "name": "ProcessStartTimesPlus.ps1",
+      "type": "powershell",
+      "info": "Shows the most recently started processes.",
+      "author": "Luis"
+    },
+    {
+      "name": "CertificateStorePeekLite.ps1",
+      "type": "powershell",
+      "info": "Lists a sample of local machine certificates.",
+      "author": "Luis"
+    },
+    {
+      "name": "ShareFolderViewLite.ps1",
+      "type": "powershell",
+      "info": "Lists SMB shares when available.",
+      "author": "Luis"
+    },
+    {
+      "name": "StartupCommandPeekLite.ps1",
+      "type": "powershell",
+      "info": "Lists Run registry startup commands.",
+      "author": "Luis"
+    },
+    {
+      "name": "RegistryValueReaderLite.ps1",
+      "type": "powershell",
+      "info": "Reads a registry value by path and name.",
+      "author": "Luis"
+    },
+    {
+      "name": "GuidGeneratorSetPlus.ps1",
+      "type": "powershell",
+      "info": "Generates a set of GUIDs.",
+      "author": "Luis"
+    },
+    {
+      "name": "HexColorPalettePlus.ps1",
+      "type": "powershell",
+      "info": "Prints a small color palette object list.",
+      "author": "Luis"
+    },
+    {
+      "name": "AsciiBannerMakerPlus.ps1",
+      "type": "powershell",
+      "info": "Builds a simple ASCII banner.",
+      "author": "Luis"
+    },
+    {
+      "name": "RandomFactsPackPlus.ps1",
+      "type": "powershell",
+      "info": "Shows a random mini fact from a list.",
+      "author": "Luis"
+    },
+    {
+      "name": "ProgressBarDemoNicePlus.ps1",
+      "type": "powershell",
+      "info": "Shows a short demo progress bar.",
+      "author": "Luis"
+    },
+    {
+      "name": "TimerStopwatchLitePlus.ps1",
+      "type": "powershell",
+      "info": "Measures a short sleep duration example.",
+      "author": "Luis"
+    },
+    {
+      "name": "CalendarWeekViewPlus.ps1",
+      "type": "powershell",
+      "info": "Displays the next 7 days.",
+      "author": "Luis"
+    },
+    {
+      "name": "ProfileBackupHelperLite.ps1",
+      "type": "powershell",
+      "info": "Copies the current PowerShell profile to a backup file if it exists.",
+      "author": "Luis"
+    },
+    {
+      "name": "QuickNotesJsonPlus.ps1",
+      "type": "powershell",
+      "info": "Appends a note entry to a JSON lines file.",
+      "author": "Luis"
+    },
+    {
+      "name": "ScriptInventoryViewPlus.ps1",
+      "type": "powershell",
+      "info": "Lists scripts in the files directory with extensions.",
+      "author": "Luis"
     }
   ]
 }

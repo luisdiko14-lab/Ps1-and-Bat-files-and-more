@@ -1,0 +1,1 @@
+if(Test-Path $PROFILE){$dest="$PROFILE.bak"; Copy-Item -Path $PROFILE -Destination $dest -Force; Write-Host "Backup created: $dest" -ForegroundColor Green}else{Write-Host 'PowerShell profile not found.' -ForegroundColor Yellow}
