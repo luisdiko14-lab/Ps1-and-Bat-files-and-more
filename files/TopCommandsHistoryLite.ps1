@@ -1,0 +1,1 @@
+if(Get-History -ErrorAction SilentlyContinue){Get-History | Select-Object -Last 20 Id,CommandLine,ExecutionStatus | Format-Table -Wrap}else{Write-Host 'No interactive history available.' -ForegroundColor Yellow}
