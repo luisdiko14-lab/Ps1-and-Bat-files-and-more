@@ -24,18 +24,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Prepare public folder
+        run: |
+          # Create public folder
+          mkdir -p public
+          
+          # Copy only the specific files
+          cp index.html style.css script.js public/
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload individual files or a folder
-          files: |
-            index.html
-            style.css
-            styles.css
-            script.js
+          path: public
 
       - name: Deploy to GitHub Pages
         id: deployment
