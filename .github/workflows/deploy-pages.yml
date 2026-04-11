@@ -1,4 +1,4 @@
-name: 🚀 Windows Powershell & Batch & EXE & HTML deploy deluxe pro v2.4 ⚒️
+name: Deploy Website via GitHub Pages
 
 on:
   push:
@@ -19,65 +19,63 @@ jobs:
   # 🔨 BUILD JOB (UBUNTU ONLY)
   # =========================
   build:
-    name: 🔨 Build & Prepare Site (Ubuntu)
+    name: Build & Prepare Site
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Checkout Repo
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: 🟢 Setup Node.js 20
+      - name: Setup Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: "npm"
 
-      - name: 📦 Install Dependencies
+      - name: Install Dependencies
         run: npm install
 
-      - name: 🛠️ Build Project
+      - name: Build Project (if applicable)
         run: |
           if [ -f package.json ]; then
             npm run build || echo "No build script found, skipping"
           fi
 
-      - name: ⚙️ Setup GitHub Pages
+      - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
-      - name: 📤 Upload Pages Artifact
+      - name: Upload Artifact for Deployment
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "."
+          path: /
 
   # =========================
   # 🧪 TEST JOB (WINDOWS)
   # =========================
   test:
-    name: 🔍 Find Files (Windows)
+    name: List Repository Files
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - name: 🗂️ List All Files
+      - name: List All Files (PowerShell)
         shell: powershell
         run: |
           Get-ChildItem -Recurse
           Write-Host "Files listed successfully"
 
   # =========================
-  
-          
-  # =========================
   # 🚀 DEPLOY JOB
   # =========================
   deploy:
-    name: 🚀 Deploy to GitHub Pages
+    name: Deploy to GitHub Pages
     runs-on: ubuntu-latest
     needs: build
     environment:
       name: github-pages
 
     steps:
-      - name: 🌍 Deploy
+      - name: Deploy Site
         uses: actions/deploy-pages@v4
