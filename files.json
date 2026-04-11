@@ -125,6 +125,7 @@
       "type": "powershell",
       "info": "Reports the largest subfolders in a path by total file size.",
       "author": "Luis"
+
     },
     {
       "name": "QuickPingSweep.bat",
@@ -335,6 +336,7 @@
       "type": "powershell",
       "info": "Utility PowerShell script for diagnostics, automation, or reporting.",
       "author": "Luis"
+
     },
     {
       "name": "clock_display_plus.bat",
