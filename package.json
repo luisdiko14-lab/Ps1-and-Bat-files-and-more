@@ -2,7 +2,7 @@
   "dependencies": {
     "@discordjs/rest": "^2.6.0",
     "@discordjs/voice": "^0.19.0",
-    "axios": "^1.13.6",
+    "axios": "^1.15.0",
     "bcrypt": "^6.0.0",
     "body-parser": "^2.2.2",
     "chalk": "^5.6.2",
@@ -19,7 +19,7 @@
     "mysql2": "^3.17.2",
     "nanoid": "^5.1.6",
     "node-fetch": "^3.3.2",
-    "nodemailer": "^8.0.1",
+    "nodemailer": "^8.0.5",
     "openai": "^6.22.0",
     "ora": "^9.3.0",
     "passport": "^0.7.0",
