@@ -14,7 +14,7 @@ TOKEN = os.getenv("TOKEN")
 PREFIX = os.getenv("PREFIX", "!")
 
 intents = discord.Intents.default()
-intents.message_content = True
+intents.message_content = True # You need these intents set true.
 intents.members = True
 intents.guilds = True
 intents.typing = False
@@ -25,6 +25,7 @@ bot = commands.Bot(command_prefix=PREFIX, intents=intents, help_command=None)
 @bot.event
 async def on_ready():
     log.info(f"✅ Logged in as {bot.user} (ID: {bot.user.id})")
+    log.warn("You can change the configurations to anything you want.")
     await bot.change_presence(activity=discord.Game(f"{PREFIX}help | Windows 10 Service on!"))
 
 @bot.event
