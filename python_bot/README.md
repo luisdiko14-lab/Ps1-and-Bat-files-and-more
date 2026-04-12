@@ -1,4 +1,4 @@
-# Python Mega Bot (Generated)
+# Python  Bot 
 
 ## Quick start
 
