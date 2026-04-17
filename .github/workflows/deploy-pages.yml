@@ -44,7 +44,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./   # ⚠️ change this if your build folder is different
+          path: ./dist   # ⚠️ change this if your build folder is different
 
   # =========================
   # 🧪 TEST JOB (OPTIONAL)
