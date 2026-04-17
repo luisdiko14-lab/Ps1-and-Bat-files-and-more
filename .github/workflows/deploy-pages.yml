@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   # =========================
-  # 🔨 BUILD JOB (UBUNTU ONLY)
+  # 🔨 BUILD JOB
   # =========================
   build:
     name: Build & Prepare Site
@@ -33,24 +33,21 @@ jobs:
           cache: "npm"
 
       - name: Install Dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Build Project (if applicable)
-        run: |
-          if [ -f package.json ]; then
-            npm run build || echo "No build script found, skipping"
-          fi
+      - name: Build Project
+        run: npm run build
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
-      - name: Upload Artifact for Deployment
+      - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: ./   # ⚠️ change this if your build folder is different
 
   # =========================
-  # 🧪 TEST JOB (WINDOWS)
+  # 🧪 TEST JOB (OPTIONAL)
   # =========================
   test:
     name: List Repository Files
@@ -60,7 +57,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: List All Files (PowerShell)
+      - name: List All Files
         shell: powershell
         run: |
           Get-ChildItem -Recurse
