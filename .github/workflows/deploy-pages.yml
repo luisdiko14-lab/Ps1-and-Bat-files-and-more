@@ -10,69 +10,57 @@ permissions:
   pages: write
   id-token: write
 
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
-
 jobs:
-  # =========================
-  # 🔨 BUILD JOB
-  # =========================
   build:
-    name: Build & Prepare Site
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 20
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: "npm"
 
-      - name: Install Dependencies
-        run: npm ci
+      # Cache npm
+      - name: Cache npm
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
 
-      - name: Build Project
-        run: npm run build
+      # Cache ./files
+      - name: Cache files
+        uses: actions/cache@v4
+        with:
+          path: ./files
+          key: ${{ runner.os }}-files-${{ hashFiles('files/**') }}
 
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
+      - run: npm ci
+      - run: npm run build
 
-      - name: Upload Artifact
+      # ✅ Artifact 1 (USED for deploy)
+      - name: Upload Pages Artifact (dist)
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist   # ⚠️ change this if your build folder is different
+          path: ./dist
 
-  # =========================
-  # 🧪 TEST JOB (OPTIONAL)
-  # =========================
-  test:
-    name: List Repository Files
-    runs-on: windows-latest
+      # ✅ Artifact 2 (NOT used by Pages, just stored)
+      - name: Upload Extra Artifact (files)
+        uses: actions/upload-artifact@v4
+        with:
+          name: extra-files
+          path: ./files
+      
 
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: List All Files
-        shell: powershell
-        run: |
-          Get-ChildItem -Recurse
-          Write-Host "Files listed successfully"
-
-  # =========================
-  # 🚀 DEPLOY JOB
-  # =========================
   deploy:
-    name: Deploy to GitHub Pages
-    runs-on: ubuntu-latest
     needs: build
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
 
     steps:
-      - name: Deploy Site
+      - name: Deploy
         uses: actions/deploy-pages@v4
