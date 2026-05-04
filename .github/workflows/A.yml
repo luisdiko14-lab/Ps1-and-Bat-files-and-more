@@ -1,0 +1,47 @@
+name: Extract ZIP and Push Files
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "Incredibox.zip"
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download ZIP
+        run: |
+          curl -L -o Incredibox.zip https://github.com/luisdiko14-lab/Ps1-and-Bat-files-and-more/raw/main/Incredibox.zip
+
+      - name: Extract ZIP
+        run: |
+          unzip -o Incredibox.zip -d extracted
+
+      - name: Clean old files (optional but recommended)
+        run: |
+          shopt -s dotglob
+          rm -rf !( .git )
+
+      - name: Move extracted files to root
+        run: |
+          shopt -s dotglob
+          mv extracted/* .
+          rm -rf extracted Incredibox.zip
+
+      - name: Commit extracted files
+        run: |
+          git config user.name "auto-extracter"
+          git config user.email "extracter@github.com"
+          git add .
+          git commit -m "Extracted Incredibox.zip contents" || echo "No changes"
+
+      - name: Push to main
+        run: |
+          git push origin main
