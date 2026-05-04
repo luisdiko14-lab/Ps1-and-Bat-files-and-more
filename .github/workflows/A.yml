@@ -24,10 +24,11 @@ jobs:
         run: |
           unzip -o Incredibox.zip -d extracted
 
-      - name: Clean old files (optional but recommended)
+      - name: Clean old files
         run: |
           shopt -s dotglob
-          rm -rf !( .git )
+          rm -rf -- * .[^.] .??* 2>/dev/null || true
+          rm -rf .git
 
       - name: Move extracted files to root
         run: |
