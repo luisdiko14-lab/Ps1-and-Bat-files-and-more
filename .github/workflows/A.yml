@@ -20,28 +20,42 @@ jobs:
         run: |
           curl -L -o Incredibox.zip "https://github.com/luisdiko14-lab/Ps1-and-Bat-files-and-more/raw/main/Incredibox.zip"
 
-      - name: Extract ZIP
+      - name: Extract first ZIP
         run: |
-          mkdir -p extracted
+          rm -rf extracted final
+          mkdir -p extracted final
           unzip -o Incredibox.zip -d extracted
-          echo "Extracted contents:"
+          echo "First extraction:"
           find extracted -maxdepth 3 -print
 
-      - name: Clean old files
+      - name: Extract nested ZIP if present
+        run: |
+          shopt -s nullglob
+          nested_zips=(extracted/*.zip extracted/**/*.zip)
+          if [ ${#nested_zips[@]} -eq 0 ]; then
+            echo "No nested zip found. Moving extracted files."
+            cp -r extracted/* final/ 2>/dev/null || true
+          else
+            for z in "${nested_zips[@]}"; do
+              echo "Extracting nested zip: $z"
+              d="final/$(basename "$z" .zip)"
+              mkdir -p "$d"
+              unzip -o "$z" -d "$d"
+            done
+          fi
+
+      - name: Clean repo contents
         run: |
           shopt -s dotglob nullglob
           rm -rf -- * .[^.]* ..?* || true
 
-      - name: Move extracted files to root
+      - name: Move final files to root
         run: |
           shopt -s dotglob nullglob
-          files=(extracted/*)
-          if [ ${#files[@]} -eq 0 ]; then
-            echo "No files were extracted."
-            exit 1
+          if [ -d final ]; then
+            mv final/* .
           fi
-          mv "${files[@]}" .
-          rm -rf extracted Incredibox.zip
+          rm -rf final extracted Incredibox.zip
 
       - name: Commit extracted files
         run: |
