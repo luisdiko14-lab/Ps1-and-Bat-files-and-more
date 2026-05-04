@@ -18,22 +18,29 @@ jobs:
 
       - name: Download ZIP
         run: |
-          curl -L -o Incredibox.zip https://github.com/luisdiko14-lab/Ps1-and-Bat-files-and-more/raw/main/Incredibox.zip
+          curl -L -o Incredibox.zip "https://github.com/luisdiko14-lab/Ps1-and-Bat-files-and-more/raw/main/Incredibox.zip"
 
       - name: Extract ZIP
         run: |
+          mkdir -p extracted
           unzip -o Incredibox.zip -d extracted
+          echo "Extracted contents:"
+          find extracted -maxdepth 3 -print
 
       - name: Clean old files
         run: |
-          shopt -s dotglob
-          rm -rf -- * .[^.] .??* 2>/dev/null || true
-          rm -rf .git
+          shopt -s dotglob nullglob
+          rm -rf -- * .[^.]* ..?* || true
 
       - name: Move extracted files to root
         run: |
-          shopt -s dotglob
-          mv extracted/* .
+          shopt -s dotglob nullglob
+          files=(extracted/*)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No files were extracted."
+            exit 1
+          fi
+          mv "${files[@]}" .
           rm -rf extracted Incredibox.zip
 
       - name: Commit extracted files
