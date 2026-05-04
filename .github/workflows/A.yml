@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - "Incredibox.zip"
+      - "Windows.zip"
 
 jobs:
   extract:
@@ -19,8 +19,8 @@ jobs:
       - name: Download ZIP
         run: |
           mkdir -p "$RUNNER_TEMP/work"
-          curl -L -o "$RUNNER_TEMP/work/Incredibox.zip" \
-            "https://github.com/luisdiko14-lab/Ps1-and-Bat-files-and-more/raw/main/Incredibox.zip"
+          curl -L -o "$RUNNER_TEMP/work/Windows.zip" \
+            "https://github.com/luisdiko14-lab/Ps1-and-Bat-files-and-more/raw/main/Windows.zip"
 
       - name: Extract first ZIP
         run: |
