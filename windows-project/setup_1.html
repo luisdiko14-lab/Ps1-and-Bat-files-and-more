@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Setup</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="screen active" id="setup-screen">
+            <div class="setup-container">
+                <div class="windows-logo">
+                    <div class="windows-squares">
+                        <div class="square"></div>
+                        <div class="square"></div>
+                        <div class="square"></div>
+                        <div class="square"></div>
+                    </div>
+                </div>
+
+                <div class="setup-step active" id="step-language">
+                    <h2>Let's start with region. Is this right?</h2>
+                    <div class="region-list">
+                        <div class="region-item selected" onclick="selectRegion(this)">United States</div>
+                        <div class="region-item" onclick="selectRegion(this)">United Kingdom</div>
+                        <div class="region-item" onclick="selectRegion(this)">Canada</div>
+                        <div class="region-item" onclick="selectRegion(this)">Australia</div>
+                        <div class="region-item" onclick="selectRegion(this)">Germany</div>
+                        <div class="region-item" onclick="selectRegion(this)">France</div>
+                    </div>
+                    <button class="btn-primary" onclick="setupNext()">Yes</button>
+                </div>
+
+                <div class="setup-step" id="step-keyboard">
+                    <h2>Is this the right keyboard layout?</h2>
+                    <div class="region-list">
+                        <div class="region-item selected" onclick="selectKeyboard(this)">US</div>
+                        <div class="region-item" onclick="selectKeyboard(this)">UK</div>
+                        <div class="region-item" onclick="selectKeyboard(this)">German</div>
+                        <div class="region-item" onclick="selectKeyboard(this)">French</div>
+                    </div>
+                    <button class="btn-primary" onclick="setupNext()">Yes</button>
+                    <button class="btn-secondary" onclick="setupNext()">Skip</button>
+                </div>
+
+                <div class="setup-step" id="step-drive">
+                    <h2>Where do you want to install Windows?</h2>
+                    <p>Select the drive for installation:</p>
+                    <div class="drive-list">
+                        <div class="drive-item" onclick="selectDrive(0)">
+                            <div class="drive-icon">💾</div>
+                            <div class="drive-info">
+                                <div class="drive-name">Drive 0 - SSD</div>
+                                <div class="drive-size">256 GB | 256 GB free</div>
+                            </div>
+                        </div>
+                        <div class="drive-item" onclick="selectDrive(1)">
+                            <div class="drive-icon">💿</div>
+                            <div class="drive-info">
+                                <div class="drive-name">Drive 1 - HDD</div>
+                                <div class="drive-size">1 TB | 1 TB free</div>
+                            </div>
+                        </div>
+                        <div class="drive-item" onclick="selectDrive(2)">
+                            <div class="drive-icon">🔌</div>
+                            <div class="drive-info">
+                                <div class="drive-name">Drive 2 - USB Drive</div>
+                                <div class="drive-size">32 GB | 32 GB free</div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn-primary" onclick="setupNext()">Next</button>
+                </div>
+
+                <div class="setup-step" id="step-installing">
+                    <h2>Installing Windows</h2>
+                    <p class="install-message" id="install-message">Copying files...</p>
+                    <div class="loading-container">
+                        <div class="loading-dots">
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <p class="progress-text" id="progress-text">0%</p>
+                </div>
+
+                <div class="setup-step" id="step-restarting">
+                    <h2>Your PC will restart in <span id="restart-countdown">5</span> seconds</h2>
+                    <p>Windows needs to restart to continue setup.</p>
+                    <div class="loading-container">
+                        <div class="loading-dots">
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="screen" id="restart-screen">
+            <div class="restart-animation">
+                <div class="windows-logo-large">
+                    <div class="windows-squares">
+                        <div class="square"></div>
+                        <div class="square"></div>
+                        <div class="square"></div>
+                        <div class="square"></div>
+                    </div>
+                </div>
+                <div class="loading-circle"></div>
+                <p>Restarting...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSetupStep = 0;
+        const setupSteps = ['step-language', 'step-keyboard', 'step-drive', 'step-installing'];
+        
+        let userData = {
+            region: 'United States',
+            keyboard: 'US',
+            selectedDrive: -1
+        };
+
+        function selectRegion(element) {
+            document.querySelectorAll('.region-item').forEach(item => item.classList.remove('selected'));
+            element.classList.add('selected');
+            userData.region = element.textContent;
+        }
+
+        function selectKeyboard(element) {
+            document.querySelectorAll('.region-item').forEach(item => item.classList.remove('selected'));
+            element.classList.add('selected');
+            userData.keyboard = element.textContent;
+        }
+
+        function selectDrive(driveIndex) {
+            document.querySelectorAll('.drive-item').forEach((item, index) => {
+                item.classList.toggle('selected', index === driveIndex);
+            });
+            userData.selectedDrive = driveIndex;
+        }
+
+        function setupNext() {
+            const currentStep = setupSteps[currentSetupStep];
+            
+            if (currentStep === 'step-drive') {
+                if (userData.selectedDrive === -1) {
+                    alert('Please select a drive');
+                    return;
+                }
+            }
+            
+            const currentStepElement = document.getElementById(currentStep);
+            if (currentStepElement) {
+                currentStepElement.classList.remove('active');
+            }
+            currentSetupStep++;
+            
+            if (currentSetupStep < setupSteps.length) {
+                const nextStepElement = document.getElementById(setupSteps[currentSetupStep]);
+                if (nextStepElement) {
+                    nextStepElement.classList.add('active');
+                }
+                
+                if (setupSteps[currentSetupStep] === 'step-installing') {
+                    startInstallation();
+                }
+            }
+        }
+
+        function startInstallation() {
+            const messages = [
+                'Copying Windows files...',
+                'Getting files ready for installation...',
+                'Installing features...',
+                'Installing updates...',
+                'Finishing up...'
+            ];
+            
+            let progress = 0;
+            const progressFill = document.getElementById('progress-fill');
+            const progressText = document.getElementById('progress-text');
+            const installMessage = document.getElementById('install-message');
+            
+            const interval = setInterval(() => {
+                progress += Math.random() * 3 + 1;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    installMessage.textContent = 'Installation complete!';
+                    setTimeout(() => {
+                        showRestartCountdown();
+                    }, 1000);
+                }
+                
+                progressFill.style.width = progress + '%';
+                progressText.textContent = Math.floor(progress) + '%';
+                
+                const messageIndex = Math.min(Math.floor(progress / 20), messages.length - 1);
+                installMessage.textContent = messages[messageIndex];
+            }, 200);
+        }
+
+        function showRestartCountdown() {
+            document.getElementById('step-installing').classList.remove('active');
+            document.getElementById('step-restarting').classList.add('active');
+            
+            let countdown = 5;
+            const countdownElement = document.getElementById('restart-countdown');
+            
+            const interval = setInterval(() => {
+                countdown--;
+                countdownElement.textContent = countdown;
+                
+                if (countdown <= 0) {
+                    clearInterval(interval);
+                    performRestart();
+                }
+            }, 1000);
+        }
+
+        function performRestart() {
+            document.getElementById('setup-screen').classList.remove('active');
+            document.getElementById('restart-screen').classList.add('active');
+            
+            localStorage.setItem('windowsSetupData', JSON.stringify(userData));
+            
+            setTimeout(() => {
+                window.location.href = 'setup_2.html';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

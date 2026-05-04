@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Select VM</title>
+
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #0f172a, #020617);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+
+  /* ================= VM BOX ================= */
+  .vm-box {
+    background: #020617;
+    border: 1px solid #1e293b;
+    border-radius: 12px;
+    padding: 30px;
+    width: 420px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    text-align: center;
+  }
+
+  .vm-box h1 {
+    margin-bottom: 25px;
+  }
+
+  .vm-option {
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .vm-option:hover {
+    background: #020617;
+    border-color: #38bdf8;
+  }
+
+  .status {
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #16a34a;
+  }
+
+  /* ================= WINDOWS LOADING ================= */
+  .loading {
+    margin-top: 20px;
+    display: none;
+  }
+
+  .loading-text {
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #38bdf8;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 10px;
+    background: #020617;
+    border-radius: 999px;
+    overflow: hidden;
+    border: 1px solid #334155;
+  }
+
+  .progress {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #38bdf8, #22c55e);
+    transition: width 0.1s linear;
+  }
+
+  /* ================= iOS BOOT SCREEN ================= */
+  .ios-boot {
+    position: fixed;
+    inset: 0;
+    background: black;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 9999;
+  }
+
+  .apple-logo {
+    font-size: 80px;
+    margin-bottom: 40px;
+  }
+
+  .ios-loader {
+    width: 60px;
+    height: 6px;
+    background: #333;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .ios-loader span {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: white;
+    animation: iosLoad 3s ease-in-out forwards;
+  }
+
+  @keyframes iosLoad {
+    from { width: 0%; }
+    to { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= MAIN UI ================= -->
+<div class="vm-box" id="vmBox">
+  <h1>Select VM</h1>
+
+  <div class="vm-option" id="windowsVM">
+    <div>
+      <strong>🪟 Windows 10</strong><br>
+      <small>Virtual Machine</small>
+    </div>
+    <span class="status">Available</span>
+  </div>
+
+  <div class="vm-option" id="iphoneVM">
+    <div>
+      <strong>📱 iPhone</strong><br>
+      <small>Virtual Device</small>
+    </div>
+    <span class="status">Available</span>
+  </div>
+
+  <div class="loading" id="loadingBox">
+    <div class="loading-text" id="loadingText">Starting Windows VM...</div>
+    <div class="progress-bar">
+      <div class="progress" id="progressBar"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= iOS BOOT SCREEN ================= -->
+<div class="ios-boot" id="iosBoot">
+  <div class="apple-logo"></div>
+  <div class="ios-loader"><span></span></div>
+</div>
+
+<script>
+  const windowsVM = document.getElementById('windowsVM');
+  const iphoneVM = document.getElementById('iphoneVM');
+
+  const loadingBox = document.getElementById('loadingBox');
+  const progressBar = document.getElementById('progressBar');
+  const loadingText = document.getElementById('loadingText');
+
+  const iosBoot = document.getElementById('iosBoot');
+  const vmBox = document.getElementById('vmBox');
+
+  /* ================= WINDOWS VM ================= */
+  windowsVM.addEventListener('click', () => {
+    windowsVM.style.pointerEvents = 'none';
+    iphoneVM.style.pointerEvents = 'none';
+
+    loadingBox.style.display = 'block';
+
+    let progress = 0;
+    const messages = [
+      "Initializing VM...",
+      "Loading Windows kernel...",
+      "Starting services...",
+      "Preparing desktop...",
+      "Almost ready..."
+    ];
+
+    let msgIndex = 0;
+
+    const interval = setInterval(() => {
+      progress += Math.random() * 8 + 4;
+      if (progress >= 100) progress = 100;
+
+      progressBar.style.width = progress + '%';
+
+      if (progress > (msgIndex + 1) * 20 && msgIndex < messages.length) {
+        loadingText.textContent = messages[msgIndex];
+        msgIndex++;
+      }
+
+      if (progress >= 100) {
+        clearInterval(interval);
+        loadingText.textContent = "Windows VM Ready!";
+        setTimeout(() => {
+          window.location.href = "/WebOSSimulator-in-windows/index.html";
+        }, 600);
+      }
+    }, 120);
+  });
+
+  /* ================= iPHONE FAKE BOOT ================= */
+  iphoneVM.addEventListener('click', () => {
+    vmBox.style.display = 'none';
+    iosBoot.style.display = 'flex';
+
+    setTimeout(() => {
+      window.location.href =
+        "https://luisdiko14-lab.github.io/iPhone-15-Pro-MaxIpad-10-Generation/";
+    }, 3200);
+  });
+</script>
+
+</body>
+</html>

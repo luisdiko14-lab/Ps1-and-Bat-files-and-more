@@ -1,0 +1,10 @@
+{
+  name: "runner",
+  version: "2.50.0",
+  description: "A simple runner",
+  main: "index.js",
+  scripts:
+    {
+    "start": "node index.js",
+    "dev": "node index.js"
+  }

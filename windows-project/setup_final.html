@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm your settings • Windows 10 Setup</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body { background:#0a1929; }
+        .final-wrap {
+            max-width: 880px;
+            margin: 30px auto;
+            padding: 30px;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+        }
+        .final-header { text-align:center; margin-bottom:30px; }
+        .final-header .logo { display:inline-block; margin-bottom:12px; }
+        .final-header h1 { font-weight:300; font-size:32px; margin-bottom:8px; }
+        .final-header p  { color:rgba(255,255,255,.7); font-size:15px; }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 14px;
+            margin-bottom: 30px;
+        }
+        .summary-card {
+            background: rgba(255,255,255,.06);
+            border: 1px solid rgba(255,255,255,.1);
+            border-radius: 10px;
+            padding: 18px;
+            transition: .2s;
+        }
+        .summary-card:hover { background: rgba(255,255,255,.1); }
+        .summary-card .sc-head {
+            display: flex; align-items:center; gap:10px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: rgba(255,255,255,.7);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+        .summary-card .sc-head .ico { font-size:22px; }
+        .summary-card .sc-row { display:flex; justify-content:space-between; padding:4px 0; font-size:14px; }
+        .summary-card .sc-key { color:rgba(255,255,255,.6); }
+        .summary-card .sc-val { color:#fff; font-weight:500; text-align:right; max-width:60%; word-break:break-word; }
+        .yes { color:#4caf50; }
+        .no  { color:#f44336; }
+        .accent-swatch { display:inline-block; width:18px; height:18px; border-radius:3px; vertical-align:middle; margin-left:6px; border:1px solid rgba(255,255,255,.3); }
+        .badge-pill { display:inline-block; padding:2px 10px; border-radius:10px; font-size:12px; }
+        .pill-blue { background:#0078d4; color:#fff; }
+        .pill-green { background:#107c10; color:#fff; }
+        .pill-grey { background:rgba(255,255,255,.15); color:#fff; }
+
+        .actions { display:flex; justify-content:center; gap:14px; }
+        .actions button {
+            padding: 14px 36px;
+            border-radius: 4px;
+            border: none;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: .2s;
+        }
+        .btn-confirm  { background:#0078d4; color:#fff; }
+        .btn-confirm:hover  { background:#106ebe; }
+        .btn-back     { background:transparent; color:#fff; border:1px solid rgba(255,255,255,.3) !important; }
+        .btn-back:hover { background:rgba(255,255,255,.1); }
+
+        #applying-overlay {
+            display:none; position:fixed; inset:0;
+            background:#0a1929;
+            z-index:9999;
+            align-items:center; justify-content:center; flex-direction:column;
+        }
+        #applying-overlay.active { display:flex; }
+        .applying-spinner { width:80px; height:80px; border:6px solid rgba(255,255,255,.1); border-top-color:#0078d4; border-radius:50%; animation:spin 1s linear infinite; margin-bottom:24px; }
+        @keyframes spin { to { transform:rotate(360deg); } }
+        #applying-overlay h2 { color:#fff; font-weight:300; font-size:26px; margin-bottom:8px; }
+        #applying-overlay p { color:rgba(255,255,255,.7); }
+    </style>
+</head>
+<body>
+    <div class="final-wrap">
+        <div class="final-header">
+            <div class="logo windows-logo" style="margin:0 auto 12px;">
+                <div class="windows-squares">
+                    <div class="square"></div><div class="square"></div>
+                    <div class="square"></div><div class="square"></div>
+                </div>
+            </div>
+            <h1>Review your setup</h1>
+            <p>Take a quick look at everything you chose. You can go back to make changes or confirm to finish.</p>
+        </div>
+
+        <div class="summary-grid" id="summary-grid"></div>
+
+        <div class="actions">
+            <button class="btn-back"    onclick="goBack()">← Edit settings</button>
+            <button class="btn-confirm" onclick="confirmSetup()">Confirm and continue →</button>
+        </div>
+    </div>
+
+    <div id="applying-overlay">
+        <div class="applying-spinner"></div>
+        <h2 id="applying-msg">Applying your settings...</h2>
+        <p>Don't turn off your PC.</p>
+    </div>
+
+    <script>
+        // Read all URL params
+        const p = new URLSearchParams(window.location.search);
+        const get = (k, d='') => p.get(k) ?? d;
+        const bool = v => v === 'true';
+
+        const cfg = {
+            username:      get('username','User'),
+            password:      get('password',''),
+            email:         get('email',''),
+            accountType:   get('accountType','local'),
+            wifi:          get('wifi','offline'),
+            wifiPassword:  get('wifiPassword',''),
+            bluetooth:     get('bluetooth','').split(',').filter(Boolean),
+            pin:           get('pin',''),
+            securityQ1:    get('securityQ1',''),
+            securityA1:    get('securityA1',''),
+            securityQ2:    get('securityQ2',''),
+            securityA2:    get('securityA2',''),
+            theme:         get('theme','dark'),
+            accent:        get('accent','#0078d4'),
+            timezone:      get('timezone','America/New_York'),
+            timezoneLabel: get('timezoneLabel',''),
+            cortana:       bool(get('cortana','true')),
+            findDevice:    bool(get('findDevice','true')),
+            location:      bool(get('location','true')),
+            diagnostics:   bool(get('diagnostics','true')),
+            tailored:      bool(get('tailored','false')),
+            ink:           bool(get('ink','false')),
+            ads:           bool(get('ads','false')),
+            activity:      bool(get('activity','true'))
+        };
+
+        const yn = (v) => v ? '<span class="yes">✓ On</span>' : '<span class="no">✕ Off</span>';
+        const mask = (s, n=2) => s ? s.slice(0,n) + '•'.repeat(Math.max(s.length-n, 4)) : '—';
+
+        function renderSummary() {
+            const grid = document.getElementById('summary-grid');
+            const accountBadge = cfg.accountType === 'microsoft'
+                ? '<span class="badge-pill pill-blue">Microsoft</span>'
+                : '<span class="badge-pill pill-grey">Local</span>';
+
+            grid.innerHTML = `
+                <div class="summary-card">
+                    <div class="sc-head"><span class="ico">👤</span> Account</div>
+                    <div class="sc-row"><span class="sc-key">Type</span><span class="sc-val">${accountBadge}</span></div>
+                    <div class="sc-row"><span class="sc-key">Username</span><span class="sc-val">${cfg.username || '—'}</span></div>
+                    ${cfg.email ? `<div class="sc-row"><span class="sc-key">Email</span><span class="sc-val">${cfg.email}</span></div>` : ''}
+                    <div class="sc-row"><span class="sc-key">Password</span><span class="sc-val">${mask(cfg.password)}</span></div>
+                    ${cfg.pin ? `<div class="sc-row"><span class="sc-key">PIN</span><span class="sc-val">${'•'.repeat(cfg.pin.length)}</span></div>` : ''}
+                </div>
+
+                <div class="summary-card">
+                    <div class="sc-head"><span class="ico">📶</span> Network</div>
+                    <div class="sc-row"><span class="sc-key">Wi-Fi</span><span class="sc-val">${cfg.wifi || 'offline'}</span></div>
+                    ${cfg.wifiPassword ? `<div class="sc-row"><span class="sc-key">Password</span><span class="sc-val">${mask(cfg.wifiPassword)}</span></div>` : ''}
+                </div>
+
+                <div class="summary-card">
+                    <div class="sc-head"><span class="ico">📡</span> Bluetooth</div>
+                    ${cfg.bluetooth.length
+                        ? cfg.bluetooth.map(b => `<div class="sc-row"><span class="sc-key">Paired</span><span class="sc-val">${b}</span></div>`).join('')
+                        : '<div class="sc-row"><span class="sc-key">Devices</span><span class="sc-val">None</span></div>'
+                    }
+                </div>
+
+                <div class="summary-card">
+                    <div class="sc-head"><span class="ico">🎨</span> Personalization</div>
+                    <div class="sc-row"><span class="sc-key">Theme</span><span class="sc-val">${cfg.theme.charAt(0).toUpperCase()+cfg.theme.slice(1)}</span></div>
+                    <div class="sc-row"><span class="sc-key">Accent color</span><span class="sc-val">${cfg.accent}<span class="accent-swatch" style="background:${cfg.accent}"></span></span></div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="sc-head"><span class="ico">🕒</span> Time & Region</div>
+                    <div class="sc-row"><span class="sc-key">Time zone</span><span class="sc-val">${cfg.timezoneLabel || cfg.timezone}</span></div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="sc-head"><span class="ico">🤖</span> Assistance</div>
+                    <div class="sc-row"><span class="sc-key">Cortana</span><span class="sc-val">${yn(cfg.cortana)}</span></div>
+                    <div class="sc-row"><span class="sc-key">Find my device</span><span class="sc-val">${yn(cfg.findDevice)}</span></div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="sc-head"><span class="ico">🔒</span> Privacy</div>
+                    <div class="sc-row"><span class="sc-key">Location</span><span class="sc-val">${yn(cfg.location)}</span></div>
+                    <div class="sc-row"><span class="sc-key">Diagnostics</span><span class="sc-val">${yn(cfg.diagnostics)}</span></div>
+                    <div class="sc-row"><span class="sc-key">Tailored experiences</span><span class="sc-val">${yn(cfg.tailored)}</span></div>
+                    <div class="sc-row"><span class="sc-key">Inking & typing</span><span class="sc-val">${yn(cfg.ink)}</span></div>
+                    <div class="sc-row"><span class="sc-key">Advertising ID</span><span class="sc-val">${yn(cfg.ads)}</span></div>
+                    <div class="sc-row"><span class="sc-key">Activity history</span><span class="sc-val">${yn(cfg.activity)}</span></div>
+                </div>
+
+                ${cfg.securityQ1 ? `
+                <div class="summary-card">
+                    <div class="sc-head"><span class="ico">🛡️</span> Security questions</div>
+                    <div class="sc-row"><span class="sc-key">Q1</span><span class="sc-val">${cfg.securityQ1}</span></div>
+                    <div class="sc-row"><span class="sc-key">Q2</span><span class="sc-val">${cfg.securityQ2}</span></div>
+                </div>` : ''}
+            `;
+        }
+
+        function goBack() { window.location.href = 'setup_2.html'; }
+
+        function confirmSetup() {
+            // Save final user data with all settings
+            const userData = {
+                username:      cfg.username,
+                password:      cfg.password,
+                email:         cfg.email,
+                accountType:   cfg.accountType,
+                wifiNetwork:   cfg.wifi,
+                bluetoothDevices: cfg.bluetooth,
+                pin:           cfg.pin,
+                securityQ1:    cfg.securityQ1, securityA1: cfg.securityA1,
+                securityQ2:    cfg.securityQ2, securityA2: cfg.securityA2,
+                theme:         cfg.theme,
+                accent:        cfg.accent,
+                accentColor:   cfg.accent,  // alias used by main app
+                timezone:      cfg.timezone,
+                timezoneLabel: cfg.timezoneLabel,
+                cortana:       cfg.cortana,
+                findDevice:    cfg.findDevice,
+                privacyLocation:    cfg.location,
+                privacyDiagnostics: cfg.diagnostics,
+                privacyTailored:    cfg.tailored,
+                privacyInk:         cfg.ink,
+                privacyAds:         cfg.ads,
+                privacyActivity:    cfg.activity
+            };
+            localStorage.setItem('windowsUserData', JSON.stringify(userData));
+
+            const overlay = document.getElementById('applying-overlay');
+            const msg = document.getElementById('applying-msg');
+            overlay.classList.add('active');
+
+            const messages = [
+                'Applying your settings...',
+                'Setting up your account...',
+                'Configuring privacy...',
+                'Personalizing your experience...',
+                'Almost there...',
+                'Welcome aboard!'
+            ];
+            let i = 0;
+            const t = setInterval(() => {
+                i++;
+                if (i >= messages.length) {
+                    clearInterval(t);
+                    setTimeout(() => { window.location.href = 'index.html'; }, 1200);
+                    return;
+                }
+                msg.textContent = messages[i];
+            }, 900);
+        }
+
+        renderSummary();
+    </script>
+</body>
+</html>

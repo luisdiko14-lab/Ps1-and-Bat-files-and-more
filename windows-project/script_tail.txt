@@ -1,0 +1,1000 @@
+                    <div>Visibility</div>
+                </div>
+            </div>
+            <div class="weather-forecast">
+                ${days.map((day, i) => `
+                    <div class="forecast-day">
+                        <div>${day}</div>
+                        <div style="font-size: 24px">${conditions[i % conditions.length]}</div>
+                        <div>${temps[i]}°</div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+
+// Snipping Tool
+function createSnipping() {
+    return `
+        <div class="snipping-app">
+            <div class="snipping-toolbar">
+                <button class="snipping-btn" onclick="takeSnip()">+ New</button>
+                <select style="padding: 6px;">
+                    <option>Rectangular Snip</option>
+                    <option>Free-form Snip</option>
+                    <option>Window Snip</option>
+                    <option>Full-screen Snip</option>
+                </select>
+            </div>
+            <div class="snipping-content" id="snipping-content">
+                <div style="text-align: center">
+                    <p style="font-size: 48px">✂️</p>
+                    <p>Click "New" to take a screenshot</p>
+                    <p style="font-size: 12px; margin-top: 10px">Press Windows + Shift + S for quick snip</p>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function takeSnip() {
+    const content = document.getElementById('snipping-content');
+    if (content) {
+        content.innerHTML = `
+            <div style="text-align: center">
+                <p style="font-size: 48px">📸</p>
+                <p>Screenshot captured!</p>
+                <p style="font-size: 12px; margin-top: 10px; color: #0078d4">Saved to clipboard</p>
+            </div>
+        `;
+    }
+}
+
+// Context Menu
+document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('contextmenu', (e) => {
+        const desktop = document.getElementById('screen-desktop');
+        if (desktop && desktop.classList.contains('active')) {
+            const contextMenu = document.getElementById('context-menu');
+            if (contextMenu && e.target.closest('.desktop-icons')) {
+                e.preventDefault();
+                contextMenu.style.left = e.pageX + 'px';
+                contextMenu.style.top = e.pageY + 'px';
+                contextMenu.classList.add('active');
+            }
+        }
+    });
+    
+    document.addEventListener('click', () => {
+        const contextMenu = document.getElementById('context-menu');
+        if (contextMenu) contextMenu.classList.remove('active');
+    });
+});
+
+function refreshDesktop() {
+    const icons = document.querySelector('.desktop-icons');
+    if (icons) {
+        icons.style.opacity = '0.5';
+        setTimeout(() => icons.style.opacity = '1', 300);
+    }
+}
+
+function createFolder() {
+    const icons = document.querySelector('.desktop-icons');
+    if (icons) {
+        const folder = document.createElement('div');
+        folder.className = 'desktop-icon';
+        folder.innerHTML = '<div class="icon">📁</div><div class="icon-label">New folder</div>';
+        folder.ondblclick = () => openApp('explorer');
+        icons.appendChild(folder);
+    }
+}
+
+function toggleQuickAction(el) {
+    el.classList.toggle('active');
+}
+
+// WiFi and Volume Menus
+function toggleWifiMenu() {
+    const menu = document.getElementById('wifi-menu');
+    const volumeMenu = document.getElementById('volume-menu');
+    if (volumeMenu) volumeMenu.classList.remove('active');
+    if (menu) menu.classList.toggle('active');
+}
+
+function toggleVolumeMenu() {
+    const menu = document.getElementById('volume-menu');
+    const wifiMenu = document.getElementById('wifi-menu');
+    if (wifiMenu) wifiMenu.classList.remove('active');
+    if (menu) menu.classList.toggle('active');
+    
+    const slider = document.getElementById('volume-slider');
+    const value = document.getElementById('volume-value');
+    if (slider && value) {
+        slider.oninput = () => value.textContent = slider.value + '%';
+    }
+}
+
+function toggleWifiState(checkbox) {
+    const wifiList = document.getElementById('wifi-list');
+    if (wifiList) {
+        wifiList.style.opacity = checkbox.checked ? '1' : '0.5';
+        wifiList.style.pointerEvents = checkbox.checked ? 'auto' : 'none';
+    }
+}
+
+function selectWifi(el) {
+    document.querySelectorAll('.wifi-network').forEach(n => {
+        n.classList.remove('connected');
+        n.querySelector('.wifi-status').textContent = n.querySelector('.wifi-status').textContent.replace('Connected, ', '');
+    });
+    el.classList.add('connected');
+    const status = el.querySelector('.wifi-status');
+    status.textContent = 'Connected, ' + status.textContent;
+    playSound('notification');
+}
+
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.wifi-menu') && !e.target.closest('.tray-icon')) {
+        const wifiMenu = document.getElementById('wifi-menu');
+        if (wifiMenu) wifiMenu.classList.remove('active');
+    }
+    if (!e.target.closest('.volume-menu') && !e.target.closest('.tray-icon')) {
+        const volumeMenu = document.getElementById('volume-menu');
+        if (volumeMenu) volumeMenu.classList.remove('active');
+    }
+});
+
+// Photos App
+function createPhotos() {
+    const images = [
+        'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=400&q=80',
+        'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=400&q=80',
+        'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=400&q=80',
+        'https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=400&q=80'
+    ];
+    return `
+        <div class="photos-app" style="height: 100%; background: #111; padding: 20px; overflow-y: auto;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px;">
+                ${images.map(src => `<img src="${src}" style="width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 4px; cursor: pointer; transition: 0.2s;" onclick="openImageFullScreen('${src}')">`).join('')}
+            </div>
+        </div>
+    `;
+}
+
+function openImageFullScreen(src) {
+    const viewer = document.createElement('div');
+    viewer.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 100000; display: flex; align-items: center; justify-content: center; cursor: pointer;';
+    viewer.innerHTML = `<img src="${src}" style="max-width: 90%; max-height: 90%; box-shadow: 0 0 30px rgba(0,0,0,0.5);">`;
+    viewer.onclick = () => viewer.remove();
+    document.body.appendChild(viewer);
+}
+
+function createCamera() {
+    setTimeout(() => {
+        const video = document.getElementById('camera-stream');
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => { video.srcObject = stream; })
+                .catch(err => {
+                    const errEl = document.getElementById('camera-error');
+                    if (errEl) errEl.textContent = 'Camera not found or access denied.';
+                });
+        }
+    }, 100);
+    return `
+        <div style="height: 100%; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; position: relative;">
+            <video id="camera-stream" autoplay style="width: 100%; height: 100%; object-fit: cover;"></video>
+            <div id="camera-error" style="position: absolute; color: white; text-align: center; padding: 20px;"></div>
+            <div style="position: absolute; bottom: 30px; display: flex; gap: 20px;">
+                <button onclick="alert('Photo saved to Pictures!')" style="width: 60px; height: 60px; border-radius: 50%; border: 5px solid white; background: transparent; cursor: pointer;"></button>
+            </div>
+        </div>
+    `;
+}
+
+// Calendar App
+function createCalendar() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const today = now.getDate();
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    
+    let daysHtml = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => `<div class="calendar-day header">${d}</div>`).join('');
+    
+    for (let i = 0; i < firstDay; i++) {
+        daysHtml += '<div class="calendar-day"></div>';
+    }
+    
+    for (let day = 1; day <= daysInMonth; day++) {
+        const isToday = day === today ? 'today' : '';
+        daysHtml += `<div class="calendar-day ${isToday}">${day}</div>`;
+    }
+    
+    return `
+        <div class="calendar-app">
+            <div class="calendar-header">
+                <button onclick="changeMonth(-1)" style="padding: 8px 16px; cursor: pointer;">←</button>
+                <h2>${monthNames[month]} ${year}</h2>
+                <button onclick="changeMonth(1)" style="padding: 8px 16px; cursor: pointer;">→</button>
+            </div>
+            <div class="calendar-grid">
+                ${daysHtml}
+            </div>
+        </div>
+    `;
+}
+
+// Clock App
+function createClockApp() {
+    setTimeout(() => {
+        updateClockApp();
+        setInterval(updateClockApp, 1000);
+    }, 100);
+    
+    return `
+        <div class="clock-app">
+            <div class="clock-display" id="clock-app-time">00:00:00</div>
+            <div class="clock-date" id="clock-app-date">Loading...</div>
+        </div>
+    `;
+}
+
+function updateClockApp() {
+    const now = new Date();
+    const timeEl = document.getElementById('clock-app-time');
+    const dateEl = document.getElementById('clock-app-date');
+    if (timeEl) timeEl.textContent = now.toLocaleTimeString();
+    if (dateEl) dateEl.textContent = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+// Maps App
+function createMaps() {
+    return `
+        <div class="maps-app">
+            <div class="maps-search">
+                <input type="text" placeholder="Search for a place...">
+            </div>
+            <div class="maps-content">🗺️</div>
+        </div>
+    `;
+}
+
+// Microsoft Store App
+function createMusicPlayer() {
+    return `
+        <div style="padding: 20px; background: #111; color: white; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <div style="font-size: 80px; margin-bottom: 20px;">🎵</div>
+            <h3>Now Playing</h3>
+            <p style="color: #888;">Windows 10 Remix.mp3</p>
+            <div style="width: 100%; height: 4px; background: #333; margin: 20px 0; border-radius: 2px;">
+                <div style="width: 45%; height: 100%; background: #0078d4; border-radius: 2px;"></div>
+            </div>
+            <div style="display: flex; gap: 20px; font-size: 24px;">
+                <span>⏮️</span>
+                <span style="font-size: 32px;">⏸️</span>
+                <span>⏭️</span>
+            </div>
+        </div>
+    `;
+}
+
+function createSolitaire() {
+    return `
+        <div style="padding: 20px; background: #0e4e2c; height: 100%; color: white;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                <div>Score: 1250</div>
+                <div>Time: 04:23</div>
+            </div>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <div style="width: 80px; height: 120px; background: white; border-radius: 5px; border: 1px solid #ccc; color: red; padding: 5px;">A ❤️</div>
+                <div style="width: 80px; height: 120px; background: white; border-radius: 5px; border: 1px solid #ccc; color: black; padding: 5px;">K ♠️</div>
+                <div style="width: 80px; height: 120px; background: white; border-radius: 5px; border: 1px solid #ccc; color: red; padding: 5px;">Q ♦️</div>
+                <div style="width: 80px; height: 120px; background: white; border-radius: 5px; border: 1px solid #ccc; color: black; padding: 5px;">J ♣️</div>
+            </div>
+            <div style="margin-top: 50px; text-align: center; opacity: 0.5;">[ Game in Progress ]</div>
+        </div>
+    `;
+}
+
+// Paint App
+let paintColor = '#000000';
+let paintSize = 5;
+let paintTool = 'brush';
+let isDrawing = false;
+
+function createPaint() {
+    setTimeout(() => initPaintCanvas(), 100);
+    
+    return `
+        <div class="paint-app" style="height: 100%; display: flex; flex-direction: column; background: #f0f0f0;">
+            <div class="paint-toolbar" style="padding: 10px; background: white; border-bottom: 1px solid #ccc; display: flex; gap: 15px; align-items: center;">
+                <div class="paint-colors" style="display: flex; gap: 5px;">
+                    <div class="paint-color active" style="width: 20px; height: 20px; background:#000; cursor: pointer; border: 1px solid #999;" onclick="setPaintColor('#000', this)"></div>
+                    <div class="paint-color" style="width: 20px; height: 20px; background:#fff; cursor: pointer; border: 1px solid #999;" onclick="setPaintColor('#fff', this)"></div>
+                    <div class="paint-color" style="width: 20px; height: 20px; background:#ff0000; cursor: pointer; border: 1px solid #999;" onclick="setPaintColor('#ff0000', this)"></div>
+                    <div class="paint-color" style="width: 20px; height: 20px; background:#00ff00; cursor: pointer; border: 1px solid #999;" onclick="setPaintColor('#00ff00', this)"></div>
+                    <div class="paint-color" style="width: 20px; height: 20px; background:#0000ff; cursor: pointer; border: 1px solid #999;" onclick="setPaintColor('#0000ff', this)"></div>
+                </div>
+                <div class="paint-tools" style="display: flex; gap: 5px;">
+                    <button class="paint-tool active" onclick="setPaintTool('brush', this)" style="padding: 5px 10px; cursor: pointer;">🖌️ Brush</button>
+                    <button class="paint-tool" onclick="setPaintTool('eraser', this)" style="padding: 5px 10px; cursor: pointer;">🧹 Eraser</button>
+                    <button class="paint-tool" onclick="clearCanvas()" style="padding: 5px 10px; cursor: pointer;">🗑️ Clear</button>
+                </div>
+                <label style="display: flex; align-items: center; gap: 5px;">Size: <input type="range" class="paint-size" min="1" max="50" value="5" oninput="paintSize=this.value"></label>
+            </div>
+            <div class="paint-canvas-container" style="flex: 1; overflow: auto; padding: 20px; background: #adb5bd; display: flex; justify-content: center; align-items: center;">
+                <canvas id="paint-canvas" width="600" height="400" style="background: white; box-shadow: 0 0 10px rgba(0,0,0,0.2); cursor: crosshair;"></canvas>
+            </div>
+        </div>
+    `;
+}
+
+function initPaintCanvas() {
+    const canvas = document.getElementById('paint-canvas');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    canvas.addEventListener('mousedown', (e) => {
+        isDrawing = true;
+        draw(e);
+    });
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', () => isDrawing = false);
+    canvas.addEventListener('mouseout', () => isDrawing = false);
+}
+
+function draw(e) {
+    if (!isDrawing) return;
+    const canvas = document.getElementById('paint-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const rect = canvas.getBoundingClientRect();
+    
+    ctx.beginPath();
+    ctx.arc(e.clientX - rect.left, e.clientY - rect.top, paintSize/2, 0, Math.PI * 2);
+    ctx.fillStyle = paintTool === 'eraser' ? 'white' : paintColor;
+    ctx.fill();
+}
+
+function setPaintColor(color, el) {
+    paintColor = color;
+    document.querySelectorAll('.paint-color').forEach(c => c.style.border = '1px solid #999');
+    if (el) el.style.border = '2px solid #0078d4';
+}
+
+function setPaintTool(tool, el) {
+    paintTool = tool;
+    document.querySelectorAll('.paint-tool').forEach(t => t.classList.remove('active'));
+    if (el) el.classList.add('active');
+}
+
+function clearCanvas() {
+    const canvas = document.getElementById('paint-canvas');
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+}
+
+function createWeather() {
+    return `
+        <div style="height: 100%; background: linear-gradient(to bottom, #4facfe 0%, #00f2fe 100%); color: white; padding: 30px; text-align: center;">
+            <div style="font-size: 24px; margin-bottom: 10px;">New York, NY</div>
+            <div style="font-size: 72px; font-weight: 300; margin: 20px 0;">72°</div>
+            <div style="font-size: 80px; margin-bottom: 20px;">🌤️</div>
+            <div style="font-size: 20px;">Partly Cloudy</div>
+            <div style="margin-top: 40px; display: flex; justify-content: space-around; background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px;">
+                <div>Mon<br>☀️<br>75°</div>
+                <div>Tue<br>⛅<br>70°</div>
+                <div>Wed<br>🌧️<br>65°</div>
+                <div>Thu<br>☁️<br>68°</div>
+                <div>Fri<br>☀️<br>74°</div>
+            </div>
+        </div>
+    `;
+}
+    const apps = [
+        { icon: '🎮', name: 'Xbox', rating: '★★★★☆' },
+        { icon: '🎵', name: 'Spotify', rating: '★★★★★' },
+        { icon: '📺', name: 'Netflix', rating: '★★★★☆' },
+        { icon: '💬', name: 'WhatsApp', rating: '★★★★☆' },
+        { icon: '📷', name: 'Instagram', rating: '★★★★☆' },
+        { icon: '🎥', name: 'TikTok', rating: '★★★★☆' },
+        { icon: '📝', name: 'OneNote', rating: '★★★★☆' },
+        { icon: '🎨', name: 'Canva', rating: '★★★★★' },
+        { icon: '🔐', name: '1Password', rating: '★★★★★' }
+    ];
+    
+    return `
+        <div class="store-app">
+            <div class="store-header">
+                <h1>🛍️ Microsoft Store</h1>
+                <p>Discover apps, games, and more</p>
+            </div>
+            <div class="store-apps">
+                ${apps.map(app => `
+                    <div class="store-app-item">
+                        <div class="store-app-icon">${app.icon}</div>
+                        <div class="store-app-name">${app.name}</div>
+                        <div class="store-app-rating">${app.rating}</div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+
+// WiFi Settings App
+// Night Light
+function toggleNightLight(el) {
+    el.classList.toggle('active');
+    const overlay = document.getElementById('night-light-overlay');
+    if (overlay) overlay.classList.toggle('active');
+    playSound('notification');
+}
+
+// Brightness control
+function changeBrightness(value) {
+    document.getElementById('brightness-value').textContent = value + '%';
+    document.body.style.filter = `brightness(${value / 100})`;
+}
+
+// Focus Assist
+function toggleFocusAssist(el) {
+    el.classList.toggle('active');
+    document.body.classList.toggle('focus-assist-active');
+    playSound('notification');
+}
+
+// Clear notifications
+function clearNotifications() {
+    const list = document.getElementById('notification-list');
+    if (list) {
+        list.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No new notifications</p>';
+    }
+}
+
+// Battery popup
+function toggleBatteryPopup() {
+    const popup = document.getElementById('battery-popup');
+    const wifiMenu = document.getElementById('wifi-menu');
+    const volumeMenu = document.getElementById('volume-menu');
+    if (wifiMenu) wifiMenu.classList.remove('active');
+    if (volumeMenu) volumeMenu.classList.remove('active');
+    if (popup) popup.classList.toggle('active');
+}
+
+// Close battery popup when clicking outside
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.battery-popup') && !e.target.closest('.tray-icon[onclick*="Battery"]')) {
+        const popup = document.getElementById('battery-popup');
+        if (popup) popup.classList.remove('active');
+    }
+});
+
+// Loading cursor effect when opening apps
+function showLoadingCursor() {
+    document.body.classList.add('loading-cursor');
+    setTimeout(() => document.body.classList.remove('loading-cursor'), 500);
+}
+
+// Add notification dynamically
+function addNotification(icon, title, body) {
+    const list = document.getElementById('notification-list');
+    if (list) {
+        const noNotif = list.querySelector('p');
+        if (noNotif) noNotif.remove();
+        
+        const notif = document.createElement('div');
+        notif.className = 'notification';
+        notif.onclick = () => notif.remove();
+        notif.innerHTML = `
+            <div class="notification-icon">${icon}</div>
+            <div class="notification-text">
+                <div class="notification-title">${title}</div>
+                <div class="notification-body">${body}</div>
+                <div class="notification-time">Just now</div>
+            </div>
+        `;
+        list.insertBefore(notif, list.firstChild);
+        playSound('notification');
+    }
+}
+
+// Random notifications every 30 seconds
+setInterval(() => {
+    const notifications = [
+        { icon: '📧', title: 'Mail', body: 'New message from John Doe' },
+        { icon: '🔔', title: 'Reminder', body: 'Meeting in 15 minutes' },
+        { icon: '💬', title: 'Teams', body: 'Sarah: Are you available?' },
+        { icon: '📅', title: 'Calendar', body: 'Event starting soon' },
+        { icon: '⬇️', title: 'Downloads', body: 'Download complete' }
+    ];
+    const random = notifications[Math.floor(Math.random() * notifications.length)];
+    if (document.getElementById('screen-desktop')?.classList.contains('active')) {
+        addNotification(random.icon, random.title, random.body);
+    }
+}, 60000);
+
+function setSettingsBrightness(value) {
+    document.getElementById('settings-brightness-val').textContent = value + '%';
+    document.body.style.filter = `brightness(${value / 100})`;
+}
+
+function toggleSettingsNightLight(checked) {
+    const overlay = document.getElementById('night-light-overlay');
+    if (overlay) {
+        if (checked) overlay.classList.add('active');
+        else overlay.classList.remove('active');
+    }
+}
+
+function setWallpaper(type, el) {
+    currentWallpaper = type;
+    const desktop = document.querySelector('.desktop');
+    const wallpapers = {
+        gradient1: 'linear-gradient(135deg, #667eea, #764ba2)',
+        gradient2: 'linear-gradient(135deg, #11998e, #38ef7d)',
+        gradient3: 'linear-gradient(135deg, #ee0979, #ff6a00)',
+        gradient4: 'linear-gradient(135deg, #2193b0, #6dd5ed)',
+        solid1: '#0078d4',
+        solid2: '#1a1a2e',
+        solid3: '#16213e',
+        nature: 'linear-gradient(to bottom, #87ceeb, #228b22)'
+    };
+    if (desktop) {
+        desktop.style.background = wallpapers[type];
+        desktop.style.backgroundSize = 'cover';
+    }
+    document.querySelectorAll('.wallpaper-option').forEach(w => w.style.border = '3px solid transparent');
+    if (el) el.style.border = '3px solid #0078d4';
+    playSound('notification');
+}
+
+function setCustomWallpaper() {
+    const urlInput = document.getElementById('custom-wallpaper-url');
+    const url = urlInput.value.trim();
+    
+    if (!url) {
+        alert('Please enter an image URL');
+        return;
+    }
+    
+    const desktop = document.querySelector('.desktop');
+    if (desktop) {
+        desktop.style.background = `url('${url}') center/cover no-repeat`;
+        currentWallpaper = 'custom';
+        
+        const preview = document.getElementById('wallpaper-preview');
+        const previewImg = document.getElementById('wallpaper-preview-img');
+        if (preview && previewImg) {
+            previewImg.src = url;
+            preview.style.display = 'block';
+        }
+        
+        document.querySelectorAll('.wallpaper-option').forEach(w => w.style.border = '3px solid transparent');
+        playSound('notification');
+    }
+}
+
+function updateUsername() {
+    const newUsername = document.getElementById('edit-username').value.trim();
+    if (newUsername && newUsername.length >= 2) {
+        userData.username = newUsername;
+        users[currentUserIndex].username = newUsername;
+        
+        const displayUsername = document.getElementById('display-username');
+        if (displayUsername) displayUsername.textContent = newUsername;
+        
+        const loginUsername = document.getElementById('login-username');
+        if (loginUsername) loginUsername.textContent = newUsername;
+        
+        const lockUsername = document.querySelector('.lock-username');
+        if (lockUsername) lockUsername.textContent = newUsername;
+        
+        document.querySelectorAll('.start-user-name').forEach(el => el.textContent = newUsername);
+        
+        saveUsers();
+        playSound('notification');
+        alert('Username updated successfully!');
+    } else {
+        alert('Username must be at least 2 characters');
+    }
+}
+
+function saveUsers() {
+    localStorage.setItem('windowsUsers', JSON.stringify(users));
+}
+
+function createNewUser() {
+    const name = prompt('Enter new username:');
+    if (!name) return;
+    const password = prompt('Enter password:');
+    
+    const newUser = {
+        username: name,
+        password: password || '',
+        email: '',
+        avatar: '👤',
+        avatarColor: '#' + Math.floor(Math.random()*16777215).toString(16),
+        accountType: 'local'
+    };
+    
+    users.push(newUser);
+    saveUsers();
+    alert('User created! You can switch from the login screen.');
+    renderUserList();
+}
+
+function renderUserList() {
+    const container = document.getElementById('login-user-list');
+    if (!container) return;
+    
+    container.innerHTML = users.map((user, index) => `
+        <div class="user-item ${index === currentUserIndex ? 'active' : ''}" onclick="selectLoginUser(${index})">
+            <div class="user-avatar-small" style="background: ${user.avatarColor}">${user.avatar}</div>
+            <div class="user-name-small">${user.username}</div>
+        </div>
+    `).join('');
+}
+
+function selectLoginUser(index) {
+    currentUserIndex = index;
+    userData = users[index];
+    document.getElementById('login-username').textContent = userData.username;
+    const loginAvatar = document.querySelector('#screen-login .user-avatar');
+    if (loginAvatar) {
+        loginAvatar.style.background = userData.avatarColor;
+        loginAvatar.innerHTML = `<span style="font-size: 50px">${userData.avatar}</span>`;
+    }
+    renderUserList();
+}
+
+function setAvatar(emoji, color) {
+    userData.avatar = emoji;
+    userData.avatarColor = color;
+    users[currentUserIndex].avatar = emoji;
+    users[currentUserIndex].avatarColor = color;
+    
+    const accountAvatar = document.getElementById('account-avatar');
+    if (accountAvatar) {
+        accountAvatar.innerHTML = emoji;
+        accountAvatar.style.background = color;
+    }
+    
+    document.querySelectorAll('.start-user-avatar').forEach(el => {
+        el.innerHTML = emoji;
+        el.style.background = color;
+    });
+    
+    const lockAvatar = document.querySelector('.lock-avatar');
+    if (lockAvatar) {
+        lockAvatar.innerHTML = emoji;
+        lockAvatar.style.background = color;
+    }
+    
+    saveUsers();
+    playSound('notification');
+}
+
+function setCustomAvatar() {
+    const url = document.getElementById('custom-avatar-url').value.trim();
+    if (!url) {
+        alert('Please enter an image URL');
+        return;
+    }
+    
+    userData.avatar = '';
+    userData.avatarUrl = url;
+    users[currentUserIndex].avatarUrl = url;
+    
+    const avatarStyle = `background: url('${url}') center/cover no-repeat;`;
+    
+    const accountAvatar = document.getElementById('account-avatar');
+    if (accountAvatar) {
+        accountAvatar.innerHTML = '';
+        accountAvatar.style.cssText = `width: 100px; height: 100px; border-radius: 50%; ${avatarStyle} border: 4px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.15);`;
+    }
+    
+    saveUsers();
+    playSound('notification');
+}
+
+function changeAvatar() {
+    const avatars = ['👤', '😊', '🎮', '🎨', '💻', '🚀', '🌟', '🐱', '🦊', '🐶'];
+    const colors = ['#0078d4', '#4caf50', '#9c27b0', '#ff5722', '#607d8b', '#e91e63', '#ffc107', '#795548', '#ff9800', '#3f51b5'];
+    const randomIndex = Math.floor(Math.random() * avatars.length);
+    setAvatar(avatars[randomIndex], colors[randomIndex]);
+}
+
+function setAccentColor(color, el) {
+    accentColor = color;
+    document.documentElement.style.setProperty('--accent-color', color);
+    document.querySelectorAll('.start-button, .calc-btn.equals, button[style*="0078d4"]').forEach(btn => {
+        if (btn.style.background) btn.style.background = color;
+    });
+    playSound('notification');
+}
+
+function toggleTransparency(enabled) {
+    if (enabled) {
+        document.querySelectorAll('.window, .start-menu, .notification-center').forEach(el => {
+            el.style.backdropFilter = 'blur(10px)';
+        });
+    } else {
+        document.querySelectorAll('.window, .start-menu, .notification-center').forEach(el => {
+            el.style.backdropFilter = 'none';
+        });
+    }
+}
+
+function uninstallApp(appName, btn) {
+    btn.textContent = 'Uninstalling...';
+    btn.disabled = true;
+    setTimeout(() => {
+        btn.closest('.setting-item').style.opacity = '0.5';
+        btn.textContent = 'Uninstalled';
+        playSound('notification');
+    }, 1500);
+}
+
+function checkForUpdates(btn) {
+    btn.textContent = 'Checking...';
+    btn.disabled = true;
+    setTimeout(() => {
+        btn.textContent = 'Up to date ✓';
+        btn.style.background = '#107c10';
+        playSound('notification');
+    }, 2000);
+}
+
+function runQuickScan() {
+    openApp('defender');
+}
+
+function createDefender() {
+    return `
+        <div style="height: 100%; background: #f5f5f5; padding: 20px; overflow-y: auto;">
+            <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
+                <span style="font-size: 48px;">🛡️</span>
+                <div>
+                    <h2 style="margin: 0;">Windows Security</h2>
+                    <p style="color: #666; margin: 4px 0;">Your device is being protected</p>
+                </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+                <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #107c10;">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                        <span style="font-size: 24px;">🛡️</span>
+                        <strong>Virus & threat protection</strong>
+                    </div>
+                    <p style="color: #107c10; margin: 0;">✓ No threats found</p>
+                    <button onclick="startScan(this)" style="margin-top: 12px; padding: 8px 16px; background: #0078d4; color: white; border: none; border-radius: 4px; cursor: pointer;">Quick scan</button>
+                </div>
+                
+                <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #107c10;">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                        <span style="font-size: 24px;">🔥</span>
+                        <strong>Firewall & network</strong>
+                    </div>
+                    <p style="color: #107c10; margin: 0;">✓ Firewall is on</p>
+                </div>
+                
+                <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #107c10;">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                        <span style="font-size: 24px;">🌐</span>
+                        <strong>App & browser control</strong>
+                    </div>
+                    <p style="color: #107c10; margin: 0;">✓ Protected</p>
+                </div>
+                
+                <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #107c10;">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                        <span style="font-size: 24px;">💻</span>
+                        <strong>Device security</strong>
+                    </div>
+                    <p style="color: #107c10; margin: 0;">✓ Standard hardware security</p>
+                </div>
+            </div>
+            
+            <div style="background: white; padding: 20px; border-radius: 8px; margin-top: 16px;">
+                <h3>Recent scans</h3>
+                <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eee;">
+                    <span>Quick scan</span>
+                    <span style="color: #666;">Today at ${new Date().toLocaleTimeString()}</span>
+                    <span style="color: #107c10;">No threats</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eee;">
+                    <span>Full scan</span>
+                    <span style="color: #666;">Yesterday</span>
+                    <span style="color: #107c10;">No threats</span>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function startScan(btn) {
+    const originalText = btn.textContent;
+    btn.textContent = 'Scanning...';
+    btn.disabled = true;
+    
+    let progress = 0;
+    const interval = setInterval(() => {
+        progress += Math.random() * 15;
+        if (progress >= 100) {
+            clearInterval(interval);
+            btn.textContent = 'No threats found ✓';
+            btn.style.background = '#107c10';
+            playSound('notification');
+        } else {
+            btn.textContent = `Scanning... ${Math.floor(progress)}%`;
+        }
+    }, 300);
+}
+
+let ransomTimerInterval;
+
+function downloadRansomware() {
+    playSound('error');
+    
+    const downloadPopup = document.createElement('div');
+    downloadPopup.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 100000; text-align: center;';
+    downloadPopup.innerHTML = `
+        <h3 style="margin-bottom: 16px;">⬇️ Downloading Ransomware.exe...</h3>
+        <div style="width: 300px; height: 20px; background: #e0e0e0; border-radius: 10px; overflow: hidden;">
+            <div id="ransom-download-progress" style="width: 0%; height: 100%; background: linear-gradient(90deg, #ff0000, #ff6600); transition: width 0.1s;"></div>
+        </div>
+        <p id="ransom-download-text" style="margin-top: 12px; color: #666;">0% - Starting download...</p>
+    `;
+    document.body.appendChild(downloadPopup);
+    
+    let progress = 0;
+    const downloadInterval = setInterval(() => {
+        progress += Math.random() * 8;
+        if (progress >= 100) {
+            progress = 100;
+            clearInterval(downloadInterval);
+            document.getElementById('ransom-download-text').textContent = '100% - Running executable...';
+            
+            setTimeout(() => {
+                downloadPopup.remove();
+                activateRansomware();
+            }, 1000);
+        }
+        document.getElementById('ransom-download-progress').style.width = progress + '%';
+        document.getElementById('ransom-download-text').textContent = Math.floor(progress) + '% - Downloading...';
+    }, 100);
+}
+
+function activateRansomware() {
+    playSound('error');
+    showScreen('screen-ransomware');
+    
+    let timeLeft = 1 * 25;
+    ransomTimerInterval = setInterval(() => {
+        timeLeft--;
+        const hours = Math.floor(timeLeft / 3600);
+        const mins = Math.floor((timeLeft % 3600) / 60);
+        const secs = timeLeft % 60;
+        const timerEl = document.getElementById('ransom-timer');
+        if (timerEl) {
+            timerEl.textContent = `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+    }, 1000);
+}
+
+function decryptFiles() {
+    clearInterval(ransomTimerInterval);
+    const content = document.querySelector('.ransomware-content');
+    if (content) {
+        content.innerHTML = `
+            <div style="font-size: 80px; margin-bottom: 20px;">✅</div>
+            <h2 style="color: #00ff00;">Payment Received!</h2>
+            <p>Just kidding! This was a simulation.</p>
+            <p>Never pay ransomware attackers in real life!</p>
+            <p style="margin-top: 20px;">Tips to stay safe:</p>
+            <ul style="text-align: left; margin: 20px auto; max-width: 400px;">
+                <li>Keep regular backups</li>
+                <li>Don't click suspicious links</li>
+                <li>Keep your software updated</li>
+                <li>Use antivirus software</li>
+            </ul>
+            <button onclick="closeRansomware()" style="padding: 14px 28px; background: #00cc00; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; margin-top: 20px;">Return to Desktop</button>
+        `;
+    }
+    playSound('notification');
+}
+
+function closeRansomware() {
+    clearInterval(ransomTimerInterval);
+    showScreen('screen-desktop');
+    playSound('startup');
+}
+
+function downloadFreeGames() {
+    playSound('error');
+    triggerBSOD();
+}
+
+function triggerBSOD() {
+    showScreen('screen-bsod');
+    
+    let percent = 0;
+    const bsodInterval = setInterval(() => {
+        percent += Math.random() * 3;
+        if (percent >= 100) {
+            percent = 100;
+            clearInterval(bsodInterval);
+            setTimeout(() => {
+                showScreen('screen-boot');
+                setTimeout(() => {
+                    showScreen('screen-lock');
+                    playSound('startup');
+                }, 3000);
+            }, 2000);
+        }
+        const percentEl = document.getElementById('bsod-percent');
+        if (percentEl) percentEl.textContent = Math.floor(percent);
+    }, 200);
+}
+
+function showVirusAlert() {
+    playSound('error');
+    const alert = document.createElement('div');
+    alert.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(135deg, #ff0000, #cc0000); color: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 40px rgba(255,0,0,0.5); z-index: 100000; text-align: center; animation: shake 0.5s infinite;';
+    alert.innerHTML = `
+        <style>@keyframes shake { 0%, 100% { transform: translate(-50%, -50%) rotate(0deg); } 25% { transform: translate(-50%, -50%) rotate(-2deg); } 75% { transform: translate(-50%, -50%) rotate(2deg); } }</style>
+        <div style="font-size: 60px; margin-bottom: 16px;">⚠️🦠⚠️</div>
+        <h2>VIRUS DETECTED!</h2>
+        <p>Your computer has been infected with 47 viruses!</p>
+        <p style="font-size: 12px; opacity: 0.8; margin-top: 16px;">(This is fake, don't worry)</p>
+        <button onclick="this.parentElement.remove(); playSound('notification');" style="margin-top: 20px; padding: 12px 24px; background: white; color: #cc0000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">Close</button>
+    `;
+    document.body.appendChild(alert);
+}
+
+function createWifiSettings() {
+    return `
+        <div style="padding: 20px; height: 100%; background: white;">
+            <h2 style="margin-bottom: 20px;">📶 Network & Internet</h2>
+            <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 18px; font-weight: 500;">Wi-Fi</div>
+                        <div style="color: #666;">Connected to Home_WiFi_5G</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+            <h3 style="margin-bottom: 10px;">Available networks</h3>
+            <div style="border: 1px solid #e0e0e0; border-radius: 8px;">
+                <div style="padding: 12px 16px; border-bottom: 1px solid #e0e0e0; background: #e3f2fd;">
+                    <strong>Home_WiFi_5G</strong> - Connected, secured 📶
+                </div>
+                <div style="padding: 12px 16px; border-bottom: 1px solid #e0e0e0;">
+                    Neighbors_Network - Secured 📶
+                </div>
+                <div style="padding: 12px 16px; border-bottom: 1px solid #e0e0e0;">
+                    Coffee_Shop_Free 5Ghz - Open 📶
+                </div>
+                <div style="padding: 12px 16px;">
+                    Office_Guest - Secured 📶
+                </div>
+            </div>
+        </div>
+    `;
+}
