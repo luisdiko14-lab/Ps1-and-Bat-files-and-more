@@ -18,50 +18,51 @@ jobs:
 
       - name: Download ZIP
         run: |
-          curl -L -o Incredibox.zip "https://github.com/luisdiko14-lab/Ps1-and-Bat-files-and-more/raw/main/Incredibox.zip"
+          mkdir -p "$RUNNER_TEMP/work"
+          curl -L -o "$RUNNER_TEMP/work/Incredibox.zip" \
+            "https://github.com/luisdiko14-lab/Ps1-and-Bat-files-and-more/raw/main/Incredibox.zip"
 
       - name: Extract first ZIP
         run: |
-          rm -rf extracted final
-          mkdir -p extracted final
-          unzip -o Incredibox.zip -d extracted
-          echo "First extraction:"
-          find extracted -maxdepth 3 -print
+          mkdir -p "$RUNNER_TEMP/work/level1"
+          unzip -o "$RUNNER_TEMP/work/Incredibox.zip" -d "$RUNNER_TEMP/work/level1"
+          echo "Level 1 contents:"
+          find "$RUNNER_TEMP/work/level1" -maxdepth 3 -print
 
-      - name: Extract nested ZIP if present
+      - name: Extract nested ZIPs
         run: |
-          shopt -s nullglob
-          nested_zips=(extracted/*.zip extracted/**/*.zip)
+          shopt -s nullglob globstar
+
+          mkdir -p "$RUNNER_TEMP/work/final"
+
+          nested_zips=("$RUNNER_TEMP/work/level1"/**/*.zip "$RUNNER_TEMP/work/level1"/*.zip)
+
           if [ ${#nested_zips[@]} -eq 0 ]; then
-            echo "No nested zip found. Moving extracted files."
-            cp -r extracted/* final/ 2>/dev/null || true
+            echo "No nested ZIP found, copying level1 contents."
+            cp -a "$RUNNER_TEMP/work/level1"/. "$RUNNER_TEMP/work/final"/
           else
             for z in "${nested_zips[@]}"; do
-              echo "Extracting nested zip: $z"
-              d="final/$(basename "$z" .zip)"
-              mkdir -p "$d"
-              unzip -o "$z" -d "$d"
+              echo "Extracting nested ZIP: $z"
+              base="$(basename "$z" .zip)"
+              outdir="$RUNNER_TEMP/work/final/$base"
+              mkdir -p "$outdir"
+              unzip -o "$z" -d "$outdir"
             done
           fi
 
-      - name: Clean repo contents
-        run: |
-          shopt -s dotglob nullglob
-          rm -rf -- * .[^.]* ..?* || true
+          echo "Final contents:"
+          find "$RUNNER_TEMP/work/final" -maxdepth 4 -print
 
-      - name: Move final files to root
+      - name: Copy extracted files into repo
         run: |
           shopt -s dotglob nullglob
-          if [ -d final ]; then
-            mv final/* .
-          fi
-          rm -rf final extracted Incredibox.zip
+          cp -a "$RUNNER_TEMP/work/final"/. .
 
       - name: Commit extracted files
         run: |
           git config user.name "auto-extracter"
           git config user.email "extracter@github.com"
-          git add .
+          git add -A
           git commit -m "Extracted Incredibox.zip contents" || echo "No changes"
 
       - name: Push to main
