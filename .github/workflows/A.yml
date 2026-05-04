@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - "Windows.zip"
+      - "windows.zip"
 
 jobs:
   extract:
@@ -19,13 +19,13 @@ jobs:
       - name: Download ZIP
         run: |
           mkdir -p "$RUNNER_TEMP/work"
-          curl -L -o "$RUNNER_TEMP/work/Windows.zip" \
-            "https://github.com/luisdiko14-lab/Ps1-and-Bat-files-and-more/raw/main/Windows.zip"
+          curl -L -o "$RUNNER_TEMP/work/windows.zip" \
+            "https://github.com/luisdiko14-lab/Ps1-and-Bat-files-and-more/raw/main/windows.zip"
 
       - name: Extract first ZIP
         run: |
           mkdir -p "$RUNNER_TEMP/work/level1"
-          unzip -o "$RUNNER_TEMP/work/Incredibox.zip" -d "$RUNNER_TEMP/work/level1"
+          unzip -o "$RUNNER_TEMP/work/windows.zip" -d "$RUNNER_TEMP/work/level1"
           echo "Level 1 contents:"
           find "$RUNNER_TEMP/work/level1" -maxdepth 3 -print
 
@@ -60,10 +60,10 @@ jobs:
 
       - name: Commit extracted files
         run: |
-          git config user.name "auto-extracter"
+          git config user.name "auto-extracter-for-windows"
           git config user.email "extracter@github.com"
           git add -A
-          git commit -m "Extracted Incredibox.zip contents" || echo "No changes"
+          git commit -m "Extracted windows.zip contents" || echo "No changes"
 
       - name: Push to main
         run: |
