@@ -1,0 +1,19 @@
+<icons>
+  <line>
+    <icon name="The Love Modded" ID="1" color="#BA7B3D" locked="false" customName="true" customIcon="asset-v1/icon.png" hidden="false"></icon>
+    <icon name="Neon Beats" ID="2" color="#39FF14" locked="false" customName="true" customIcon="asset-v1/neon.png" hidden="false"></icon>
+    <icon name="Dark Rhythm" ID="3" color="#2C2C2C" locked="false" customName="true" customIcon="asset-v1/dark.png" hidden="false"></icon>
+  </line>
+
+  <line>
+    <icon name="Golden Vibes" ID="4" color="#FFD700" locked="false" customName="true" customIcon="asset-v1/gold.png" hidden="false"></icon>
+    <icon name="Cyber Pulse" ID="5" color="#00BFFF" locked="false" customName="true" customIcon="asset-v1/cyber.png" hidden="false"></icon>
+    <icon name="Retro Wave" ID="6" color="#FF5F9E" locked="false" customName="true" customIcon="asset-v1/retro.png" hidden="false"></icon>
+  </line>
+
+  <line>
+    <icon name="Ice Chill" ID="7" color="#AEEFFF" locked="false" customName="true" customIcon="asset-v1/ice.png" hidden="false"></icon>
+    <icon name="Fire Beats" ID="8" color="#FF4500" locked="false" customName="true" customIcon="asset-v1/fire.png" hidden="false"></icon>
+    <icon name="Mystic Groove" ID="9" color="#8A2BE2" locked="false" customName="true" customIcon="asset-v1/mystic.png" hidden="false"></icon>
+  </line>
+</icons>

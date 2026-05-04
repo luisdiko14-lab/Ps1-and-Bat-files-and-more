@@ -1,0 +1,30 @@
+{
+  "name": "test-do-not-touch",
+  "version": "1.0.0",
+  "description": "STEP 1 create a bookmark Step 3 edit the book mark to edit the name to Full screen mode step 4 change url to javascript:(function() { document.documentElement.requestFullscreen(); })();  save it step five launch the game use use book mare and after clicking the version use the book mark again # remember as of right now the name of the game is template but its the love",
+  "main": "cordova.js",
+  "scripts": {
+    "run": "cordova.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/revie-cpu/test-do-not-touch.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/revie-cpu/test-do-not-touch/issues"
+  },
+  "homepage": "https://github.com/revie-cpu/test-do-not-touch#readme",
+  "dependencies": {
+    "compression": "^1.8.1",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "helmet": "^8.1.0",
+    "morgan": "^1.10.1"
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "name": "Incredibox",
+  "version": "1.0",
+  "author": "Luis",
+  "description": "A custom Incredibox mod with urban beats and fresh vibes.",
+  "theme": {
+    "background": "assets/bg.png",
+    "titleImage": "assets/logo.png",
+    "color": "#ff3333"
+  },
+  "sounds": [
+    {
+      "id": "beat1",
+      "type": "beat",
+      "name": "Kickstart",
+      "file": "sounds/beat1.mp3",
+      "icon": "icons/beat1.png",
+      "loop": true
+    },
+    {
+      "id": "bass1",
+      "type": "bass",
+      "name": "Deep Bass",
+      "file": "sounds/bass1.mp3",
+      "icon": "icons/bass1.png",
+      "loop": true
+    },
+    {
+      "id": "mel1",
+      "type": "melody",
+      "name": "Harmony Up",
+      "file": "sounds/mel1.mp3",
+      "icon": "icons/mel1.png",
+      "loop": true
+    },
+    {
+      "id": "fx1",
+      "type": "effect",
+      "name": "Glitch Rise",
+      "file": "sounds/fx1.mp3",
+      "icon": "icons/fx1.png",
+      "loop": true
+    },
+    {
+      "id": "voice1",
+      "type": "voice",
+      "name": "Singshot",
+      "file": "sounds/voice1.mp3",
+      "icon": "icons/voice1.png",
+      "loop": true
+    },
+    {
+      "id": "chorus1",
+      "type": "chorus",
+      "name": "Chordwave",
+      "file": "sounds/chorus1.mp3",
+      "icon": "icons/chorus1.png",
+      "loop": true
+    }
+  ],
+  "settings": {
+    "maxSounds": 6,
+    "autoPlay": false,
+    "showCredits": true
+  }
+}

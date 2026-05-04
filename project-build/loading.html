@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loading...</title>
+
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    background: #0f1115;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    color: white;
+    overflow: hidden;
+  }
+
+  .container {
+    text-align: center;
+    width: 300px;
+  }
+
+  .spinner {
+    border: 6px solid #222;
+    border-top: 6px solid #00f2ff;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 30px;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 12px;
+    background: #222;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .progress {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #00f2ff, #0072ff);
+    transition: width 0.1s linear;
+  }
+
+  .percent {
+    margin-top: 15px;
+    font-size: 18px;
+    letter-spacing: 2px;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="spinner"></div>
+  <div class="progress-bar">
+    <div class="progress" id="progress"></div>
+  </div>
+  <div class="percent" id="percent">0%</div>
+</div>
+
+<script>
+  let progress = 0;
+  const progressBar = document.getElementById("progress");
+  const percentText = document.getElementById("percent");
+
+  const interval = setInterval(() => {
+    progress++;
+    progressBar.style.width = progress + "%";
+    percentText.textContent = progress + "%";
+
+    if (progress >= 100) {
+      clearInterval(interval);
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 500);
+    }
+  }, 40); // slower = increase number
+</script>
+
+</body>
+</html>
