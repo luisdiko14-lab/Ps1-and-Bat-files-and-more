@@ -32,8 +32,8 @@ jobs:
 
       - name: Commit changes
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+          git config user.name "Luisdiko14-lab"
+          git config user.email "luisdiko1410@gmail.com"
           git add .
           git commit -m "Auto-extracted Incredibox.zip" || echo "No changes to commit"
 
