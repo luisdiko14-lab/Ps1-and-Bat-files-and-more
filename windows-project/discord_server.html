@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Support Server</title>
+<style>
+  body {
+    background: #0f0f14;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+
+  .support-wrapper {
+    text-align: center;
+  }
+
+  .support-btn {
+    background: linear-gradient(135deg, #444, #666);
+    border: none;
+    border-radius: 14px;
+    padding: 18px 40px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #ccc;
+    cursor: not-allowed;
+    position: relative;
+    box-shadow: 0 0 15px rgba(0,0,0,0.6);
+    filter: grayscale(100%);
+    opacity: 0.7;
+  }
+
+  .support-btn::after {
+    content: "🚫 Server Unavailable";
+    display: block;
+    font-size: 14px;
+    margin-top: 8px;
+    color: #999;
+    letter-spacing: 0.5px;
+  }
+
+  .support-btn:hover {
+    box-shadow: 0 0 15px rgba(0,0,0,0.6);
+  }
+
+  .offline-badge {
+    margin-top: 12px;
+    font-size: 13px;
+    color: #888;
+  }
+</style>
+</head>
+<body>
+
+<div class="support-wrapper">
+  <button class="support-btn" disabled>
+    💬 Join Our Support Server
+  </button>
+  <div class="offline-badge">
+    🔒 Link disabled — server is currently offline
+  </div>
+</div>
+
+<script>
+  // Safety: Block clicks even if someone removes "disabled"
+  document.querySelector('.support-btn').addEventListener('click', function(e) {
+    e.preventDefault();
+    alert("Server is currently unavailable. Please try again later.");
+  });
+</script>
+
+</body>
+</html>

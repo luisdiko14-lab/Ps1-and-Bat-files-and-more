@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 || Desktop</title>
+    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="sound-container" style="display: none; position: absolute; left: -9999px;">
+        <iframe id="startup-sound" width="1" height="1" src="" frameborder="0"></iframe>
+        <iframe id="boot-sound" width="1" height="1" src="" frameborder="0"></iframe>
+        <audio id="error-sound" preload="auto">
+            <source src="https://www.myinstants.com/media/sounds/erro.mp3" type="audio/mpeg">
+        </audio>
+        <audio id="notification-sound" preload="auto">
+            <source src="https://www.myinstants.com/media/sounds/facebook-notification-sound-effect.mp3" type="audio/mpeg">
+        </audio>
+        <audio id="shutdown-sound" preload="auto">
+            <source src="https://www.myinstants.com/media/sounds/windows-xp-shutdown.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+    <div id="screen-boot" class="screen active">
+        <div class="boot-screen">
+            <div class="windows-logo-large">
+                <div class="windows-squares">
+                    <div class="square"></div>
+                    <div class="square"></div>
+                    <div class="square"></div>
+                    <div class="square"></div>
+                </div>
+            </div>
+            <div class="loading-circle"></div>
+            <p id="boot-status">Loading Windows...</p>
+        </div>
+    </div>
+
+    <div id="screen-logging-in" class="screen">
+        <div class="login-progress-screen">
+            <div class="user-avatar-large">
+                <svg width="120" height="120" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="48" fill="#0078d4"/>
+                    <circle cx="50" cy="40" r="18" fill="white"/>
+                    <path d="M 20 85 Q 50 70 80 85" fill="white"/>
+                </svg>
+            </div>
+            <h2 id="logging-in-text">Logging in...</h2>
+            <div class="loading-circle"></div>
+            <p id="login-status">Welcome</p>
+        </div>
+    </div>
+
+    <div id="screen-getting-ready" class="screen">
+        <div class="getting-ready-screen">
+            <div class="loading-circle"></div>
+            <h2>Getting your desktop ready...</h2>
+            <p>This won't take long</p>
+        </div>
+    </div>
+
+    <div id="screen-lock" class="screen">
+        <div class="lock-screen">
+            <div class="lock-time" id="lock-time">12:00</div>
+            <div class="lock-date" id="lock-date">Monday, January 1</div>
+            <div class="lock-hint">Click anywhere to continue</div>
+        </div>
+    </div>
+
+    <div id="screen-login" class="screen">
+        <div class="login-left-panel">
+            <div id="login-user-list"></div>
+            <button class="btn-add-user" onclick="createNewUser()">+ Add User</button>
+        </div>
+        <div class="login-container">
+            <div class="user-avatar" id="login-avatar-container" style="width: 100px; height: 100px; background: #0078d4; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; border: 4px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-size: 50px;">👤</div>
+            <div class="user-name" id="login-username">User</div>
+            <div class="password-container">
+                <input type="password" class="password-input" id="login-password" placeholder="Password">
+                <button class="btn-submit" onclick="attemptLogin()">→</button>
+            </div>
+            <div class="login-error" id="login-error"></div>
+            <div class="login-options">
+                <button class="btn-text" onclick="switchUser()">Sign in options</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-desktop" class="screen">
+        <div class="desktop">
+            <div class="desktop-icons">
+                <div class="desktop-icon" ondblclick="openApp('computer')">
+                    <div class="icon-img">💻</div>
+                    <div class="icon-label">This PC</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openApp('trash')">
+                    <div class="icon-img">🗑️</div>
+                    <div class="icon-label">Recycle Bin</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openApp('edge')">
+                    <div class="icon-img">🌐</div>
+                    <div class="icon-label">Microsoft Edge</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openApp('google_setup')">
+                    <div class="icon-img" style="font-size: 28px;">🔵</div>
+                    <div class="icon-label">Chrome Setup</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openApp('explorer')">
+                    <div class="icon-img">📁</div>
+                    <div class="icon-label">Documents</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openApp('notepad')">
+                    <div class="icon-img">📝</div>
+                    <div class="icon-label">Notes.txt</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openApp('cmd')">
+                    <div class="icon-img">⬛</div>
+                    <div class="icon-label">Terminal</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openApp('store')">
+                    <div class="icon-img">🛍️</div>
+                    <div class="icon-label">Microsoft Store</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openApp('paint')">
+                    <div class="icon-img">🎨</div>
+                    <div class="icon-label">Paint</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openApp('weather')">
+                    <div class="icon-img">🌤️</div>
+                    <div class="icon-label">Weather</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openApp('imagegen')">
+                    <div class="icon-img">🎨</div>
+                    <div class="icon-label">AI Image Gen</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openApp('bluetooth')">
+                    <div class="icon-img">📡</div>
+                    <div class="icon-label">Bluetooth</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openApp('settings')">
+                    <div class="icon-img">⚙️</div>
+                    <div class="icon-label">Settings</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openApp('solitaire')">
+                    <div class="icon-img">🃏</div>
+                    <div class="icon-label">Solitaire</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openApp('discord')">
+                    <div class="icon-img">💬</div>
+                    <div class="icon-label">Discord</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openApp('photos')">
+                    <div class="icon-img">🖼️</div>
+                    <div class="icon-label">Photos</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openApp('calendar')">
+                    <div class="icon-img">📅</div>
+                    <div class="icon-label">Calendar</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openApp('maps')">
+                    <div class="icon-img">🗺️</div>
+                    <div class="icon-label">Maps</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openApp('music')">
+                    <div class="icon-img">🎵</div>
+                    <div class="icon-label">Groove Music</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openApp('defender')">
+                    <div class="icon-img">🛡️</div>
+                    <div class="icon-label">Windows Security</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openApp('code')">
+                    <div class="icon-img">💻</div>
+                    <div class="icon-label">Code Editor</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openApp('sysinfo')">
+                    <div class="icon-img">ℹ️</div>
+                    <div class="icon-label">System Info</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openApp('advanced')">
+                    <div class="icon-img">⚙️</div>
+                    <div class="icon-label">Advanced</div>
+                </div>
+            </div>
+
+            <div class="taskbar">
+                <div class="taskbar-left">
+                    <button class="start-button" onclick="toggleStartMenu()">
+                        <div class="windows-icon">
+                            <div class="win-square"></div>
+                            <div class="win-square"></div>
+                            <div class="win-square"></div>
+                            <div class="win-square"></div>
+                        </div>
+                    </button>
+                    <div class="search-box" onclick="openApp('search')">
+                        <span class="search-icon">🔍</span>
+                        <span class="search-text">Type here to search</span>
+                    </div>
+                </div>
+                <div class="taskbar-pinned">
+                    <button class="taskbar-pin-btn" onclick="openApp('browser')" title="Microsoft Edge">🌐</button>
+                    <button class="taskbar-pin-btn" onclick="openApp('explorer')" title="File Explorer">📁</button>
+                    <button class="taskbar-pin-btn" onclick="openApp('mail')" title="Mail">📧</button>
+                    <button class="taskbar-pin-btn" onclick="openApp('teams')" title="Teams">👥</button>
+                    <button class="taskbar-pin-btn" onclick="openApp('store')" title="Microsoft Store">🛍️</button>
+                    <button class="taskbar-pin-btn" onclick="openApp('cmd')" title="Command Prompt">⬛</button>
+                    <button class="taskbar-pin-btn" onclick="openApp('code')" title="VS Code">💻</button>
+                    <button class="taskbar-pin-btn" onclick="openApp('calculator')" title="Calculator">🔢</button>
+                </div>
+                <div class="taskbar-center" id="taskbar-apps"></div>
+                <div class="taskbar-right">
+                    <div class="system-tray">
+                        <span class="tray-icon plan-badge" id="plan-badge" onclick="openPlanPopup()" title="Active VM plan" style="display:none;font-size:11px;font-weight:700;letter-spacing:1px;padding:2px 8px;border-radius:10px;color:white;background:linear-gradient(135deg,#3ba55d,#22c55e);"></span>
+                        <span class="tray-icon" onclick="openApp('taskmgr')">📊</span>
+                        <span class="tray-icon" onclick="toggleVolumeMenu()">🔊</span>
+                        <span class="tray-icon" onclick="toggleWifiMenu()">📶</span>
+                        <span class="tray-icon" onclick="toggleBatteryPopup()">🔋</span>
+                        <div class="clock" id="taskbar-clock">12:00 PM<br>1/1/2024</div>
+                        <button class="notification-button" onclick="toggleNotifications()">💬</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="start-menu" id="start-menu">
+                <div class="start-content">
+                    <div class="start-user">
+                        <div class="start-avatar">👤</div>
+                        <div class="start-username" id="start-username">User</div>
+                    </div>
+                    <div class="start-apps">
+                        <h3>All apps</h3>
+                        <div class="app-list">
+                            <div class="app-item" onclick="openApp('calculator'); toggleStartMenu()">
+                                <span class="app-icon">🔢</span>
+                                <span>Calculator</span>
+                            </div>
+                            <div class="app-item" onclick="openApp('notepad'); toggleStartMenu()">
+                                <span class="app-icon">📝</span>
+                                <span>Notepad</span>
+                            </div>
+                            <div class="app-item" onclick="openApp('explorer'); toggleStartMenu()">
+                                <span class="app-icon">📁</span>
+                                <span>File Explorer</span>
+                            </div>
+                            <div class="app-item" onclick="openApp('settings'); toggleStartMenu()">
+                                <span class="app-icon">⚙️</span>
+                                <span>Settings</span>
+                            </div>
+                            <div class="app-item" onclick="openApp('taskmgr'); toggleStartMenu()">
+                                <span class="app-icon">📊</span>
+                                <span>Task Manager</span>
+                            </div>
+                            <div class="app-item" onclick="openApp('browser'); toggleStartMenu()">
+                                <span class="app-icon">🌐</span>
+                                <span>Microsoft Edge</span>
+                            </div>
+                            <div class="app-item" onclick="openApp('cmd'); toggleStartMenu()">
+                                <span class="app-icon">⬛</span>
+                                <span>Command Prompt</span>
+                            </div>
+                            <div class="app-item" onclick="openApp('paint'); toggleStartMenu()">
+                                <span class="app-icon">🎨</span>
+                                <span>Paint</span>
+                            </div>
+                            <div class="app-item" onclick="openApp('weather'); toggleStartMenu()">
+                                <span class="app-icon">🌤️</span>
+                                <span>Weather</span>
+                            </div>
+                            <div class="app-item" onclick="openApp('imagegen'); toggleStartMenu()">
+                                <span class="app-icon">🎨</span>
+                                <span>AI Image Generator</span>
+                            </div>
+                            <div class="app-item" onclick="openApp('bluetooth'); toggleStartMenu()">
+                                <span class="app-icon">📡</span>
+                                <span>Bluetooth &amp; Devices</span>
+                            </div>
+                            <div class="app-item" onclick="openApp('snipping'); toggleStartMenu()">
+                                <span class="app-icon">✂️</span>
+                                <span>Snipping Tool</span>
+                            </div>
+                            <div class="app-item" onclick="openApp('photos'); toggleStartMenu()">
+                                <span class="app-icon">🖼️</span>
+                                <span>Photos</span>
+                            </div>
+                            <div class="app-item" onclick="openApp('calendar'); toggleStartMenu()">
+                                <span class="app-icon">📅</span>
+                                <span>Calendar</span>
+                            </div>
+                            <div class="app-item" onclick="openApp('clock'); toggleStartMenu()">
+                                <span class="app-icon">⏰</span>
+                                <span>Alarms & Clock</span>
+                            </div>
+                            <div class="app-item" onclick="openApp('maps'); toggleStartMenu()">
+                                <span class="app-icon">🗺️</span>
+                                <span>Maps</span>
+                            </div>
+                            <div class="app-item" onclick="openApp('store'); toggleStartMenu()">
+                                <span class="app-icon">🛍️</span>
+                                <span>Microsoft Store</span>
+                            </div>
+                            <div class="app-item" onclick="openApp('music'); toggleStartMenu()">
+                                <span class="app-icon">🎵</span>
+                                <span>Groove Music</span>
+                            </div>
+                            <div class="app-item" onclick="openApp('solitaire'); toggleStartMenu()">
+                                <span class="app-icon">🃏</span>
+                                <span>Solitaire</span>
+                            </div>
+                            <div class="app-item" onclick="openApp('discord'); toggleStartMenu()">
+                                <span class="app-icon">💬</span>
+                                <span>Discord</span>
+                            </div>
+                            <div class="app-item" onclick="openApp('code'); toggleStartMenu()">
+                                <span class="app-icon">💻</span>
+                                <span>VS Code</span>
+                            </div>
+                            <div class="app-item" onclick="openApp('sysinfo'); toggleStartMenu()">
+                                <span class="app-icon">ℹ️</span>
+                                <span>System Info</span>
+                            </div>
+                            <div class="app-item" onclick="openApp('wordpad'); toggleStartMenu()">
+                                <span class="app-icon">📄</span>
+                                <span>WordPad</span>
+                            </div>
+                            <div class="app-item" onclick="openApp('stickynotes'); toggleStartMenu()">
+                                <span class="app-icon">🟡</span>
+                                <span>Sticky Notes</span>
+                            </div>
+                            <div class="app-item" onclick="openApp('powershell'); toggleStartMenu()">
+                                <span class="app-icon">🔷</span>
+                                <span>PowerShell</span>
+                            </div>
+                            <div class="app-item" onclick="openApp('controlpanel'); toggleStartMenu()">
+                                <span class="app-icon">🎛️</span>
+                                <span>Control Panel</span>
+                            </div>
+                            <div class="app-item" onclick="openApp('devmgr'); toggleStartMenu()">
+                                <span class="app-icon">🖥️</span>
+                                <span>Device Manager</span>
+                            </div>
+                            <div class="app-item" onclick="openApp('registry'); toggleStartMenu()">
+                                <span class="app-icon">📋</span>
+                                <span>Registry Editor</span>
+                            </div>
+                            <div class="app-item" onclick="openApp('mediaplayer'); toggleStartMenu()">
+                                <span class="app-icon">▶️</span>
+                                <span>Media Player</span>
+                            </div>
+                            <div class="app-item" onclick="openApp('teams'); toggleStartMenu()">
+                                <span class="app-icon">👥</span>
+                                <span>Microsoft Teams</span>
+                            </div>
+                            <div class="app-item" onclick="openApp('mail'); toggleStartMenu()">
+                                <span class="app-icon">📧</span>
+                                <span>Mail</span>
+                            </div>
+                            <div class="app-item" onclick="openApp('xbox'); toggleStartMenu()">
+                                <span class="app-icon">🎮</span>
+                                <span>Xbox</span>
+                            </div>
+                            <div class="app-item" onclick="openApp('speedtest'); toggleStartMenu()">
+                                <span class="app-icon">⚡</span>
+                                <span>Speed Test</span>
+                            </div>
+                            <div class="app-item" onclick="openApp('search'); toggleStartMenu()">
+                                <span class="app-icon">🔍</span>
+                                <span>Search</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="start-power">
+                        <button class="power-button" onclick="togglePowerMenu()">⚡</button>
+                    </div>
+                </div>
+                <div class="power-menu" id="power-menu">
+                    <div class="power-option" onclick="signOut()">Sign out</div>
+                    <div class="power-option" onclick="lockScreen()">Lock</div>
+                    <div class="power-option" onclick="restart()">Restart</div>
+                    <div class="power-option" onclick="shutdown()">Shut down</div>
+                </div>
+            </div>
+
+            <div class="wifi-menu" id="wifi-menu">
+                <div class="wifi-header">
+                    <span>📶 Wi-Fi</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked onchange="toggleWifiState(this)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="wifi-list" id="wifi-list">
+                    <div class="wifi-network connected" onclick="selectWifi(this)">
+                        <div class="wifi-info">
+                            <span class="wifi-name">Home_WiFi_5G</span>
+                            <span class="wifi-status">Connected, secured</span>
+                        </div>
+                        <span class="wifi-strength">📶</span>
+                    </div>
+                    <div class="wifi-network" onclick="selectWifi(this)">
+                        <div class="wifi-info">
+                            <span class="wifi-name">Neighbors_Network</span>
+                            <span class="wifi-status">Secured</span>
+                        </div>
+                        <span class="wifi-strength">📶</span>
+                    </div>
+                    <div class="wifi-network" onclick="selectWifi(this)">
+                        <div class="wifi-info">
+                            <span class="wifi-name">Coffee_Shop_Free</span>
+                            <span class="wifi-status">Open</span>
+                        </div>
+                        <span class="wifi-strength">📶</span>
+                    </div>
+                    <div class="wifi-network" onclick="selectWifi(this)">
+                        <div class="wifi-info">
+                            <span class="wifi-name">Office_Guest</span>
+                            <span class="wifi-status">Secured</span>
+                        </div>
+                        <span class="wifi-strength">📶</span>
+                    </div>
+                </div>
+                <div class="wifi-footer">
+                    <a href="#" onclick="openApp('wifi'); toggleWifiMenu();">Network & Internet settings</a>
+                </div>
+            </div>
+
+            <div class="volume-menu" id="volume-menu">
+                <div class="volume-header">🔊 Volume</div>
+                <div class="volume-slider">
+                    <input type="range" min="0" max="100" value="75" id="volume-slider">
+                    <span id="volume-value">75%</span>
+                </div>
+            </div>
+
+            <div class="context-menu" id="context-menu">
+                <div class="context-item" onclick="refreshDesktop()">🔄 Refresh</div>
+                <div class="context-divider"></div>
+                <div class="context-item" onclick="openApp('notepad')">📝 New Text Document</div>
+                <div class="context-item" onclick="createFolder()">📁 New Folder</div>
+                <div class="context-divider"></div>
+                <div class="context-item" onclick="openApp('settings')">⚙️ Display settings</div>
+                <div class="context-item" onclick="openApp('settings')">🎨 Personalize</div>
+            </div>
+
+            <div class="notification-center" id="notification-center">
+                <div class="notification-header">
+                    <h3>Notifications</h3>
+                    <button onclick="clearNotifications()">Clear all</button>
+                    <button onclick="toggleNotifications()">✕</button>
+                </div>
+                <div class="quick-actions">
+                    <div class="quick-action" onclick="toggleNightLight(this)">🌙 Night light</div>
+                    <div class="quick-action" onclick="toggleQuickAction(this)">📍 Location</div>
+                    <div class="quick-action active" onclick="toggleQuickAction(this)">📶 Wi-Fi</div>
+                    <div class="quick-action active" onclick="toggleQuickAction(this)">🔵 Bluetooth</div>
+                    <div class="quick-action" onclick="toggleQuickAction(this)">✈️ Airplane mode</div>
+                    <div class="quick-action" onclick="toggleQuickAction(this)">🔋 Battery saver</div>
+                    <div class="quick-action" onclick="toggleQuickAction(this)">🎮 Game mode</div>
+                    <div class="quick-action" onclick="toggleFocusAssist(this)">🔕 Focus assist</div>
+                </div>
+                <div class="brightness-slider">
+                    <span>☀️</span>
+                    <input type="range" min="20" max="100" value="80" id="brightness-slider" oninput="changeBrightness(this.value)">
+                    <span id="brightness-value">80%</span>
+                </div>
+                <div class="notification-content" id="notification-list">
+                    <div class="notification" onclick="this.remove()">
+                        <div class="notification-icon">🛡️</div>
+                        <div class="notification-text">
+                            <div class="notification-title">Windows Security</div>
+                            <div class="notification-body">No threats found - Your device is protected</div>
+                            <div class="notification-time">Just now</div>
+                        </div>
+                    </div>
+                    <div class="notification" onclick="this.remove()">
+                        <div class="notification-icon">📧</div>
+                        <div class="notification-text">
+                            <div class="notification-title">Mail</div>
+                            <div class="notification-body">You have 3 unread messages</div>
+                            <div class="notification-time">2 minutes ago</div>
+                        </div>
+                    </div>
+                    <div class="notification" onclick="this.remove()">
+                        <div class="notification-icon">⬇️</div>
+                        <div class="notification-text">
+                            <div class="notification-title">Microsoft Store</div>
+                            <div class="notification-body">App update available</div>
+                            <div class="notification-time">5 minutes ago</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="windows-container"></div>
+
+            <div class="battery-popup" id="battery-popup">
+                <div class="battery-icon-large">🔋</div>
+                <div class="battery-percentage">87%</div>
+                <div class="battery-status">Plugged in, charging</div>
+                <div class="battery-time">Fully charged in 45 minutes</div>
+                <div style="margin-top: 16px; display: flex; gap: 8px;">
+                    <button onclick="openApp('settings'); toggleBatteryPopup();" style="flex: 1; padding: 8px; cursor: pointer;">Battery settings</button>
+                </div>
+            </div>
+
+            <div class="night-light-overlay" id="night-light-overlay"></div>
+            
+            <div class="snap-preview" id="snap-preview"></div>
+        </div>
+    </div>
+
+    <div id="screen-shutdown" class="screen">
+        <div class="shutdown-screen">
+            <div class="windows-logo-large">
+                <div class="windows-squares">
+                    <div class="square"></div>
+                    <div class="square"></div>
+                    <div class="square"></div>
+                    <div class="square"></div>
+                </div>
+            </div>
+            <div class="loading-circle"></div>
+            <h2 id="shutdown-text">Shutting down...</h2>
+        </div>
+    </div>
+
+    <div id="screen-signout" class="screen">
+        <div class="signout-screen">
+            <div class="windows-logo-large">
+                <div class="windows-squares">
+                    <div class="square"></div>
+                    <div class="square"></div>
+                    <div class="square"></div>
+                    <div class="square"></div>
+                </div>
+            </div>
+            <div class="loading-circle"></div>
+            <h2>Signing out...</h2>
+        </div>
+    </div>
+
+    <div id="screen-ransomware" class="screen">
+        <div class="ransomware-screen">
+            <div class="ransomware-skull">💀</div>
+            <h1 class="ransomware-title">YOUR FILES HAVE BEEN ENCRYPTED!</h1>
+            <div class="ransomware-content">
+                <p>All your important files (documents, photos, videos, databases) have been encrypted with military-grade encryption.</p>
+                <p>You cannot decrypt your files without our special decryption key.</p>
+                <div class="ransomware-timer">
+                    <span>Time remaining to pay:</span>
+                    <div class="timer-display" id="ransom-timer">23:59:59</div>
+                </div>
+                <div class="ransomware-payment">
+                    <p>Send <strong>0.5 Bitcoin</strong> to the following address:</p>
+                    <code class="btc-address">1F4k3B1tC01nAdDr3sS123456789</code>
+                    <p style="color: #ff6666; font-size: 12px;">⚠️ DO NOT turn off your computer or your files will be permanently deleted!</p>
+                </div>
+                <div class="ransomware-buttons">
+                    <button onclick="decryptFiles()" class="ransom-btn pay-btn">💰 I Paid! Decrypt My Files</button>
+                    <button onclick="closeRansomware()" class="ransom-btn close-btn">❌ This is fake, let me out!</button>
+                </div>
+            </div>
+            <div class="ransomware-footer">
+                <p>🔒 CryptoLocker v3.0 - Your friendly neighborhood ransomware</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-bsod" class="screen">
+        <div class="bsod-screen">
+            <div class="bsod-content">
+                <div class="bsod-sad">:(</div>
+                <h1>Your PC ran into a problem and needs to restart.</h1>
+                <p>We're just collecting some error info, and then we'll restart for you.</p>
+                <div class="bsod-progress">
+                    <span id="bsod-percent">0</span>% complete
+                </div>
+                <div class="bsod-qr">
+                    <div style="width: 80px; height: 80px; background: white; display: flex; align-items: center; justify-content: center; font-size: 10px; color: black;">QR Code</div>
+                </div>
+                <p class="bsod-stop">Stop code: CRITICAL_PROCESS_DIED</p>
+                <p class="bsod-info">If you call a support person, give them this info:</p>
+                <p class="bsod-info">Stop code: SYSTEM_THREAD_EXCEPTION_NOT_HANDLED</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-off" class="screen">
+        <div style="width: 100%; height: 100%; background: #000;"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Windows Defender — Security Scan</title>
+<style>
+  body {
+    margin: 0;
+    font-family: "Segoe UI", system-ui, Arial, sans-serif;
+    background: radial-gradient(circle at top, #0b1b2b, #050b12);
+    color: #e8f2ff;
+    overflow: hidden;
+  }
+
+  .app {
+    max-width: 900px;
+    margin: 40px auto;
+    background: rgba(15, 30, 50, 0.95);
+    border-radius: 14px;
+    box-shadow: 0 0 40px rgba(0,180,255,0.25);
+    padding: 24px;
+    border: 1px solid rgba(0,180,255,0.2);
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .shield {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #1ec9ff, #0078d4);
+    display: grid;
+    place-items: center;
+    font-size: 28px;
+    box-shadow: 0 0 20px rgba(30,200,255,0.6);
+  }
+
+  .title h1 {
+    margin: 0;
+    font-size: 22px;
+    letter-spacing: 0.5px;
+  }
+
+  .title p {
+    margin: 4px 0 0;
+    opacity: 0.7;
+    font-size: 13px;
+  }
+
+  .status {
+    background: rgba(0, 120, 212, 0.15);
+    border: 1px solid rgba(0, 120, 212, 0.35);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .status strong {
+    color: #5fd1ff;
+  }
+
+  .scan-btn {
+    background: linear-gradient(135deg, #1ec9ff, #0078d4);
+    border: none;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(30,200,255,0.5);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+  }
+
+  .scan-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 25px rgba(30,200,255,0.8);
+  }
+
+  .progress-box {
+    margin: 20px 0;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 16px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #1ec9ff, #00ff9c);
+    box-shadow: 0 0 15px rgba(0,255,180,0.6);
+    transition: width 0.25s ease;
+  }
+
+  .scan-info {
+    margin-top: 8px;
+    font-size: 13px;
+    opacity: 0.85;
+  }
+
+  .panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 20px;
+  }
+
+  .panel {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 14px;
+  }
+
+  .panel h3 {
+    margin: 0 0 10px;
+    font-size: 15px;
+    color: #5fd1ff;
+  }
+
+  .log {
+    font-family: Consolas, monospace;
+    font-size: 12px;
+    max-height: 200px;
+    overflow-y: auto;
+    background: rgba(0,0,0,0.3);
+    padding: 8px;
+    border-radius: 6px;
+  }
+
+  .log div {
+    margin-bottom: 4px;
+    opacity: 0.9;
+  }
+
+  .ok {
+    color: #5dffb0;
+  }
+
+  .warn {
+    color: #ffd45d;
+  }
+
+  .bad {
+    color: #ff5d5d;
+  }
+
+  .footer {
+    margin-top: 18px;
+    text-align: center;
+    font-size: 11px;
+    opacity: 0.5;
+  }
+
+  .pulse {
+    animation: pulse 1.5s infinite;
+  }
+
+  @keyframes pulse {
+    0% { box-shadow: 0 0 10px rgba(30,200,255,0.4); }
+    50% { box-shadow: 0 0 25px rgba(30,200,255,0.9); }
+    100% { box-shadow: 0 0 10px rgba(30,200,255,0.4); }
+  }
+</style>
+</head>
+<body>
+  <div class="app">
+    <div class="header">
+      <div class="shield pulse">🛡️</div>
+      <div class="title">
+        <h1>Windows Defender</h1>
+        <p>Advanced Threat Protection</p>
+      </div>
+    </div>
+
+    <div class="status">
+      <div>
+        Status: <strong id="statusText">Protected</strong><br />
+        Last scan: <span id="lastScan">Never</span>
+      </div>
+      <button class="scan-btn" id="scanBtn">Start Scan</button>
+    </div>
+
+    <div class="progress-box">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="scan-info" id="scanInfo">
+        Idle. System is protected.
+      </div>
+    </div>
+
+    <div class="panels">
+      <div class="panel">
+        <h3>Real-time Protection</h3>
+        <p class="ok">✔ Enabled</p>
+        <p>Virus & threat protection: <span class="ok">On</span></p>
+        <p>Firewall: <span class="ok">Active</span></p>
+        <p>SmartScreen: <span class="ok">Enabled</span></p>
+      </div>
+
+      <div class="panel">
+        <h3>Scan Log</h3>
+        <div class="log" id="log"></div>
+      </div>
+    </div>
+
+    <div class="footer">
+      Demo UI — Not a real antivirus. For design & UI testing only.
+    </div>
+  </div>
+
+<script>
+  const scanBtn = document.getElementById("scanBtn");
+  const progressFill = document.getElementById("progressFill");
+  const scanInfo = document.getElementById("scanInfo");
+  const log = document.getElementById("log");
+  const statusText = document.getElementById("statusText");
+  const lastScan = document.getElementById("lastScan");
+
+  let scanning = false;
+  let progress = 0;
+  let interval = null;
+
+  function addLog(text, type = "ok") {
+    const div = document.createElement("div");
+    div.className = type;
+    div.textContent = `[${new Date().toLocaleTimeString()}] ${text}`;
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  scanBtn.addEventListener("click", () => {
+    if (scanning) return;
+
+    scanning = true;
+    progress = 0;
+    progressFill.style.width = "0%";
+    scanInfo.textContent = "Initializing scan engine...";
+    statusText.textContent = "Scanning...";
+    statusText.className = "warn";
+    log.innerHTML = "";
+
+    addLog("Scan engine started.", "ok");
+    addLog("Loading virus definitions...", "ok");
+
+    interval = setInterval(() => {
+      progress += Math.random() * 8 + 2;
+      if (progress > 100) progress = 100;
+
+      progressFill.style.width = progress + "%";
+      scanInfo.textContent = `Scanning system files... ${Math.floor(progress)}%`;
+
+      if (Math.random() < 0.2) {
+        addLog("Checked: C:\\Windows\\System32", "ok");
+      }
+      if (Math.random() < 0.1) {
+        addLog("Checked: C:\\Users\\Public\\Downloads", "ok");
+      }
+
+      if (progress >= 100) {
+        clearInterval(interval);
+        scanning = false;
+
+        // Fake result
+        const foundThreat = Math.random() < 0.35;
+
+        if (foundThreat) {
+          addLog("Threat detected: Trojan.Generic.Demo", "bad");
+          addLog("Threat quarantined successfully.", "warn");
+          statusText.textContent = "Action Required";
+          statusText.className = "bad";
+          scanInfo.textContent = "Threats found and quarantined.";
+        } else {
+          addLog("No threats found.", "ok");
+          statusText.textContent = "Protected";
+          statusText.className = "ok";
+          scanInfo.textContent = "Scan complete. Your device is protected.";
+        }
+
+        lastScan.textContent = new Date().toLocaleString();
+      }
+    }, 400);
+  });
+</script>
+</body>
+</html>

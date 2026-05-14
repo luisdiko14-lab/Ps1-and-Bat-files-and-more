@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Setup</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .setup-step h2 { font-weight: 300; }
+        .step-progress { position: absolute; top: 20px; left: 0; right: 0; display:flex; justify-content:center; gap:6px; z-index:10; }
+        .step-progress span { width:34px; height:4px; border-radius:2px; background:rgba(255,255,255,0.25); transition:background .3s; }
+        .step-progress span.done { background:#0078d4; }
+        .step-progress span.current { background:#fff; }
+
+        .bt-list, .wifi-list { max-width: 460px; margin: 0 auto 20px; max-height: 280px; overflow-y:auto; }
+        .bt-item { display:flex; align-items:center; gap:12px; padding:12px 14px; background:rgba(255,255,255,.08); border-radius:8px; margin-bottom:8px; cursor:pointer; transition:.2s; border:2px solid transparent; }
+        .bt-item:hover { background:rgba(255,255,255,.15); }
+        .bt-item.selected { border-color:#0078d4; background:rgba(0,120,212,.25); }
+        .bt-icon { font-size:24px; width:36px; text-align:center; }
+        .bt-info { flex:1; }
+        .bt-name { color:#fff; font-weight:500; }
+        .bt-sub { color:rgba(255,255,255,.6); font-size:12px; }
+        .bt-battery { color:rgba(255,255,255,.7); font-size:12px; }
+
+        .wifi-bars { display:inline-flex; gap:2px; align-items:flex-end; height:18px; margin-right:6px; }
+        .wifi-bars span { width:3px; background:#fff; border-radius:1px; opacity:.3; }
+        .wifi-bars span.on { opacity:1; }
+
+        .theme-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; max-width:520px; margin:0 auto 20px; }
+        .theme-card { background:rgba(255,255,255,.08); border-radius:10px; padding:12px; cursor:pointer; border:2px solid transparent; text-align:center; transition:.2s; }
+        .theme-card:hover { background:rgba(255,255,255,.15); }
+        .theme-card.selected { border-color:#0078d4; }
+        .theme-preview { height:90px; border-radius:6px; margin-bottom:8px; position:relative; overflow:hidden; }
+        .theme-preview::after { content:''; position:absolute; bottom:6px; left:6px; right:6px; height:14px; background:rgba(0,0,0,.35); border-radius:3px; }
+        .theme-card .theme-name { color:#fff; font-size:14px; }
+
+        .accent-grid { display:flex; flex-wrap:wrap; gap:10px; max-width:420px; margin:0 auto 20px; justify-content:center; }
+        .accent-dot { width:42px; height:42px; border-radius:50%; cursor:pointer; border:3px solid transparent; transition:.2s; }
+        .accent-dot:hover { transform:scale(1.1); }
+        .accent-dot.selected { border-color:#fff; }
+
+        .tz-list { max-width:460px; margin:0 auto 20px; max-height:300px; overflow-y:auto; background:rgba(255,255,255,.05); border-radius:8px; }
+        .tz-item { padding:10px 14px; color:#fff; cursor:pointer; border-bottom:1px solid rgba(255,255,255,.08); }
+        .tz-item:hover { background:rgba(255,255,255,.1); }
+        .tz-item.selected { background:rgba(0,120,212,.4); }
+        .tz-item .tz-time { float:right; color:rgba(255,255,255,.6); font-size:12px; }
+
+        .pin-input { font-size:32px; letter-spacing:14px; text-align:center; max-width:220px; }
+
+        .privacy-options { max-width:520px; margin:0 auto 20px; }
+        .privacy-item { display:flex; justify-content:space-between; align-items:flex-start; padding:14px 16px; background:rgba(255,255,255,.06); border-radius:8px; margin-bottom:8px; gap:14px; }
+        .privacy-item .pi-text { flex:1; color:#fff; }
+        .privacy-item .pi-name { font-weight:500; margin-bottom:4px; }
+        .privacy-item .pi-desc { color:rgba(255,255,255,.65); font-size:12px; }
+
+        .scan-pulse { width:90px; height:90px; border-radius:50%; background:#0078d4; margin:30px auto; position:relative; animation:pulse 1.6s infinite; display:flex; align-items:center; justify-content:center; font-size:42px; }
+        @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(0,120,212,.6);} 70%{box-shadow:0 0 0 30px rgba(0,120,212,0);} 100%{box-shadow:0 0 0 0 rgba(0,120,212,0);} }
+
+        .cortana-mic { width:120px; height:120px; border-radius:50%; background:radial-gradient(circle, #00bcf2, #0078d4); margin:20px auto; display:flex; align-items:center; justify-content:center; font-size:60px; box-shadow:0 8px 30px rgba(0,120,212,.5); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="screen" id="boot-screen">
+            <div class="restart-animation">
+                <div class="windows-logo-large">
+                    <div class="windows-squares">
+                        <div class="square"></div><div class="square"></div>
+                        <div class="square"></div><div class="square"></div>
+                    </div>
+                </div>
+                <div class="loading-circle"></div>
+                <p>Getting ready...</p>
+            </div>
+        </div>
+
+        <div class="screen" id="setup-screen">
+            <div class="step-progress" id="step-progress"></div>
+            <div class="setup-container">
+                <div class="windows-logo">
+                    <div class="windows-squares">
+                        <div class="square"></div><div class="square"></div>
+                        <div class="square"></div><div class="square"></div>
+                    </div>
+                </div>
+
+                <!-- WIFI -->
+                <div class="setup-step active" id="step-wifi" data-progress="1">
+                    <h2>Let's connect you to a network</h2>
+                    <p>Connect to the internet to get the latest features and security updates.</p>
+                    <div class="wifi-list" id="wifi-list-el"></div>
+                    <button class="btn-secondary" onclick="skipWifi()">I don't have internet</button>
+                </div>
+
+                <div class="setup-step" id="step-wifi-password">
+                    <h2>Enter network password</h2>
+                    <p>Network: <span id="wifi-network-name"></span></p>
+                    <input type="password" id="wifi-password-input" class="setup-input" placeholder="Network password">
+                    <label style="color:#fff;display:block;margin:8px 0 14px;"><input type="checkbox" id="wifi-show-pw" onchange="document.getElementById('wifi-password-input').type=this.checked?'text':'password'"> Show password</label>
+                    <button class="btn-primary" onclick="connectWifi()">Connect</button>
+                    <button class="btn-secondary" onclick="backToWifiList()">Back</button>
+                </div>
+
+                <!-- BLUETOOTH -->
+                <div class="setup-step" id="step-bluetooth" data-progress="2">
+                    <h2>Pair your Bluetooth devices</h2>
+                    <p>Select any devices you'd like to connect (optional)</p>
+                    <div class="scan-pulse">📡</div>
+                    <div class="bt-list" id="bt-list-el"></div>
+                    <button class="btn-primary" onclick="goToStep('step-account-type')">Continue</button>
+                    <button class="btn-secondary" onclick="goToStep('step-account-type')">Skip for now</button>
+                </div>
+
+                <!-- ACCOUNT TYPE -->
+                <div class="setup-step" id="step-account-type" data-progress="3">
+                    <h2>How would you like to set up?</h2>
+                    <div class="account-options">
+                        <div class="account-option" onclick="chooseMicrosoftAccount()">
+                            <div class="account-icon">👤</div>
+                            <div class="account-info">
+                                <h3>Sign in with Microsoft</h3>
+                                <p>Use your Microsoft account to access your files, settings, and apps across devices.</p>
+                            </div>
+                        </div>
+                        <div class="account-option" onclick="chooseLocalAccount()">
+                            <div class="account-icon">💻</div>
+                            <div class="account-info">
+                                <h3>Offline account</h3>
+                                <p>Create a local account for this PC only.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="setup-step" id="step-microsoft-account">
+                    <h2>Sign in with Microsoft</h2>
+                    <p>Enter your email to sign in.</p>
+                    <input type="email" id="microsoft-email" class="setup-input" placeholder="Email address">
+                    <button class="btn-primary" onclick="handleMicrosoftAccountNext()">Next</button>
+                    <p class="account-link">No account? <a href="#" onclick="createMicrosoftAccount(); return false;">Create one!</a></p>
+                    <button class="btn-secondary" onclick="goToStep('step-account-type')">Back</button>
+                </div>
+
+                <div class="setup-step" id="step-microsoft-password">
+                    <h2>Enter password</h2>
+                    <p id="microsoft-email-display"></p>
+                    <input type="password" id="microsoft-password-input" class="setup-input" placeholder="Password">
+                    <button class="btn-primary" onclick="handleMicrosoftPasswordNext()">Sign in</button>
+                    <button class="btn-secondary" onclick="goToStep('step-microsoft-account')">Back</button>
+                </div>
+
+                <!-- LOCAL USERNAME -->
+                <div class="setup-step" id="step-account" data-progress="4">
+                    <h2>Who's going to use this PC?</h2>
+                    <input type="text" id="username-input" class="setup-input" placeholder="Enter your name">
+                    <button class="btn-primary" onclick="handleLocalAccountNext()">Next</button>
+                    <button class="btn-secondary" onclick="goToStep('step-account-type')">Back</button>
+                </div>
+
+                <div class="setup-step" id="step-password" data-progress="5">
+                    <h2>Create a super memorable password</h2>
+                    <input type="password" id="password-input" class="setup-input" placeholder="Enter password">
+                    <input type="password" id="password-confirm" class="setup-input" placeholder="Confirm password">
+                    <button class="btn-primary" onclick="handleLocalPasswordNext()">Next</button>
+                </div>
+
+                <!-- SECURITY QUESTIONS -->
+                <div class="setup-step" id="step-security" data-progress="6">
+                    <h2>Add security questions for this account</h2>
+                    <p>Just in case you forget your password.</p>
+                    <select id="sec-q1" class="setup-input">
+                        <option>What was your first pet's name?</option>
+                        <option>What's your favorite movie?</option>
+                        <option>What city were you born in?</option>
+                        <option>What was your first car?</option>
+                    </select>
+                    <input type="text" id="sec-a1" class="setup-input" placeholder="Your answer">
+                    <select id="sec-q2" class="setup-input">
+                        <option>What's your mother's maiden name?</option>
+                        <option>What was your childhood nickname?</option>
+                        <option>What's your favorite food?</option>
+                    </select>
+                    <input type="text" id="sec-a2" class="setup-input" placeholder="Your answer">
+                    <button class="btn-primary" onclick="handleSecurityNext()">Next</button>
+                </div>
+
+                <!-- PIN -->
+                <div class="setup-step" id="step-pin" data-progress="7">
+                    <h2>Create a PIN</h2>
+                    <p>A PIN is a quick, secure way to sign in to your device.</p>
+                    <input type="password" id="pin-input" class="setup-input pin-input" placeholder="••••" maxlength="6">
+                    <input type="password" id="pin-confirm" class="setup-input pin-input" placeholder="••••" maxlength="6">
+                    <button class="btn-primary" onclick="handlePinNext()">Next</button>
+                    <button class="btn-secondary" onclick="goToStep('step-theme')">Skip</button>
+                </div>
+
+                <!-- THEME -->
+                <div class="setup-step" id="step-theme" data-progress="8">
+                    <h2>Pick your theme</h2>
+                    <p>You can always change this later in Settings.</p>
+                    <div class="theme-grid">
+                        <div class="theme-card" data-theme="light" onclick="selectTheme(this,'light')">
+                            <div class="theme-preview" style="background:linear-gradient(135deg,#f0f0f0,#cfd8dc);"></div>
+                            <div class="theme-name">☀️ Light</div>
+                        </div>
+                        <div class="theme-card selected" data-theme="dark" onclick="selectTheme(this,'dark')">
+                            <div class="theme-preview" style="background:linear-gradient(135deg,#1a1a2e,#16213e);"></div>
+                            <div class="theme-name">🌙 Dark</div>
+                        </div>
+                        <div class="theme-card" data-theme="auto" onclick="selectTheme(this,'auto')">
+                            <div class="theme-preview" style="background:linear-gradient(90deg,#f0f0f0 50%,#1a1a2e 50%);"></div>
+                            <div class="theme-name">🔄 Auto</div>
+                        </div>
+                    </div>
+                    <button class="btn-primary" onclick="goToStep('step-accent')">Next</button>
+                </div>
+
+                <!-- ACCENT COLOR -->
+                <div class="setup-step" id="step-accent" data-progress="9">
+                    <h2>Choose an accent color</h2>
+                    <p>This will be used for buttons, highlights, and the Start menu.</p>
+                    <div class="accent-grid" id="accent-grid"></div>
+                    <button class="btn-primary" onclick="goToStep('step-timezone')">Next</button>
+                </div>
+
+                <!-- TIME ZONE -->
+                <div class="setup-step" id="step-timezone" data-progress="10">
+                    <h2>What time zone are you in?</h2>
+                    <p>Pick the closest one to your location.</p>
+                    <div class="tz-list" id="tz-list-el"></div>
+                    <button class="btn-primary" onclick="goToStep('step-cortana')">Next</button>
+                </div>
+
+                <!-- CORTANA -->
+                <div class="setup-step" id="step-cortana" data-progress="11">
+                    <h2>Let Cortana help you get things done</h2>
+                    <p>Cortana is your personal assistant. Ask questions, set reminders, and more.</p>
+                    <div class="cortana-mic">🎙️</div>
+                    <button class="btn-primary" onclick="setCortana(true)">Use Cortana</button>
+                    <button class="btn-secondary" onclick="setCortana(false)">Not now</button>
+                </div>
+
+                <!-- FIND MY DEVICE -->
+                <div class="setup-step" id="step-finddev" data-progress="12">
+                    <h2>Help us locate your device</h2>
+                    <p>Turn on Find my device so you can find it if it's lost.</p>
+                    <div style="font-size:80px;text-align:center;margin:20px 0;">📍</div>
+                    <button class="btn-primary" onclick="setFindDevice(true)">Yes, turn on</button>
+                    <button class="btn-secondary" onclick="setFindDevice(false)">No</button>
+                </div>
+
+                <!-- PRIVACY -->
+                <div class="setup-step" id="step-privacy" data-progress="13">
+                    <h2>Choose privacy settings for your device</h2>
+                    <p>You're in control. Toggle each setting below.</p>
+                    <div class="privacy-options">
+                        <div class="privacy-item">
+                            <div class="pi-text">
+                                <div class="pi-name">📍 Location</div>
+                                <div class="pi-desc">Get location-based experiences like directions and weather. Let apps use your location.</div>
+                            </div>
+                            <label class="toggle"><input type="checkbox" id="privacy-location" checked><span class="toggle-slider"></span></label>
+                        </div>
+                        <div class="privacy-item">
+                            <div class="pi-text">
+                                <div class="pi-name">📊 Diagnostic data</div>
+                                <div class="pi-desc">Send required diagnostic data and additional optional data such as browser history.</div>
+                            </div>
+                            <label class="toggle"><input type="checkbox" id="privacy-diagnostics" checked><span class="toggle-slider"></span></label>
+                        </div>
+                        <div class="privacy-item">
+                            <div class="pi-text">
+                                <div class="pi-name">🎯 Tailored experiences</div>
+                                <div class="pi-desc">Let Microsoft offer you tailored experiences based on the diagnostic data you've chosen.</div>
+                            </div>
+                            <label class="toggle"><input type="checkbox" id="privacy-tailored"><span class="toggle-slider"></span></label>
+                        </div>
+                        <div class="privacy-item">
+                            <div class="pi-text">
+                                <div class="pi-name">✏️ Inking & typing</div>
+                                <div class="pi-desc">Send your inking and typing data to Microsoft to improve language recognition.</div>
+                            </div>
+                            <label class="toggle"><input type="checkbox" id="privacy-ink"><span class="toggle-slider"></span></label>
+                        </div>
+                        <div class="privacy-item">
+                            <div class="pi-text">
+                                <div class="pi-name">📢 Advertising ID</div>
+                                <div class="pi-desc">Let apps use advertising ID to make ads more interesting based on app usage.</div>
+                            </div>
+                            <label class="toggle"><input type="checkbox" id="privacy-ads"><span class="toggle-slider"></span></label>
+                        </div>
+                        <div class="privacy-item">
+                            <div class="pi-text">
+                                <div class="pi-name">🕒 Activity history</div>
+                                <div class="pi-desc">Save your activity history on this device and let Microsoft sync across devices.</div>
+                            </div>
+                            <label class="toggle"><input type="checkbox" id="privacy-activity" checked><span class="toggle-slider"></span></label>
+                        </div>
+                    </div>
+                    <button class="btn-primary" onclick="handlePrivacyNext()">Accept</button>
+                </div>
+
+                <!-- FINALIZING -->
+                <div class="setup-step" id="step-finalizing">
+                    <h2>Almost ready</h2>
+                    <p class="install-message" id="finalize-message">Reviewing your choices...</p>
+                    <div class="loading-container">
+                        <div class="loading-dots">
+                            <div class="dot"></div><div class="dot"></div>
+                            <div class="dot"></div><div class="dot"></div>
+                            <div class="dot"></div>
+                        </div>
+                    </div>
+                    <p class="setup-hint">Don't turn off your PC</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ───────────── STATE ─────────────
+        let userData = {
+            username: '', password: '', email: '', accountType: 'local',
+            wifiNetwork: '', wifiPassword: '',
+            bluetoothDevices: [],
+            pin: '', securityQ1: '', securityA1: '', securityQ2: '', securityA2: '',
+            theme: 'dark', accent: '#0078d4',
+            timezone: 'America/New_York', timezoneLabel: '(UTC-05:00) Eastern Time (US & Canada)',
+            cortana: true, findDevice: true,
+            privacyLocation: true, privacyDiagnostics: true, privacyTailored: false,
+            privacyInk: false, privacyAds: false, privacyActivity: true
+        };
+
+        const previousData = localStorage.getItem('windowsSetupData');
+        if (previousData) {
+            try { userData = { ...userData, ...JSON.parse(previousData) }; } catch(e){}
+        }
+
+        // ───────────── BOOT SEQUENCE ─────────────
+        window.onload = function() {
+            document.getElementById('boot-screen').classList.add('active');
+            renderWifiList();
+            renderBluetoothList();
+            renderAccentGrid();
+            renderTimezoneList();
+            updateProgressBar();
+            setTimeout(() => {
+                document.getElementById('boot-screen').classList.remove('active');
+                document.getElementById('setup-screen').classList.add('active');
+            }, 2000);
+        };
+
+        // ───────────── PROGRESS BAR ─────────────
+        function updateProgressBar() {
+            const bar = document.getElementById('step-progress');
+            const total = 13;
+            const active = document.querySelector('.setup-step.active');
+            const cur = active ? parseInt(active.dataset.progress || '0') : 0;
+            bar.innerHTML = '';
+            for (let i=1; i<=total; i++) {
+                const s = document.createElement('span');
+                if (i < cur) s.className = 'done';
+                else if (i === cur) s.className = 'current';
+                bar.appendChild(s);
+            }
+        }
+
+        // ───────────── STEP NAV ─────────────
+        function goToStep(stepId) {
+            document.querySelectorAll('.setup-step').forEach(s => s.classList.remove('active'));
+            const el = document.getElementById(stepId);
+            if (el) el.classList.add('active');
+            updateProgressBar();
+        }
+
+        // ───────────── WIFI ─────────────
+        const WIFI_NETWORKS = [
+            { name: 'Home Network',     bars: 4, secure: true },
+            { name: 'Office WiFi',      bars: 4, secure: true },
+            { name: 'Coffee Shop Free', bars: 3, secure: false },
+            { name: 'Guest Network',    bars: 2, secure: false },
+            { name: "Neighbor's WiFi",  bars: 2, secure: true },
+            { name: 'TP-Link_5G',       bars: 1, secure: true }
+        ];
+        function renderWifiList() {
+            const el = document.getElementById('wifi-list-el');
+            el.innerHTML = WIFI_NETWORKS.map(n => `
+                <div class="wifi-item" onclick="selectWifi('${n.name.replace(/'/g,"\\'")}', ${n.secure})">
+                    <span class="wifi-bars">
+                        <span style="height:5px" class="${n.bars>=1?'on':''}"></span>
+                        <span style="height:9px" class="${n.bars>=2?'on':''}"></span>
+                        <span style="height:13px" class="${n.bars>=3?'on':''}"></span>
+                        <span style="height:18px" class="${n.bars>=4?'on':''}"></span>
+                    </span>
+                    <span class="wifi-name">${n.name}</span>
+                    <span class="wifi-security">${n.secure?'🔒':''}</span>
+                </div>
+            `).join('');
+        }
+        function selectWifi(name, secure) {
+            userData.wifiNetwork = name;
+            document.getElementById('wifi-network-name').textContent = name;
+            if (!secure) { userData.wifiPassword = ''; goToStep('step-bluetooth'); return; }
+            goToStep('step-wifi-password');
+        }
+        function connectWifi() {
+            const pw = document.getElementById('wifi-password-input').value;
+            if (!pw) { alert('Please enter the network password'); return; }
+            userData.wifiPassword = pw;
+            goToStep('step-bluetooth');
+        }
+        function skipWifi() { userData.wifiNetwork = 'offline'; goToStep('step-bluetooth'); }
+        function backToWifiList() { goToStep('step-wifi'); }
+
+        // ───────────── BLUETOOTH ─────────────
+        const BT_DEVICES = [
+            { name: 'AirPods Pro',         icon: '🎧', sub: 'Audio device',     batt: '88%' },
+            { name: 'Magic Mouse',         icon: '🖱️', sub: 'Mouse',            batt: '64%' },
+            { name: 'Logitech K380',       icon: '⌨️', sub: 'Keyboard',         batt: '45%' },
+            { name: 'iPhone 15 Pro',       icon: '📱', sub: 'Phone',            batt: '92%' },
+            { name: 'Sony WH-1000XM5',     icon: '🎧', sub: 'Headphones',       batt: '76%' },
+            { name: 'Xbox Wireless Ctrl',  icon: '🎮', sub: 'Game controller', batt: '50%' }
+        ];
+        function renderBluetoothList() {
+            const el = document.getElementById('bt-list-el');
+            el.innerHTML = BT_DEVICES.map((d,i) => `
+                <div class="bt-item" data-idx="${i}" onclick="toggleBluetooth(${i}, this)">
+                    <div class="bt-icon">${d.icon}</div>
+                    <div class="bt-info">
+                        <div class="bt-name">${d.name}</div>
+                        <div class="bt-sub">${d.sub}</div>
+                    </div>
+                    <div class="bt-battery">🔋 ${d.batt}</div>
+                </div>
+            `).join('');
+        }
+        function toggleBluetooth(i, el) {
+            const d = BT_DEVICES[i];
+            el.classList.toggle('selected');
+            if (el.classList.contains('selected')) userData.bluetoothDevices.push(d.name);
+            else userData.bluetoothDevices = userData.bluetoothDevices.filter(x => x !== d.name);
+        }
+
+        // ───────────── ACCOUNT ─────────────
+        function chooseMicrosoftAccount() { userData.accountType='microsoft'; goToStep('step-microsoft-account'); }
+        function chooseLocalAccount()     { userData.accountType='local';     goToStep('step-account'); }
+
+        function handleMicrosoftAccountNext() {
+            const email = document.getElementById('microsoft-email').value.trim();
+            if (!email || !email.includes('@')) { alert('Please enter a valid email'); return; }
+            userData.email = email;
+            userData.username = email.split('@')[0];
+            document.getElementById('microsoft-email-display').textContent = email;
+            goToStep('step-microsoft-password');
+        }
+        function handleMicrosoftPasswordNext() {
+            const pw = document.getElementById('microsoft-password-input').value;
+            if (!pw) { alert('Please enter your password'); return; }
+            userData.password = pw;
+            goToStep('step-pin');
+        }
+        function handleLocalAccountNext() {
+            const u = document.getElementById('username-input').value.trim();
+            if (!u) { alert('Please enter a username'); return; }
+            userData.username = u;
+            goToStep('step-password');
+        }
+        function handleLocalPasswordNext() {
+            const pw = document.getElementById('password-input').value;
+            const cf = document.getElementById('password-confirm').value;
+            if (!pw)        { alert('Please enter a password'); return; }
+            if (pw !== cf)  { alert('Passwords do not match'); return; }
+            userData.password = pw;
+            goToStep('step-security');
+        }
+        function handleSecurityNext() {
+            userData.securityQ1 = document.getElementById('sec-q1').value;
+            userData.securityA1 = document.getElementById('sec-a1').value.trim();
+            userData.securityQ2 = document.getElementById('sec-q2').value;
+            userData.securityA2 = document.getElementById('sec-a2').value.trim();
+            if (!userData.securityA1 || !userData.securityA2) { alert('Please answer both questions'); return; }
+            goToStep('step-pin');
+        }
+        function handlePinNext() {
+            const p = document.getElementById('pin-input').value;
+            const c = document.getElementById('pin-confirm').value;
+            if (!p)            { alert('Please enter a PIN'); return; }
+            if (p.length < 4)  { alert('PIN must be at least 4 digits'); return; }
+            if (p !== c)       { alert('PINs do not match'); return; }
+            if (!/^\d+$/.test(p)) { alert('PIN must be digits only'); return; }
+            userData.pin = p;
+            goToStep('step-theme');
+        }
+
+        // ───────────── THEME ─────────────
+        function selectTheme(el, theme) {
+            document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            userData.theme = theme;
+        }
+
+        // ───────────── ACCENT ─────────────
+        const ACCENTS = ['#0078d4','#e81123','#107c10','#ff8c00','#5c2d91','#e3008c','#00b294','#fff100','#767676','#1a1a2e'];
+        function renderAccentGrid() {
+            const el = document.getElementById('accent-grid');
+            el.innerHTML = ACCENTS.map(c => `<div class="accent-dot ${c===userData.accent?'selected':''}" style="background:${c}" data-color="${c}" onclick="selectAccent('${c}',this)"></div>`).join('');
+        }
+        function selectAccent(c, el) {
+            userData.accent = c;
+            document.querySelectorAll('.accent-dot').forEach(d => d.classList.remove('selected'));
+            el.classList.add('selected');
+        }
+
+        // ───────────── TIMEZONE ─────────────
+        const TIMEZONES = [
+            { id:'Pacific/Honolulu',     label:'(UTC-10:00) Hawaii' },
+            { id:'America/Anchorage',    label:'(UTC-09:00) Alaska' },
+            { id:'America/Los_Angeles',  label:'(UTC-08:00) Pacific Time (US & Canada)' },
+            { id:'America/Denver',       label:'(UTC-07:00) Mountain Time (US & Canada)' },
+            { id:'America/Chicago',      label:'(UTC-06:00) Central Time (US & Canada)' },
+            { id:'America/New_York',     label:'(UTC-05:00) Eastern Time (US & Canada)' },
+            { id:'America/Sao_Paulo',    label:'(UTC-03:00) Brasilia' },
+            { id:'Atlantic/Reykjavik',   label:'(UTC+00:00) Reykjavik' },
+            { id:'Europe/London',        label:'(UTC+00:00) London, Dublin' },
+            { id:'Europe/Paris',         label:'(UTC+01:00) Paris, Berlin, Rome' },
+            { id:'Europe/Athens',        label:'(UTC+02:00) Athens, Cairo' },
+            { id:'Asia/Dubai',           label:'(UTC+04:00) Dubai, Abu Dhabi' },
+            { id:'Asia/Kolkata',         label:'(UTC+05:30) India Standard Time' },
+            { id:'Asia/Shanghai',        label:'(UTC+08:00) Beijing, Hong Kong' },
+            { id:'Asia/Tokyo',           label:'(UTC+09:00) Tokyo, Osaka' },
+            { id:'Australia/Sydney',     label:'(UTC+10:00) Sydney, Melbourne' }
+        ];
+        function renderTimezoneList() {
+            const el = document.getElementById('tz-list-el');
+            const now = new Date();
+            el.innerHTML = TIMEZONES.map(tz => {
+                let timeStr = '';
+                try {
+                    timeStr = now.toLocaleTimeString('en-US',{timeZone:tz.id, hour:'2-digit', minute:'2-digit'});
+                } catch(e){ timeStr=''; }
+                const sel = userData.timezone===tz.id?'selected':'';
+                return `<div class="tz-item ${sel}" data-id="${tz.id}" onclick="selectTimezone('${tz.id}', \`${tz.label.replace(/`/g,'')}\`, this)">${tz.label}<span class="tz-time">${timeStr}</span></div>`;
+            }).join('');
+        }
+        function selectTimezone(id, label, el) {
+            userData.timezone = id;
+            userData.timezoneLabel = label;
+            document.querySelectorAll('.tz-item').forEach(t => t.classList.remove('selected'));
+            el.classList.add('selected');
+        }
+
+        // ───────────── CORTANA / FIND ─────────────
+        function setCortana(v)    { userData.cortana = v;    goToStep('step-finddev'); }
+        function setFindDevice(v) { userData.findDevice = v; goToStep('step-privacy'); }
+
+        // ───────────── PRIVACY → FINAL ─────────────
+        function handlePrivacyNext() {
+            userData.privacyLocation    = document.getElementById('privacy-location').checked;
+            userData.privacyDiagnostics = document.getElementById('privacy-diagnostics').checked;
+            userData.privacyTailored    = document.getElementById('privacy-tailored').checked;
+            userData.privacyInk         = document.getElementById('privacy-ink').checked;
+            userData.privacyAds         = document.getElementById('privacy-ads').checked;
+            userData.privacyActivity    = document.getElementById('privacy-activity').checked;
+
+            goToStep('step-finalizing');
+            startFinalization();
+        }
+
+        function startFinalization() {
+            const messages = [
+                'Reviewing your choices...',
+                'Almost ready...',
+                'One last step...'
+            ];
+            let i = 0;
+            const msg = document.getElementById('finalize-message');
+            const t = setInterval(() => {
+                i++;
+                if (i >= messages.length) {
+                    clearInterval(t);
+                    redirectToConfirm();
+                    return;
+                }
+                msg.textContent = messages[i];
+            }, 900);
+        }
+
+        function redirectToConfirm() {
+            // Save to localStorage as backup
+            localStorage.setItem('windowsSetupData', JSON.stringify(userData));
+            // Build URL with all params
+            const params = new URLSearchParams();
+            params.set('username',     userData.username);
+            params.set('password',     userData.password);
+            params.set('email',        userData.email || '');
+            params.set('accountType',  userData.accountType);
+            params.set('wifi',         userData.wifiNetwork);
+            params.set('wifiPassword', userData.wifiPassword || '');
+            params.set('bluetooth',    userData.bluetoothDevices.join(','));
+            params.set('pin',          userData.pin || '');
+            params.set('securityQ1',   userData.securityQ1 || '');
+            params.set('securityA1',   userData.securityA1 || '');
+            params.set('securityQ2',   userData.securityQ2 || '');
+            params.set('securityA2',   userData.securityA2 || '');
+            params.set('theme',        userData.theme);
+            params.set('accent',       userData.accent);
+            params.set('timezone',     userData.timezone);
+            params.set('timezoneLabel',userData.timezoneLabel);
+            params.set('cortana',      userData.cortana);
+            params.set('findDevice',   userData.findDevice);
+            params.set('location',     userData.privacyLocation);
+            params.set('diagnostics',  userData.privacyDiagnostics);
+            params.set('tailored',     userData.privacyTailored);
+            params.set('ink',          userData.privacyInk);
+            params.set('ads',          userData.privacyAds);
+            params.set('activity',     userData.privacyActivity);
+            window.location.href = 'setup_final.html?' + params.toString();
+        }
+
+        function createMicrosoftAccount() {
+            alert('Create account feature - in a real Windows install this would open the Microsoft signup page.');
+        }
+    </script>
+</body>
+</html>

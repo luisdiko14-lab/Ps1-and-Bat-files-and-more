@@ -22,10 +22,17 @@ jobs:
           curl -L -o "$RUNNER_TEMP/work/Windows.zip" \
             "https://github.com/luisdiko14-lab/Ps1-and-Bat-files-and-more/raw/main/Windows.zip"
 
+      - name: Verify file (debug)
+        run: |
+          echo "Checking file type..."
+          file "$RUNNER_TEMP/work/Windows.zip"
+          echo "First bytes:"
+          head -n 5 "$RUNNER_TEMP/work/Windows.zip"
+
       - name: Extract first ZIP
         run: |
           mkdir -p "$RUNNER_TEMP/work/level1"
-          unzip -o "$RUNNER_TEMP/work/Incredibox.zip" -d "$RUNNER_TEMP/work/level1"
+          unzip -o "$RUNNER_TEMP/work/Windows.zip" -d "$RUNNER_TEMP/work/level1"
           echo "Level 1 contents:"
           find "$RUNNER_TEMP/work/level1" -maxdepth 3 -print
 
@@ -60,10 +67,10 @@ jobs:
 
       - name: Commit extracted files
         run: |
-          git config user.name "auto-extracter"
+          git config user.name "auto-extracter-windows"
           git config user.email "extracter@github.com"
           git add -A
-          git commit -m "Extracted Incredibox.zip contents" || echo "No changes"
+          git commit -m "Extracted Windows.zip contents" || echo "No changes"
 
       - name: Push to main
         run: |

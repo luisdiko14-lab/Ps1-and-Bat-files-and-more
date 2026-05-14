@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Discord Login Success</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #23272a;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    text-align: center;
+    padding: 24px;
+  }
+  .icon { font-size: 64px; margin-bottom: 16px; }
+  h2 { font-size: 24px; margin-bottom: 8px; }
+  p { color: #b9bbbe; font-size: 14px; margin-bottom: 24px; }
+  .spinner {
+    width: 32px; height: 32px;
+    border: 3px solid #4f545c;
+    border-top-color: #5865f2;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  button {
+    background: #5865f2;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 28px;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: none;
+  }
+  button:hover { background: #4752c4; }
+</style>
+</head>
+<body>
+  <div class="icon" id="icon">💬</div>
+  <h2 id="title">Logging you in...</h2>
+  <p id="msg">Fetching your Discord profile</p>
+  <div class="spinner" id="spinner"></div>
+  <button id="closeBtn" onclick="window.close()">Close Window</button>
+
+<script>
+(async function() {
+  try {
+    const res = await fetch('/api/auth/user');
+    const user = await res.json();
+
+    if (user && user.id) {
+      // Store user data in localStorage so the main window can pick it up
+      localStorage.setItem('discord_user_data', JSON.stringify(user));
+
+      document.getElementById('icon').textContent = '✅';
+      document.getElementById('title').textContent = 'Logged in as ' + user.username + '!';
+      document.getElementById('msg').textContent = 'Returning to Windows 10 Simulator...';
+      document.getElementById('spinner').style.display = 'none';
+
+      // Try to notify the opener via postMessage
+      if (window.opener && !window.opener.closed) {
+        window.opener.postMessage({ type: 'discord_auth_success', user }, '*');
+      }
+
+      // Auto-close after 1.5 seconds
+      setTimeout(() => window.close(), 1500);
+    } else {
+      throw new Error('No user data received');
+    }
+  } catch (err) {
+    document.getElementById('icon').textContent = '❌';
+    document.getElementById('title').textContent = 'Login failed';
+    document.getElementById('msg').textContent = err.message || 'Something went wrong. Please try again.';
+    document.getElementById('spinner').style.display = 'none';
+    document.getElementById('closeBtn').style.display = 'inline-block';
+  }
+})();
+</script>
+</body>
+</html>

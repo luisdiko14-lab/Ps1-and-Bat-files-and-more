@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Authenticating · Discord</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', 'Whitney', system-ui, sans-serif;
+    background: #0a0c14;
+    color: #e8e8f0;
+    min-height: 100vh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  /* Animated gradient background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: -100px;
+    background:
+      radial-gradient(ellipse 60% 50% at 20% 20%, rgba(88,101,242,0.35), transparent 60%),
+      radial-gradient(ellipse 60% 50% at 80% 80%, rgba(155,89,182,0.30), transparent 60%),
+      radial-gradient(ellipse 70% 50% at 50% 50%, rgba(236,72,153,0.18), transparent 65%);
+    animation: bgDrift 18s ease-in-out infinite alternate;
+    z-index: 0;
+  }
+  @keyframes bgDrift {
+    0%   { transform: translate(0,0) scale(1); }
+    100% { transform: translate(-40px,30px) scale(1.1); }
+  }
+
+  /* Particle canvas */
+  #stars {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  .auth-card {
+    position: relative;
+    z-index: 2;
+    background: rgba(15, 18, 30, 0.78);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 24px;
+    padding: 48px 48px 40px;
+    width: min(460px, 92vw);
+    text-align: center;
+    box-shadow:
+      0 30px 80px rgba(0,0,0,0.6),
+      0 0 0 1px rgba(88,101,242,0.18),
+      inset 0 1px 0 rgba(255,255,255,0.06);
+    animation: cardIn 0.7s cubic-bezier(.2,1.1,.4,1);
+  }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(28px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* Brand row */
+  .brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #b9bbbe;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+  .brand-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #5865f2;
+    box-shadow: 0 0 12px #5865f2;
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50%     { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  /* Avatar */
+  .avatar-ring {
+    position: relative;
+    width: 130px;
+    height: 130px;
+    margin: 0 auto 24px;
+  }
+  .avatar-ring::before,
+  .avatar-ring::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    border-top-color: #5865f2;
+    border-right-color: #9b59b6;
+    animation: ringSpin 2.4s linear infinite;
+  }
+  .avatar-ring::after {
+    inset: -16px;
+    border-top-color: transparent;
+    border-bottom-color: rgba(236,72,153,0.6);
+    border-left-color: rgba(88,101,242,0.4);
+    animation-direction: reverse;
+    animation-duration: 3.6s;
+  }
+  @keyframes ringSpin { to { transform: rotate(360deg); } }
+
+  .avatar {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #5865f2, #9b59b6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 56px;
+    color: white;
+    font-weight: 700;
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(88,101,242,0.55);
+    animation: avatarPop 0.9s cubic-bezier(.2,1.4,.4,1) 0.2s both;
+  }
+  .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  @keyframes avatarPop {
+    from { opacity: 0; transform: scale(0.4) rotate(-20deg); }
+    to   { opacity: 1; transform: scale(1) rotate(0); }
+  }
+
+  .greet {
+    font-size: 15px;
+    color: #b9bbbe;
+    margin-bottom: 4px;
+  }
+  .username {
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 6px;
+    letter-spacing: 0.3px;
+    background: linear-gradient(135deg, #fff, #b0b8ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .status-text {
+    color: #8e9bff;
+    font-size: 14px;
+    margin-bottom: 24px;
+    min-height: 20px;
+    transition: color 0.3s, opacity 0.3s;
+  }
+
+  /* Step list */
+  .steps {
+    text-align: left;
+    margin: 24px 0 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.03);
+    font-size: 13.5px;
+    color: #8892b0;
+    transition: 0.3s;
+  }
+  .step .step-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid #4f545c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    flex-shrink: 0;
+    transition: 0.3s;
+  }
+  .step.active {
+    background: rgba(88,101,242,0.12);
+    color: #c8cce8;
+  }
+  .step.active .step-icon {
+    border-color: #5865f2;
+    background: #5865f2;
+    color: white;
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+  .step.done {
+    color: #c8cce8;
+  }
+  .step.done .step-icon {
+    border-color: #3ba55d;
+    background: #3ba55d;
+    color: white;
+    animation: none;
+  }
+
+  /* Progress bar */
+  .progress-track {
+    height: 6px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 18px;
+    position: relative;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #5865f2, #9b59b6, #ec4899);
+    background-size: 200% 100%;
+    border-radius: 999px;
+    transition: width 0.4s cubic-bezier(.2,1,.3,1);
+    box-shadow: 0 0 16px rgba(88,101,242,0.6);
+    animation: shimmer 2s linear infinite;
+  }
+  @keyframes shimmer {
+    from { background-position: 0% 0; }
+    to   { background-position: 200% 0; }
+  }
+
+  /* Codes */
+  .codes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 20px;
+    font-size: 10.5px;
+    color: #6b6f80;
+    text-align: left;
+  }
+  .code-tile {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 8px;
+    padding: 8px 10px;
+    overflow: hidden;
+  }
+  .code-tile .code-label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #5865f2;
+    margin-bottom: 3px;
+  }
+  .code-tile .code-value {
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    color: #c8cce8;
+    font-size: 11px;
+    word-break: break-all;
+    display: block;
+    line-height: 1.3;
+  }
+
+  /* Action button (only shown if no opener / standalone tab) */
+  .action {
+    display: none;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #5865f2, #7289da);
+    color: white;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 8px 24px rgba(88,101,242,0.4);
+  }
+  .action:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(88,101,242,0.55); }
+  .action:active { transform: translateY(0); }
+
+  .footer-note {
+    margin-top: 18px;
+    font-size: 11px;
+    color: #4a5075;
+    letter-spacing: 0.3px;
+  }
+
+  /* Confetti burst */
+  .confetti {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    pointer-events: none;
+    z-index: 5;
+    border-radius: 2px;
+  }
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+
+<div class="auth-card">
+  <div class="brand">
+    <span class="brand-dot"></span>
+    Discord · Authentication
+    <span class="brand-dot" style="animation-delay:0.7s"></span>
+  </div>
+
+  <div class="avatar-ring">
+    <div class="avatar" id="avatar">?</div>
+  </div>
+
+  <div class="greet">Welcome back,</div>
+  <div class="username" id="username">user</div>
+  <div class="status-text" id="status">Establishing secure session…</div>
+
+  <div class="progress-track"><div class="progress-fill" id="progress"></div></div>
+
+  <div class="steps" id="steps">
+    <div class="step" data-step="0"><div class="step-icon">1</div><div>Verifying authorisation code</div></div>
+    <div class="step" data-step="1"><div class="step-icon">2</div><div>Loading your Discord profile</div></div>
+    <div class="step" data-step="2"><div class="step-icon">3</div><div>Syncing servers &amp; permissions</div></div>
+    <div class="step" data-step="3"><div class="step-icon">4</div><div>Returning you to the simulator</div></div>
+  </div>
+
+  <div class="codes">
+    <div class="code-tile"><div class="code-label">State</div><span class="code-value" id="code-state">—</span></div>
+    <div class="code-tile"><div class="code-label">Callback</div><span class="code-value" id="code-callback">—</span></div>
+  </div>
+
+  <button class="action" id="continueBtn">Continue to Windows 10 →</button>
+
+  <div class="footer-note">🔒 OAuth2 · Tokens never leave the server</div>
+</div>
+
+<script>
+(function() {
+  // ── Read URL params ────────────────────────────────────────────────────
+  const params       = new URLSearchParams(location.search);
+  const username     = params.get('username')     || 'user';
+  const avatar       = params.get('avatar')       || '';
+  const statecode    = params.get('statecode')    || '';
+  const callbackcode = params.get('callbackcode') || '';
+
+  // ── Apply to UI ────────────────────────────────────────────────────────
+  document.getElementById('username').textContent = username;
+  if (avatar) {
+    document.getElementById('avatar').innerHTML =
+      '<img src="' + avatar + '" alt="' + username + '" onerror="this.parentElement.textContent=\'' + (username[0] || '?').toUpperCase() + '\'">';
+  } else {
+    document.getElementById('avatar').textContent = (username[0] || '?').toUpperCase();
+  }
+  const truncate = (s, n) => s.length > n ? s.substring(0, n) + '…' : s;
+  document.getElementById('code-state').textContent    = statecode    ? truncate(statecode, 28)    : '—';
+  document.getElementById('code-callback').textContent = callbackcode ? truncate(callbackcode, 28) : '—';
+  document.title = 'Authenticating ' + username + ' · Discord';
+
+  // ── Step / progress orchestration ──────────────────────────────────────
+  const stepEls   = document.querySelectorAll('.step');
+  const progress  = document.getElementById('progress');
+  const statusEl  = document.getElementById('status');
+  const continueBtn = document.getElementById('continueBtn');
+
+  const messages = [
+    'Establishing secure session…',
+    'Loading your Discord profile…',
+    'Syncing your servers and roles…',
+    'Almost there — preparing the desktop…'
+  ];
+
+  function setStep(i) {
+    stepEls.forEach((el, idx) => {
+      el.classList.toggle('active', idx === i);
+      el.classList.toggle('done',   idx <  i);
+      const icon = el.querySelector('.step-icon');
+      icon.textContent = idx < i ? '✓' : (idx + 1);
+    });
+    progress.style.width = ((i + 1) / stepEls.length) * 100 + '%';
+    statusEl.textContent = messages[i] || messages[messages.length - 1];
+  }
+
+  // ── Try to fetch the actual user from the session for richer data ────
+  let finalUser = { username: username, avatar: avatar };
+  function fetchUser() {
+    return fetch('/api/auth/user')
+      .then(r => r.json())
+      .then(u => { if (u && u.id) finalUser = u; })
+      .catch(() => {});
+  }
+
+  // ── Sequence the animation ─────────────────────────────────────────────
+  let step = 0;
+  setStep(0);
+
+  fetchUser().then(() => {
+    const tick = setInterval(() => {
+      step++;
+      if (step >= stepEls.length) {
+        clearInterval(tick);
+        finalize();
+        return;
+      }
+      setStep(step);
+    }, 700);
+  });
+
+  function finalize() {
+    setStep(stepEls.length - 1);
+    stepEls.forEach((el, idx) => {
+      el.classList.add('done');
+      el.classList.remove('active');
+      el.querySelector('.step-icon').textContent = '✓';
+    });
+    progress.style.width = '100%';
+    statusEl.style.color = '#3ba55d';
+    statusEl.textContent = '✓ Signed in as ' + (finalUser.username || username);
+
+    // Persist for the main app
+    try {
+      localStorage.setItem('discord_user_data', JSON.stringify(finalUser));
+    } catch (e) {}
+
+    // Notify the opener (popup flow) and any other tabs
+    try {
+      if (window.opener && !window.opener.closed) {
+        window.opener.postMessage({ type: 'discord_auth_success', user: finalUser }, '*');
+      }
+    } catch (e) {}
+
+    burstConfetti();
+
+    // If this page was opened as a popup, close it; otherwise route to the VM.
+    setTimeout(() => {
+      if (window.opener && !window.opener.closed) {
+        try { window.close(); } catch (e) {}
+        // If close was blocked, show a button to continue manually
+        continueBtn.style.display = 'block';
+        continueBtn.textContent = 'Done — you can close this tab';
+        continueBtn.onclick = () => { try { window.close(); } catch(e){} };
+      } else {
+        location.href = '/';
+      }
+    }, 1400);
+
+    // Always reveal the manual button after 3s in case auto-redirect was blocked
+    setTimeout(() => { continueBtn.style.display = 'block'; }, 3000);
+    continueBtn.onclick = () => { location.href = '/'; };
+  }
+
+  // ── Confetti on success ───────────────────────────────────────────────
+  function burstConfetti() {
+    const colors = ['#5865f2','#9b59b6','#ec4899','#3ba55d','#f1c40f','#e67e22'];
+    for (let i = 0; i < 60; i++) {
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      c.style.background = colors[i % colors.length];
+      c.style.left = (50 + (Math.random() - 0.5) * 30) + '%';
+      c.style.top  = '40%';
+      c.style.transform = 'rotate(' + Math.random() * 360 + 'deg)';
+      document.body.appendChild(c);
+      const angle = Math.random() * Math.PI * 2;
+      const dist  = 200 + Math.random() * 200;
+      const dx = Math.cos(angle) * dist;
+      const dy = Math.sin(angle) * dist + 200;
+      c.animate(
+        [
+          { transform: c.style.transform, opacity: 1 },
+          { transform: 'translate(' + dx + 'px,' + dy + 'px) rotate(' + (Math.random() * 720) + 'deg)', opacity: 0 }
+        ],
+        { duration: 1400 + Math.random() * 600, easing: 'cubic-bezier(.2,.8,.4,1)', fill: 'forwards' }
+      );
+      setTimeout(() => c.remove(), 2200);
+    }
+  }
+
+  // ── Star particle background ──────────────────────────────────────────
+  const canvas = document.getElementById('stars');
+  const ctx = canvas.getContext('2d');
+  function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
+  resize();
+  addEventListener('resize', resize);
+  const stars = Array.from({length: 90}, () => ({
+    x: Math.random() * innerWidth,
+    y: Math.random() * innerHeight,
+    r: Math.random() * 1.6 + 0.3,
+    vx: (Math.random() - 0.5) * 0.25,
+    vy: (Math.random() - 0.5) * 0.25,
+    a: Math.random()
+  }));
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    stars.forEach(s => {
+      s.x += s.vx; s.y += s.vy;
+      if (s.x < 0) s.x = canvas.width;  if (s.x > canvas.width)  s.x = 0;
+      if (s.y < 0) s.y = canvas.height; if (s.y > canvas.height) s.y = 0;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(140,160,255,' + (0.3 + Math.sin(Date.now()/1500 + s.a) * 0.25) + ')';
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
+</body>
+</html>

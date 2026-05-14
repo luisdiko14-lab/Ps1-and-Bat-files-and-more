@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pro Dashboard App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- =========================
+       GLOBAL STYLES
+  ========================== -->
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-light: #ffffff;
+      --card: #111827;
+      --card-light: #f3f4f6;
+      --text: #e5e7eb;
+      --text-light: #1f2933;
+      --primary: #3b82f6;
+      --accent: #22c55e;
+      --danger: #ef4444;
+      --shadow: 0 10px 25px rgba(0,0,0,0.25);
+      --radius: 12px;
+      --transition: 0.25s ease;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      transition: var(--transition);
+    }
+
+    body.light {
+      background: var(--bg-light);
+      color: var(--text-light);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    /* =========================
+       LAYOUT
+    ========================== */
+
+    .app {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      min-height: 100vh;
+    }
+
+    @media (max-width: 900px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: fixed;
+        left: -260px;
+        top: 0;
+        height: 100%;
+        z-index: 1000;
+      }
+
+      .sidebar.open {
+        left: 0;
+      }
+    }
+
+    /* =========================
+       SIDEBAR
+    ========================== */
+
+    .sidebar {
+      background: #020617;
+      padding: 20px;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+    }
+
+    body.light .sidebar {
+      background: #e5e7eb;
+    }
+
+    .logo {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 30px;
+      color: var(--primary);
+    }
+
+    .nav-btn {
+      display: block;
+      width: 100%;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: inherit;
+      text-align: left;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .nav-btn:hover {
+      background: rgba(59,130,246,0.15);
+    }
+
+    /* =========================
+       MAIN CONTENT
+    ========================== */
+
+    .main {
+      padding: 24px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .topbar h1 {
+      margin: 0;
+      font-size: 1.6rem;
+    }
+
+    .btn {
+      background: var(--primary);
+      border: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      color: #fff;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    /* =========================
+       DASHBOARD CARDS
+    ========================== */
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+    }
+
+    body.light .card {
+      background: var(--card-light);
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 1rem;
+      opacity: 0.8;
+    }
+
+    .card .value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    /* =========================
+       MODAL
+    ========================== */
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+
+    .modal {
+      background: var(--card);
+      padding: 24px;
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 420px;
+      box-shadow: var(--shadow);
+    }
+
+    body.light .modal {
+      background: var(--card-light);
+    }
+
+    .modal h2 {
+      margin-top: 0;
+    }
+
+    .modal input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #444;
+      background: transparent;
+      color: inherit;
+    }
+
+    /* =========================
+       TOAST
+    ========================== */
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--card);
+      padding: 14px 18px;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: var(--transition);
+      z-index: 3000;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="logo">Pro Dashboard</div>
+      <button class="nav-btn">Dashboard</button>
+      <button class="nav-btn">Analytics</button>
+      <button class="nav-btn">Settings</button>
+      <button class="nav-btn" id="openModalBtn">Create Item</button>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <div class="topbar">
+        <h1>Dashboard Overview</h1>
+        <div>
+          <button class="btn" id="toggleThemeBtn">Toggle Theme</button>
+          <button class="btn" id="menuBtn">☰</button>
+        </div>
+      </div>
+
+      <!-- STATS GRID -->
+      <div class="grid">
+        <div class="card">
+          <h3>Total Users</h3>
+          <div class="value" id="usersCount">1,204</div>
+        </div>
+        <div class="card">
+          <h3>Revenue</h3>
+          <div class="value" id="revenueCount">$9,840</div>
+        </div>
+        <div class="card">
+          <h3>Active Sessions</h3>
+          <div class="value" id="sessionCount">312</div>
+        </div>
+        <div class="card">
+          <h3>System Status</h3>
+          <div class="value">Online</div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal">
+      <h2>Create New Item</h2>
+      <input type="text" id="itemName" placeholder="Item name" />
+      <button class="btn" id="saveItemBtn">Save</button>
+      <button class="btn" style="background: var(--danger);" id="closeModalBtn">Cancel</button>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast">Saved successfully!</div>
+
+  <!-- =========================
+       JAVASCRIPT LOGIC
+  ========================== -->
+  <script>
+    // Element references
+    const body = document.body;
+    const toggleThemeBtn = document.getElementById('toggleThemeBtn');
+    const menuBtn = document.getElementById('menuBtn');
+    const sidebar = document.getElementById('sidebar');
+
+    const openModalBtn = document.getElementById('openModalBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    const saveItemBtn = document.getElementById('saveItemBtn');
+    const itemNameInput = document.getElementById('itemName');
+
+    const toast = document.getElementById('toast');
+
+    // =========================
+    // THEME TOGGLE
+    // =========================
+    toggleThemeBtn.addEventListener('click', () => {
+      body.classList.toggle('light');
+      showToast('Theme changed');
+    });
+
+    // =========================
+    // MOBILE SIDEBAR
+    // =========================
+    menuBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+    });
+
+    // =========================
+    // MODAL CONTROLS
+    // =========================
+    openModalBtn.addEventListener('click', () => {
+      modalBackdrop.style.display = 'flex';
+      itemNameInput.value = '';
+      itemNameInput.focus();
+    });
+
+    closeModalBtn.addEventListener('click', closeModal);
+    modalBackdrop.addEventListener('click', (e) => {
+      if (e.target === modalBackdrop) closeModal();
+    });
+
+    function closeModal() {
+      modalBackdrop.style.display = 'none';
+    }
+
+    // =========================
+    // SAVE ITEM LOGIC
+    // =========================
+    saveItemBtn.addEventListener('click', () => {
+      const name = itemNameInput.value.trim();
+
+      if (!name) {
+        showToast('Please enter a name');
+        return;
+      }
+
+      // Simulate saving (production-ready structure)
+      console.log('Saved item:', name);
+
+      closeModal();
+      showToast(`Item "${name}" saved`);
+    });
+
+    // =========================
+    // TOAST SYSTEM
+    // =========================
+    let toastTimeout = null;
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+
+      if (toastTimeout) clearTimeout(toastTimeout);
+
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2500);
+    }
+  </script>
+
+</body>
+</html>

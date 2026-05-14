@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Windows Update</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:"Segoe UI",Tahoma,Geneva,Verdana,sans-serif;
+background:#0078d4;
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+color:white;
+overflow:hidden;
+}
+
+.update-container{
+text-align:center;
+max-width:600px;
+padding:40px;
+}
+
+.windows-logo{
+margin-bottom:40px;
+}
+
+.windows-squares{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:8px;
+width:80px;
+height:80px;
+margin:auto;
+}
+
+.square{
+background:white;
+animation:squarePulse 2s ease-in-out infinite;
+}
+
+.square:nth-child(2){animation-delay:.2s;}
+.square:nth-child(3){animation-delay:.4s;}
+.square:nth-child(4){animation-delay:.6s;}
+
+@keyframes squarePulse{
+0%,100%{
+opacity:.3;
+transform:scale(.9);
+}
+50%{
+opacity:1;
+transform:scale(1);
+}
+}
+
+.update-text{
+font-size:32px;
+font-weight:300;
+margin-bottom:20px;
+}
+
+.update-subtitle{
+font-size:18px;
+opacity:.9;
+margin-bottom:40px;
+}
+
+.progress-container{
+width:100%;
+margin-bottom:30px;
+}
+
+.progress-percent{
+font-size:72px;
+font-weight:200;
+margin-bottom:20px;
+}
+
+.progress-bar{
+width:100%;
+height:6px;
+background:rgba(255,255,255,.3);
+border-radius:3px;
+overflow:hidden;
+}
+
+.progress-fill{
+height:100%;
+width:0%;
+background:white;
+border-radius:3px;
+transition:width .4s ease;
+}
+
+.loading-circle{
+width:50px;
+height:50px;
+border:3px solid rgba(255,255,255,.2);
+border-top-color:white;
+border-radius:50%;
+animation:spin 1s linear infinite;
+margin:30px auto;
+}
+
+@keyframes spin{
+to{transform:rotate(360deg);}
+}
+
+.update-warning{
+font-size:14px;
+opacity:.7;
+margin-top:30px;
+}
+
+.update-stage{
+font-size:16px;
+opacity:.8;
+margin-top:15px;
+}
+
+.dots::after{
+content:"";
+animation:dots 1s steps(4,end) infinite;
+}
+
+@keyframes dots{
+0%{content:"";}
+25%{content:".";}
+50%{content:"..";}
+75%{content:"...";}
+100%{content:"";}
+}
+
+.complete-container{
+display:none;
+text-align:center;
+}
+
+.checkmark{
+font-size:80px;
+margin-bottom:20px;
+animation:popIn .5s ease-out;
+}
+
+@keyframes popIn{
+0%{transform:scale(0);opacity:0;}
+50%{transform:scale(1.2);}
+100%{transform:scale(1);opacity:1;}
+}
+
+.restart-btn{
+margin-top:30px;
+padding:12px 40px;
+font-size:16px;
+background:white;
+color:#0078d4;
+border:none;
+border-radius:4px;
+cursor:pointer;
+transition:transform .2s,box-shadow .2s;
+}
+
+.restart-btn:hover{
+transform:translateY(-2px);
+box-shadow:0 4px 12px rgba(0,0,0,.2);
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="update-container" id="updating">
+
+<div class="windows-logo">
+<div class="windows-squares">
+<div class="square"></div>
+<div class="square"></div>
+<div class="square"></div>
+<div class="square"></div>
+</div>
+</div>
+
+<div class="update-text">Working on updates</div>
+
+<div class="update-subtitle">
+Don't turn off your PC. This will take a while.
+</div>
+
+<div class="progress-container">
+
+<div class="progress-percent" id="progress-percent">
+0%
+</div>
+
+<div class="progress-bar">
+<div class="progress-fill" id="progress-fill"></div>
+</div>
+
+</div>
+
+<div class="loading-circle"></div>
+
+<div class="update-stage" id="update-stage">
+Installing updates<span class="dots"></span>
+</div>
+
+<div class="update-warning">
+Your PC will restart several times. Sit back and relax.
+</div>
+
+</div>
+
+
+<div class="complete-container" id="complete">
+
+<div class="checkmark">✓</div>
+
+<div class="update-text">
+Updates installed successfully!
+</div>
+
+<div class="update-subtitle">
+Your PC is now up to date.
+</div>
+
+<button class="restart-btn" onclick="finishUpdate()">
+Restart now
+</button>
+
+</div>
+
+
+<script>
+
+let progress = 0;
+
+const stages = [
+{percent:5,text:"Downloading updates"},
+{percent:20,text:"Preparing to install"},
+{percent:40,text:"Installing feature update"},
+{percent:55,text:"Installing security patches"},
+{percent:70,text:"Installing drivers"},
+{percent:85,text:"Configuring Windows"},
+{percent:95,text:"Cleaning up temporary files"},
+{percent:100,text:"Finalizing updates"}
+];
+
+function updateProgress(){
+
+const fill=document.getElementById("progress-fill");
+const percent=document.getElementById("progress-percent");
+const stage=document.getElementById("update-stage");
+
+if(progress>=100){
+
+fill.style.width="100%";
+percent.textContent="100%";
+
+setTimeout(()=>{
+document.getElementById("updating").style.display="none";
+document.getElementById("complete").style.display="block";
+},2000);
+
+return;
+}
+
+const increase=Math.floor(Math.random()*3)+1;
+progress+=increase;
+
+if(progress>100) progress=100;
+
+const clean=Math.floor(progress);
+
+fill.style.width=clean+"%";
+percent.textContent=clean+"%";
+
+for(let i=stages.length-1;i>=0;i--){
+if(clean>=stages[i].percent){
+stage.innerHTML=stages[i].text+'<span class="dots"></span>';
+break;
+}
+}
+
+const delay=Math.random()*1500+800;
+
+setTimeout(updateProgress,delay);
+}
+
+function finishUpdate(){
+window.location.href="index.html?opened=settings";
+}
+
+setTimeout(updateProgress,2000);
+
+</script>
+
+</body>
+</html>
