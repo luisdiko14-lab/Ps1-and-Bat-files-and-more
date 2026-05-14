@@ -63,10 +63,29 @@ exploreFilesBtn.addEventListener("click", () => {
   }
 });
 
-// Quick Download button - opens in new tab
+// Quick Download button - opens in new tab with improved features
 quickDownloadBtn.addEventListener("click", () => {
   const downloadUrl = "https://github.com/luisdiko14-lab/Ps1-and-Bat-files-and-more/archive/refs/tags/final-13v.zip";
-  window.open(downloadUrl, '_blank');
+  
+  // Show loading state
+  quickDownloadBtn.textContent = "⬇️ Opening download...";
+  quickDownloadBtn.disabled = true;
+  
+  // Open in new tab
+  const newTab = window.open(downloadUrl, '_blank');
+  
+  // Check if popup was blocked
+  if (!newTab || newTab.closed || typeof newTab.closed === 'undefined') {
+    alert('⚠️ Popup blocked! Click the link below:\n\n' + downloadUrl);
+    quickDownloadBtn.textContent = "⬇️ Quick Download";
+    quickDownloadBtn.disabled = false;
+  } else {
+    // Success - reset button after 2 seconds
+    setTimeout(() => {
+      quickDownloadBtn.textContent = "⬇️ Quick Download";
+      quickDownloadBtn.disabled = false;
+    }, 2000);
+  }
 });
 
 // Populate file list
