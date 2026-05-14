@@ -139,6 +139,18 @@ p {
   transform: scale(0.98) translateY(0);
 }
 
+/* Primary button (special styling) */
+.btn-primary {
+  background: linear-gradient(45deg, #ff6b6b, #ff8e72) !important;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4) !important;
+}
+
+.btn-primary:hover {
+  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.5) !important;
+}
+
+.btn:nth-child(5) { animation-delay: 0.5s; }
+
 /* Loader */
 .loader {
   margin: 30px auto 0;

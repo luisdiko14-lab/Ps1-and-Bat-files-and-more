@@ -2,6 +2,7 @@ const downloadBtn = document.getElementById("downloadBtn");
 const viewRepoBtn = document.getElementById("viewRepo");
 const compatibilityBtn = document.getElementById("compatibility");
 const exploreFilesBtn = document.getElementById("exploreFiles");
+const quickDownloadBtn = document.getElementById("quickDownload");
 const loader = document.getElementById("loader");
 const filesSection = document.getElementById("filesSection");
 const fileList = document.getElementById("fileList");
@@ -60,6 +61,12 @@ exploreFilesBtn.addEventListener("click", () => {
   } else {
     filesSection.classList.add("hidden");
   }
+});
+
+// Quick Download button - opens in new tab
+quickDownloadBtn.addEventListener("click", () => {
+  const downloadUrl = "https://github.com/luisdiko14-lab/Ps1-and-Bat-files-and-more/archive/refs/tags/final-13v.zip";
+  window.open(downloadUrl, '_blank');
 });
 
 // Populate file list
