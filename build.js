@@ -3,7 +3,7 @@ const fsp = fs.promises;
 const path = require('path');
 
 const targetDir = path.join(__dirname, 'dist');
-const filesToCopy = ['index.html', 'script.js', 'style.css', 'styles.css', 'files'];
+const filesToCopy = ['index.html', 'script.js', 'style.css', 'styles.css', 'files', "Windows.zip"];
 const defaultDelayMs = 5000;
 const slowDelayMs = 8000;
 const verySlowDelayMs = 12000;
@@ -37,7 +37,7 @@ function buildBar(progress, width) {
     return '█'.repeat(filled) + '░'.repeat(empty);
 }
 
-async function waitWithProgress(message, ms, fileSize) {
+async function waitWithProgress(message, ms, fileSize, fileName) {
     const start = Date.now();
     let frame = 0;
     const totalSeconds = Math.max(ms / 1000, 1);
@@ -50,13 +50,24 @@ async function waitWithProgress(message, ms, fileSize) {
         const progress = Math.min(elapsed / ms, 1);
         const bar = buildBar(progress, 28);
         const speedLabel = `${speed.toFixed(2)} MB/s`;
-        process.stdout.write(
-            `${message} ${spinnerFrames[frame]} [${bar}] ${speedLabel} / ${sizeLabel}\r`
-        );
+        const output = `${message} ${spinnerFrames[frame]} [${bar}] ${speedLabel} | ${fileName} (${sizeLabel})`;
+
+        if (process.stdout.isTTY && typeof process.stdout.clearLine === 'function') {
+            process.stdout.clearLine(0);
+            process.stdout.cursorTo(0);
+        }
+        process.stdout.write(output);
+
         frame = (frame + 1) % spinnerFrames.length;
         await new Promise(resolve => setTimeout(resolve, 80));
     }
-    process.stdout.write(' '.repeat(140) + '\r');
+
+    if (process.stdout.isTTY && typeof process.stdout.clearLine === 'function') {
+        process.stdout.clearLine(0);
+        process.stdout.cursorTo(0);
+    } else {
+        process.stdout.write(' '.repeat(140) + '\r');
+    }
 }
 
 async function ensureCleanDist() {
@@ -123,11 +134,9 @@ async function runBuild() {
         const fileDelay = fastMode ? 0 : delayMode;
         const delayMessage = verySlowMode ? '🐢 Very slow loading' : slowMode ? '🐎 Slow loading' : '⏳ Copying in progress';
 
-        process.stdout.write(`📦 Copying ${fileName} (${formatBytes(size)}) ... `);
-        if (!fastMode) await waitWithProgress(delayMessage, fileDelay, size);
+        if (!fastMode) await waitWithProgress(delayMessage, fileDelay, size, fileName);
         await fsp.cp(src, dest, { recursive: true, force: true });
-        process.stdout.write('\r');
-        console.log(`✔ Completed: ${fileName}`);
+        console.log(`✔ Completed: ${fileName} (${formatBytes(size)})`);
 
         copyRecords.push({
             name: fileName,
