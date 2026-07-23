@@ -1,8 +1,25 @@
-Add-Type -AssemblyName System.Windows.Forms
-Add-Type -AssemblyName System.Drawing
-
 $script:projectRoot = $null
 $script:currentFilePath = $null
+$script:useGui = $false
+
+try {
+    Add-Type -AssemblyName System.Windows.Forms -ErrorAction Stop
+    Add-Type -AssemblyName System.Drawing -ErrorAction Stop
+    $isWindowsPlatform = $false
+    try {
+        $isWindowsPlatform = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)
+    }
+    catch {
+        if (Get-Variable -Name IsWindows -Scope Global -ErrorAction SilentlyContinue) { $isWindowsPlatform = $IsWindows }
+    }
+
+    if ($isWindowsPlatform -or $PSVersionTable.PSEdition -eq 'Desktop') {
+        $script:useGui = $true
+    }
+}
+catch {
+    $script:useGui = $false
+}
 
 function Get-ProjectRoot {
     if (-not $script:projectRoot) {
@@ -21,8 +38,18 @@ function Set-Status {
         [string]$Color = 'Gray'
     )
 
-    $statusLabel.Text = $Message
-    $statusLabel.ForeColor = [System.Drawing.Color]::FromName($Color)
+    if ($null -ne $statusLabel) {
+        $statusLabel.Text = $Message
+        try {
+            $statusLabel.ForeColor = [System.Drawing.Color]::FromName($Color)
+        }
+        catch {
+            # ignore invalid color names
+        }
+    }
+    else {
+        Write-Host $Message
+    }
 }
 
 function Refresh-FileList {
@@ -266,8 +293,13 @@ function Run-CurrentFile {
     try {
         switch ($ext.ToLower()) {
             '.ps1' {
-                $psLauncher = if (Get-Command powershell.exe -ErrorAction SilentlyContinue) { 'powershell.exe' } elseif (Get-Command pwsh -ErrorAction SilentlyContinue) { 'pwsh' } else { 'powershell.exe' }
-                Start-Process -FilePath $psLauncher -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$($script:currentFilePath)`"" -WorkingDirectory $workingDirectory -WindowStyle Normal | Out-Null
+                $psLauncher = if (Get-Command pwsh -ErrorAction SilentlyContinue) { 'pwsh' } elseif (Get-Command powershell.exe -ErrorAction SilentlyContinue) { 'powershell.exe' } else { $null }
+                if ($psLauncher) {
+                    Start-Process -FilePath $psLauncher -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$($script:currentFilePath)`"" -WorkingDirectory $workingDirectory -WindowStyle Normal | Out-Null
+                }
+                else {
+                    & $script:currentFilePath
+                }
             }
             '.py' {
                 $pyLauncher = if (Get-Command python -ErrorAction SilentlyContinue) { 'python' } elseif (Get-Command python3 -ErrorAction SilentlyContinue) { 'python3' } else { $null }
@@ -279,7 +311,12 @@ function Run-CurrentFile {
                 }
             }
             '.bat' {
-                Start-Process -FilePath 'cmd.exe' -ArgumentList "/c `"$($script:currentFilePath)`"" -WorkingDirectory $workingDirectory -WindowStyle Normal | Out-Null
+                if (Get-Command cmd.exe -ErrorAction SilentlyContinue) {
+                    Start-Process -FilePath 'cmd.exe' -ArgumentList "/c `"$($script:currentFilePath)`"" -WorkingDirectory $workingDirectory -WindowStyle Normal | Out-Null
+                }
+                else {
+                    Write-Host 'Batch files can only be launched from a Windows shell.' -ForegroundColor Yellow
+                }
             }
             default {
                 Start-Process -FilePath $script:currentFilePath -WorkingDirectory $workingDirectory -WindowStyle Normal | Out-Null
@@ -291,6 +328,23 @@ function Run-CurrentFile {
     catch {
         Set-Status "Could not run $fileName: $($_.Exception.Message)" 'Red'
     }
+}
+
+if (-not $script:useGui) {
+    Write-Host 'GUI mode is unavailable in this environment. Falling back to a simple console experience.' -ForegroundColor Yellow
+    $root = Get-ProjectRoot
+    Write-Host "PROJECT folder: $root"
+    Write-Host 'Files:'
+    $files = Get-ChildItem -Path $root -File | Select-Object -ExpandProperty Name
+    if ($files) {
+        $files | ForEach-Object { Write-Host " - $_" }
+    }
+    else {
+        Write-Host ' - No files yet. Create one in the PROJECT folder and re-run the script.'
+    }
+    Write-Host ''
+    Write-Host 'The app builder is ready for file-based editing in this environment.'
+    exit 0
 }
 
 $form = New-Object System.Windows.Forms.Form
@@ -305,7 +359,7 @@ $topPanel.Height = 120
 $topPanel.Padding = New-Object System.Windows.Forms.Padding(10)
 
 $projectLabel = New-Object System.Windows.Forms.Label
-$projectLabel.Text = 'PROJECT folder: Desktop/PROJECT'
+$projectLabel.Text = "PROJECT folder: $(Get-ProjectRoot)"
 $projectLabel.AutoSize = $true
 $projectLabel.Font = New-Object System.Drawing.Font('Segoe UI', 11, [System.Drawing.FontStyle]::Bold)
 $projectLabel.Location = New-Object System.Drawing.Point(10, 10)
@@ -392,8 +446,9 @@ $leftPanel.Controls.Add($leftLabel)
 $fileListBox = New-Object System.Windows.Forms.ListBox
 $fileListBox.Location = New-Object System.Drawing.Point(10, 25)
 $fileListBox.Size = New-Object System.Drawing.Size(210, 420)
-$fileListBox.Anchor = 'Top, Left, Right, Bottom'
-$fileListBox.Add_Click({ Open-SelectedFile })
+$fileListBox.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right -bor [System.Windows.Forms.AnchorStyles]::Bottom
+$fileListBox.add_SelectedIndexChanged({ Open-SelectedFile })
+$fileListBox.add_DoubleClick({ Open-SelectedFile })
 $leftPanel.Controls.Add($fileListBox)
 
 $mainSplit.Panel1.Controls.Add($leftPanel)
@@ -415,7 +470,7 @@ $editor.ScrollBars = 'Both'
 $editor.Font = New-Object System.Drawing.Font('Consolas', 10)
 $editor.Location = New-Object System.Drawing.Point(10, 25)
 $editor.Size = New-Object System.Drawing.Size(650, 360)
-$editor.Anchor = 'Top, Bottom, Left, Right'
+$editor.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Bottom -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
 $rightPanel.Controls.Add($editor)
 
 $errorLabel = New-Object System.Windows.Forms.Label
@@ -431,7 +486,7 @@ $errorBox.ScrollBars = 'Both'
 $errorBox.Font = New-Object System.Drawing.Font('Consolas', 9)
 $errorBox.Location = New-Object System.Drawing.Point(10, 420)
 $errorBox.Size = New-Object System.Drawing.Size(650, 120)
-$errorBox.Anchor = 'Left, Right, Bottom'
+$errorBox.Anchor = [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right -bor [System.Windows.Forms.AnchorStyles]::Bottom
 $errorBox.ReadOnly = $true
 $rightPanel.Controls.Add($errorBox)
 
@@ -440,7 +495,7 @@ $mainSplit.Panel2.Controls.Add($rightPanel)
 $statusLabel = New-Object System.Windows.Forms.Label
 $statusLabel.AutoSize = $true
 $statusLabel.Location = New-Object System.Drawing.Point(10, 545)
-$statusLabel.Anchor = 'Left, Bottom'
+$statusLabel.Anchor = [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Bottom
 $statusLabel.Text = 'Ready'
 $rightPanel.Controls.Add($statusLabel)
 

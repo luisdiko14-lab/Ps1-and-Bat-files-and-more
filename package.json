@@ -29,6 +29,7 @@
     "ora": "^9.3.0",
     "passport": "^0.7.0",
     "passport-discord": "^0.1.4",
+    "powershell": "^2.3.3",
     "socket.io": "^4.8.3",
     "sqlite3": "^6.0.1",
     "uuid": "^13.0.0",
