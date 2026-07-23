@@ -1,7 +1,6 @@
 $script:projectRoot = $null
 $script:currentFilePath = $null
 $script:useGui = $false
-
 try {
     Add-Type -AssemblyName System.Windows.Forms -ErrorAction Stop
     Add-Type -AssemblyName System.Drawing -ErrorAction Stop
@@ -92,7 +91,13 @@ function New-ProjectFile {
             '.ps1' { "# PowerShell app script\nWrite-Host 'Hello from your app!'\n" }
             '.py' { "# Python app script\nprint('Hello from your app!')\n" }
             '.bat' { "@echo off\necho Hello from your app!\n" }
-            '.json' { "{\n  \"appName\": \"My App\",\n  \"theme\": \"dark\",\n  \"version\": \"1.0\"\n}\n" }
+                        '.json' { @'
+{
+    "appName": "My App",
+    "theme": "dark",
+    "version": "1.0"
+}
+@' }
             default { "# New file\n" }
         }
         Set-Content -Path $path -Value $template -Encoding UTF8
@@ -169,30 +174,30 @@ function Create-ProjectTemplate {
 
     $starterPath = Join-Path $root 'main_app.ps1'
     if (-not (Test-Path $starterPath)) {
-        $starterContent = @"
-Write-Host 'Welcome to your custom app!'
-Write-Host 'Edit this file or create new ones in your PROJECT folder.'
-"@
+        $starterContent = @'
+    Write-Host 'Welcome to your custom app!'
+    Write-Host 'Edit this file or create new ones in your PROJECT folder.'
+    @'
         Set-Content -Path $starterPath -Value $starterContent -Encoding UTF8
     }
 
     $batchPath = Join-Path $root 'launch_app.bat'
     if (-not (Test-Path $batchPath)) {
-        $batchContent = @"
+        $batchContent = @'
 @echo off
 powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0main_app.ps1"
-"@
+@'
         Set-Content -Path $batchPath -Value $batchContent -Encoding UTF8
     }
 
     $readmePath = Join-Path $root 'README.txt'
     if (-not (Test-Path $readmePath)) {
-        $readmeContent = @"
+        $readmeContent = @'
 Omega App Builder project
 - Edit main_app.ps1 to build your app
 - app_config.json stores your app settings
 - launch_app.bat runs the starter script
-"@
+@'
         Set-Content -Path $readmePath -Value $readmeContent -Encoding UTF8
     }
 
