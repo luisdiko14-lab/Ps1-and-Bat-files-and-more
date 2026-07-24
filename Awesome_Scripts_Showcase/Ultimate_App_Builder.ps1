@@ -91,13 +91,14 @@ function New-ProjectFile {
             '.ps1' { "# PowerShell app script\nWrite-Host 'Hello from your app!'\n" }
             '.py' { "# Python app script\nprint('Hello from your app!')\n" }
             '.bat' { "@echo off\necho Hello from your app!\n" }
-                        '.json' { @'
+            '.json' { @'
 {
     "appName": "My App",
     "theme": "dark",
     "version": "1.0"
 }
-@' }
+@'
+            }
             default { "# New file\n" }
         }
         Set-Content -Path $path -Value $template -Encoding UTF8
@@ -175,9 +176,9 @@ function Create-ProjectTemplate {
     $starterPath = Join-Path $root 'main_app.ps1'
     if (-not (Test-Path $starterPath)) {
         $starterContent = @'
-    Write-Host 'Welcome to your custom app!'
-    Write-Host 'Edit this file or create new ones in your PROJECT folder.'
-    @'
+Write-Host 'Welcome to your custom app!'
+Write-Host 'Edit this file or create new ones in your PROJECT folder.'
+@'
         Set-Content -Path $starterPath -Value $starterContent -Encoding UTF8
     }
 
@@ -522,3 +523,4 @@ else {
 
 Set-Status 'Omega App Builder ready.' 'Green'
 [void]$form.ShowDialog()
+Write-Host "Omega app is running"
