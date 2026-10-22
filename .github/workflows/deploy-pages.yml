@@ -38,7 +38,7 @@ jobs:
           path: ./files
           key: ${{ runner.os }}-files-${{ hashFiles('files/**') }}
 
-      - run: npm ci
+      - run: npm install
       - run: npm run build
 
       # ✅ Artifact 1 (USED for deploy)
