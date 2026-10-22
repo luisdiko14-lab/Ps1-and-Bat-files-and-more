@@ -515,7 +515,7 @@ Get-ProjectRoot | Out-Null
 Refresh-FileList
 
 if ($fileListBox.Items.Count -eq 0) {
-    New-ProjectFile -Name 'welcome_app' -Extension '.ps1'
+    New-ProjectFile -Name 'welcome_app' -Extension '.ps1' 
 }
 else {
     Open-SelectedFile
