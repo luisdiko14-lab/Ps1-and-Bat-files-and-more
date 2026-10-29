@@ -1,0 +1,255 @@
+name: DependaUpdaterByLuis
+
+on:
+  # Runs on pushes targeting the default branch
+  push:
+    branches: ["iphone"]
+  workflow_dispatch:
+    inputs:
+      ncu_target:
+        description: "How far to bump JavaScript/TypeScript packages"
+        type: choice
+        default: latest
+        options:
+          - latest
+          - minor
+          - patch
+
+permissions:
+  contents: write       # push commits / the update branch
+  pull-requests: write  # open the fallback pull request
+
+concurrency:
+  group: dependa-updater
+  cancel-in-progress: false
+
+env:
+  BOT_NAME: "DependaUpdaterByLuis"
+  BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.g.com"
+  UPDATE_BRANCH: "automated/dependency-updates"
+  NCU_TARGET: ${{ inputs.ncu_target || 'latest' }}
+
+jobs:
+  update-packages:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          # Optional: add a PAT_TOKEN secret if you want CI to run on the bot's commits/PRs.
+          token: ${{ secrets.PAT_TOKEN || github.token }}
+
+      - name: Detect package ecosystems
+        id: detect
+        run: |
+          # Shared helpers for the later steps
+          cat > "$RUNNER_TEMP/lib.sh" <<'EOF'
+          # Print (NUL-separated) every file matching the given find expression,
+          # skipping vendored and build directories.
+          find_files() {
+            find . -type f \( "$@" \) \
+              -not -path '*/node_modules/*' -not -path '*/.git/*' -not -path '*/vendor/*' \
+              -not -path '*/.venv/*' -not -path '*/venv/*' -not -path '*/target/*' -print0
+          }
+
+          # usage: in_each_dir <file-name> <command...>
+          # Runs the command inside the folder of every file with that name.
+          in_each_dir() {
+            local name="$1" f
+            shift
+            while IFS= read -r -d '' f; do
+              echo "::group::$f"
+              ( cd "$(dirname "$f")" && "$@" ) || echo "::warning file=$f::'$*' failed"
+              echo "::endgroup::"
+            done < <(find_files -name "$name")
+            return 0
+          }
+          EOF
+
+          has() {
+            [ -n "$(find . -type f \( "$@" \) \
+              -not -path '*/node_modules/*' -not -path '*/.git/*' -not -path '*/vendor/*' \
+              -not -path '*/.venv/*' -not -path '*/venv/*' -not -path '*/target/*' -print -quit)" ]
+          }
+
+          if has -name package.json; then echo "node=true" >> "$GITHUB_OUTPUT"; fi
+          if has -name 'requirements*.txt' -o -name 'requirements*.in' -o -name Pipfile -o -name poetry.lock -o -name uv.lock; then echo "python=true" >> "$GITHUB_OUTPUT"; fi
+          if has -name go.mod; then echo "go=true" >> "$GITHUB_OUTPUT"; fi
+          if has -name Cargo.lock; then echo "rust=true" >> "$GITHUB_OUTPUT"; fi
+          if has -name Gemfile.lock; then echo "ruby=true" >> "$GITHUB_OUTPUT"; fi
+          if has -name composer.lock; then echo "php=true" >> "$GITHUB_OUTPUT"; fi
+          if has -name pom.xml; then echo "maven=true" >> "$GITHUB_OUTPUT"; fi
+          if has -name '*.csproj'; then echo "dotnet=true" >> "$GITHUB_OUTPUT"; fi
+          cat "$GITHUB_OUTPUT"
+
+      # ---------------------------------------------------------------- JavaScript / TypeScript
+      - name: Setup Node.js
+        if: steps.detect.outputs.node == 'true'
+        uses: actions/setup-node@v5
+        with:
+          node-version: lts/*
+
+      - name: Update JavaScript / TypeScript packages
+        if: steps.detect.outputs.node == 'true'
+        continue-on-error: true
+        run: |
+          source "$RUNNER_TEMP/lib.sh"
+          npm install -g npm-check-updates
+
+          # --deep covers every package.json (monorepos too): dependencies, devDependencies,
+          # typescript, @types/*, etc.
+          ncu -u --deep --target "$NCU_TARGET"
+
+          # Refresh whichever lockfile each project uses (no install scripts run in CI)
+          corepack enable
+          export YARN_ENABLE_IMMUTABLE_INSTALLS=false YARN_ENABLE_SCRIPTS=false YARN_IGNORE_SCRIPTS=true
+          in_each_dir package-lock.json npm install --ignore-scripts --no-audit --no-fund
+          in_each_dir yarn.lock yarn install
+          in_each_dir pnpm-lock.yaml pnpm install --no-frozen-lockfile --ignore-scripts
+
+      # ---------------------------------------------------------------- Python
+      - name: Setup Python
+        if: steps.detect.outputs.python == 'true'
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.x"
+
+      - name: Update Python packages
+        if: steps.detect.outputs.python == 'true'
+        continue-on-error: true
+        run: |
+          source "$RUNNER_TEMP/lib.sh"
+          for tool in pur pip-tools poetry uv pipenv; do
+            pipx install "$tool" || echo "::warning::could not install $tool"
+          done
+
+          # requirements*.txt (skip files that pip-compile generates)
+          while IFS= read -r -d '' f; do
+            if grep -q 'pip-compile' "$f"; then continue; fi
+            pur -r "$f" || echo "::warning file=$f::pur failed"
+          done < <(find_files -name 'requirements*.txt')
+
+          # requirements*.in -> re-compile the matching .txt
+          while IFS= read -r -d '' f; do
+            [ -f "${f%.in}.txt" ] || continue
+            ( cd "$(dirname "$f")" && pip-compile --upgrade --quiet "$(basename "$f")" ) \
+              || echo "::warning file=$f::pip-compile failed"
+          done < <(find_files -name 'requirements*.in')
+
+          in_each_dir poetry.lock poetry update --lock --no-interaction
+          in_each_dir uv.lock uv lock --upgrade
+          in_each_dir Pipfile pipenv lock
+
+      # ---------------------------------------------------------------- Other ecosystems
+      - name: Update Go modules
+        if: steps.detect.outputs.go == 'true'
+        continue-on-error: true
+        run: |
+          source "$RUNNER_TEMP/lib.sh"
+          in_each_dir go.mod bash -c 'go get -u ./... && go mod tidy'
+
+      - name: Update Rust crates
+        if: steps.detect.outputs.rust == 'true'
+        continue-on-error: true
+        run: |
+          source "$RUNNER_TEMP/lib.sh"
+          in_each_dir Cargo.lock cargo update
+
+      - name: Update Ruby gems
+        if: steps.detect.outputs.ruby == 'true'
+        continue-on-error: true
+        run: |
+          source "$RUNNER_TEMP/lib.sh"
+          in_each_dir Gemfile.lock bundle lock --update
+
+      - name: Update PHP packages
+        if: steps.detect.outputs.php == 'true'
+        continue-on-error: true
+        run: |
+          source "$RUNNER_TEMP/lib.sh"
+          in_each_dir composer.lock composer update --no-interaction --no-scripts --no-progress --ignore-platform-reqs
+
+      - name: Update Maven dependencies
+        if: steps.detect.outputs.maven == 'true'
+        continue-on-error: true
+        run: |
+          if [ -f pom.xml ]; then
+            mvn -B -q versions:use-latest-releases versions:update-properties \
+              -DgenerateBackupPoms=false -DallowMajorUpdates=false
+          fi
+
+      - name: Update .NET packages
+        if: steps.detect.outputs.dotnet == 'true'
+        continue-on-error: true
+        run: |
+          source "$RUNNER_TEMP/lib.sh"
+          dotnet tool install --global dotnet-outdated-tool
+          export PATH="$PATH:$HOME/.dotnet/tools"
+          in_each_dir '*.csproj' dotnet-outdated --upgrade
+
+      # ---------------------------------------------------------------- Commit, push, PR fallback
+      - name: Commit and push (falls back to a pull request)
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN || github.token }}
+          BASE_BRANCH: ${{ github.ref_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          git config user.name "$BOT_NAME"
+          git config user.email "$BOT_EMAIL"
+
+          # Stage everything except installed node_modules and workflow files
+          # (the built-in token is not allowed to modify .github/workflows).
+          git add -A -- . ':(exclude,glob)**/node_modules/**' ':(exclude,glob).github/workflows/**'
+
+          if git diff --cached --quiet; then
+            echo "No dependency updates found."
+            exit 0
+          fi
+
+          {
+            echo "🤖 Auto-update dependencies (Robot)"
+            echo
+            echo "Files changed:"
+            git diff --cached --name-only | sed 's/^/- /'
+          } > "$RUNNER_TEMP/commit-msg.txt"
+          git commit -F "$RUNNER_TEMP/commit-msg.txt"
+
+          # 1) Try to push straight to the branch this workflow ran on
+          if git pull --rebase origin "$BASE_BRANCH" && git push origin "HEAD:refs/heads/$BASE_BRANCH"; then
+            echo "✅ Pushed the updates directly to $BASE_BRANCH"
+            exit 0
+          fi
+          git rebase --abort 2>/dev/null || true
+
+          # 2) Push was rejected (branch protection, conflict, ...) -> pull request instead
+          echo "::warning::Direct push to $BASE_BRANCH failed - opening a pull request instead."
+          git push --force origin "HEAD:refs/heads/$UPDATE_BRANCH"
+
+          if [ "$(gh pr list --repo "$REPO" --head "$UPDATE_BRANCH" --base "$BASE_BRANCH" --state open --json number --jq 'length')" != "0" ]; then
+            echo "✅ The open pull request was updated with the new commit."
+            exit 0
+          fi
+
+          cat > "$RUNNER_TEMP/pr-body.md" <<EOF
+          Automated dependency update by $BOT_NAME.
+
+          A direct push to $BASE_BRANCH was not possible, so the changes are here for review.
+
+          Files changed:
+          $(git show --name-only --format= HEAD | sed 's/^/- /')
+
+          Run: $GITHUB_SERVER_URL/$REPO/actions/runs/$GITHUB_RUN_ID
+          EOF
+
+          if gh pr create --repo "$REPO" \
+               --base "$BASE_BRANCH" --head "$UPDATE_BRANCH" \
+               --title "🤖 Auto-update dependencies" \
+               --body-file "$RUNNER_TEMP/pr-body.md"; then
+            echo "✅ Pull request opened."
+          else
+            echo "::error::Branch $UPDATE_BRANCH was pushed but the pull request could not be created. Turn on Settings > Actions > General > 'Allow GitHub Actions to create and approve pull requests', or open it manually: https://github.com/$REPO/compare/$BASE_BRANCH...$UPDATE_BRANCH"
+            exit 1
+          fi
