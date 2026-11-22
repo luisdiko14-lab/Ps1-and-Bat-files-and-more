@@ -1,0 +1,135 @@
+name: Windows Script Quality
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**.ps1'
+      - '**.bat'
+      - '**.vbs'
+      - '.github/workflows/windows-script-quality.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - '**.ps1'
+      - '**.bat'
+      - '**.vbs'
+      - '.github/workflows/windows-script-quality.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-script-quality
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Syntax checks and safe smoke tests
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Parse every PowerShell file
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $tracked = @(git ls-files)
+          $psFiles = @($tracked | Where-Object { $_ -match '(?i)\.ps1$' })
+          $failed = @()
+          foreach ($path in $psFiles) {
+            $tokens = $null
+            $parseErrors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile(
+              (Join-Path $env:GITHUB_WORKSPACE $path),
+              [ref]$tokens,
+              [ref]$parseErrors
+            ) | Out-Null
+            if ($parseErrors.Count -gt 0) {
+              foreach ($issue in $parseErrors) {
+                Write-Host ("ERROR {0}:{1}:{2} {3}" -f $path,$issue.Extent.StartLineNumber,$issue.Extent.StartColumnNumber,$issue.Message)
+              }
+              $failed += $path
+            }
+          }
+          Write-Host ("Parsed {0} PowerShell file(s)." -f $psFiles.Count)
+          if ($failed.Count -gt 0) { throw ("PowerShell syntax errors in: " + ($failed -join ', ')) }
+
+      - name: Smoke-test explicitly CI-safe PowerShell scripts
+        shell: pwsh
+        env:
+          CI: 'true'
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $tracked = @(git ls-files)
+          $safe = @()
+          foreach ($path in ($tracked | Where-Object { $_ -match '(?i)\.ps1$' })) {
+            $full = Join-Path $env:GITHUB_WORKSPACE $path
+            $head = (Get-Content -LiteralPath $full -TotalCount 5) -join [Environment]::NewLine
+            if ($head -match '(?im)^\s*#\s*CI-SAFE:') { $safe += $path }
+          }
+          foreach ($path in $safe) {
+            Write-Host ("Smoke test: {0}" -f $path) -ForegroundColor Cyan
+            $full = Join-Path $env:GITHUB_WORKSPACE $path
+            $arguments = @('-NoProfile','-NonInteractive','-File',('"' + $full + '"'),'-CI')
+            $process = Start-Process -FilePath 'pwsh' -ArgumentList $arguments -PassThru -NoNewWindow
+            if (-not $process.WaitForExit(15000)) { $process.Kill(); throw "Timed out while testing $path" }
+            if ($process.ExitCode -ne 0) { throw "Smoke test failed for $path (exit code $($process.ExitCode))" }
+          }
+          Write-Host ("Executed {0} CI-safe PowerShell script(s)." -f $safe.Count)
+
+      - name: Inspect batch and VBScript files, then smoke-test CI-safe files
+        shell: pwsh
+        env:
+          CI: 'true'
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $tracked = @(git ls-files)
+          $batchFiles = @($tracked | Where-Object { $_ -match '(?i)\.bat$' })
+          $vbsFiles = @($tracked | Where-Object { $_ -match '(?i)\.vbs$' })
+          foreach ($path in ($batchFiles + $vbsFiles)) {
+            $full = Join-Path $env:GITHUB_WORKSPACE $path
+            $bytes = [System.IO.File]::ReadAllBytes($full)
+            if ($bytes.Length -eq 0) { throw "Empty script file: $path" }
+            if ($bytes -contains 0) { throw "Unexpected binary/NUL content in: $path" }
+          }
+
+          $safeBatch = @()
+          foreach ($path in $batchFiles) {
+            $full = Join-Path $env:GITHUB_WORKSPACE $path
+            $head = (Get-Content -LiteralPath $full -TotalCount 5) -join [Environment]::NewLine
+            if ($head -match '(?im)^\s*::\s*CI-SAFE\b') { $safeBatch += $path }
+          }
+          foreach ($path in $safeBatch) {
+            Write-Host ("Batch smoke test: {0}" -f $path) -ForegroundColor Cyan
+            $full = Join-Path $env:GITHUB_WORKSPACE $path
+            $arguments = '/d /c call "' + $full + '" --ci'
+            $process = Start-Process -FilePath $env:ComSpec -ArgumentList $arguments -PassThru -NoNewWindow
+            if (-not $process.WaitForExit(15000)) { $process.Kill(); throw "Timed out while testing $path" }
+            if ($process.ExitCode -ne 0) { throw "Batch smoke test failed for $path (exit code $($process.ExitCode))" }
+          }
+
+          $safeVbs = @()
+          foreach ($path in $vbsFiles) {
+            $full = Join-Path $env:GITHUB_WORKSPACE $path
+            $head = (Get-Content -LiteralPath $full -TotalCount 5) -join [Environment]::NewLine
+            if ($head -match "(?im)^\s*'\s*CI-SAFE\b") { $safeVbs += $path }
+          }
+          foreach ($path in $safeVbs) {
+            Write-Host ("VBScript smoke test: {0}" -f $path) -ForegroundColor Cyan
+            $full = Join-Path $env:GITHUB_WORKSPACE $path
+            $arguments = '//nologo "' + $full + '" --ci'
+            $cscript = Join-Path $env:WINDIR 'System32\cscript.exe'
+            $process = Start-Process -FilePath $cscript -ArgumentList $arguments -PassThru -NoNewWindow
+            if (-not $process.WaitForExit(15000)) { $process.Kill(); throw "Timed out while testing $path" }
+            if ($process.ExitCode -ne 0) { throw "VBScript smoke test failed for $path (exit code $($process.ExitCode))" }
+          }
+
+          Write-Host ("Inspected {0} batch file(s) and {1} VBScript file(s)." -f $batchFiles.Count,$vbsFiles.Count)
+          Write-Host ("Executed {0} CI-safe batch file(s) and {1} CI-safe VBScript file(s)." -f $safeBatch.Count,$safeVbs.Count)
+          Write-Host 'Unmarked legacy batch/VBScript files are deliberately not executed.'
