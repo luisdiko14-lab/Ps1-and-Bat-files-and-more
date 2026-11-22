@@ -136,8 +136,7 @@ $bGen.Add_Click({
   $psTool = "Get-Date | Out-File logs\\tool.log"
   Set-Content (Join-Path $root 'powershell\\tool.ps1') $psTool
   OutAdd "tool.ps1"
-
-  $reg1 = "Windows Registry Editor Version 5.00`r`n[HKEY_CURRENT_USER\\Software\\$name]`r`n\"Enabled\"=dword:00000001"
+  $reg1 = "Windows Registry Editor Version 5.00`r`n[HKEY_CURRENT_USER\\Software\\$name]`r`n`"Enabled`"=dword:00000001"
   Set-Content (Join-Path $root 'registry\\main.reg') $reg1
   OutAdd "main.reg"
 
@@ -156,8 +155,7 @@ $bGen.Add_Click({
   $logInit = "Created on $(Get-Date)"
   Set-Content (Join-Path $root 'logs\\setup.log') $logInit
   OutAdd "setup.log"
-
-  $json = "{`r`n  \"name\": \"$name\",`r`n  \"version\": \"1.0\"`r`n}"
+  $json = @{ name = $name; version = "1.0" } | ConvertTo-Json
   Set-Content (Join-Path $root 'config\\config.json') $json
   OutAdd "config.json"
 
