@@ -97,7 +97,7 @@ function New-ProjectFile {
     "theme": "dark",
     "version": "1.0"
 }
-@'
+'@
             }
             default { "# New file\n" }
         }
@@ -178,7 +178,7 @@ function Create-ProjectTemplate {
         $starterContent = @'
 Write-Host 'Welcome to your custom app!'
 Write-Host 'Edit this file or create new ones in your PROJECT folder.'
-@'
+'@
         Set-Content -Path $starterPath -Value $starterContent -Encoding UTF8
     }
 
@@ -187,7 +187,7 @@ Write-Host 'Edit this file or create new ones in your PROJECT folder.'
         $batchContent = @'
 @echo off
 powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0main_app.ps1"
-@'
+'@
         Set-Content -Path $batchPath -Value $batchContent -Encoding UTF8
     }
 
@@ -198,7 +198,7 @@ Omega App Builder project
 - Edit main_app.ps1 to build your app
 - app_config.json stores your app settings
 - launch_app.bat runs the starter script
-@'
+'@
         Set-Content -Path $readmePath -Value $readmeContent -Encoding UTF8
     }
 
