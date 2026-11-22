@@ -431,35 +431,3 @@ Log "Ultimate CHAOS Setup finished. Files created: $($createdFiles.Count). Level
 # End
 Show-OKBox -Text "Ultimate CHAOS setup finished successfully.`nVisit $ProjectRoot to view files." -Title "Ultimate CHAOS - Done"
 Write-Host "`nAll done — enjoy your chaos! 😈" -ForegroundColor Cyan
-,'%','*','+','~','!'))[(Get-Random -Minimum 0 -Maximum 8)]
-            $line += $ch
-        }
-        [Console]::ForegroundColor = $colors[(Get-Random -Minimum 2 -Maximum ($colors.Length -1))]
-        Write-Host $line
-        Start-Sleep -Milliseconds 90
-    }
-    [Console]::ForegroundColor = "Gray"
-    # Beep melody
-    $melody = @(440, 523, 659, 880)
-    foreach ($n in $melody) { [Console]::Beep($n, 80); Start-Sleep -Milliseconds 60 }
-}
-Confetti-And-Fanfare
-
-# Open the summary and README (best-effort)
-try { Start-Process -FilePath $SummaryPath } catch {}
-try { Start-Process -FilePath (Join-Path $ProjectRoot "README.md") } catch {}
-
-# Final console summary
-SafeWrite "`n========================================" Magenta
-SafeWrite "ULTIMATE CHAOS SETUP COMPLETE!" Green
-Write-Host "Project root: $ProjectRoot"
-Write-Host "Files created: $($createdFiles.Count)"
-Write-Host "Level: $Level  XP: $([math]::Round($XP,2))"
-Write-Host "Achievements: $($Achievements.Count)"
-SafeWrite "========================================`n" Magenta
-
-Log "Ultimate CHAOS Setup finished. Files created: $($createdFiles.Count). Level: $Level XP: $([math]::Round($XP,2))."
-
-# End
-Show-OKBox -Text "Ultimate CHAOS setup finished successfully.`nVisit $ProjectRoot to view files." -Title "Ultimate CHAOS - Done"
-Write-Host "`nAll done — enjoy your chaos! 😈" -ForegroundColor Cyan
