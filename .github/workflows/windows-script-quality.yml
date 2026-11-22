@@ -70,7 +70,9 @@ jobs:
           $ErrorActionPreference = 'Stop'
           $files = @(git ls-files | Where-Object { [IO.Path]::GetExtension($_).ToLowerInvariant() -in @('.js','.mjs','.cjs') })
           foreach ($file in $files) {
-            node --check "$file"
+            # Parse through stdin as an ES module so import/export files are checked
+            # correctly even when they live outside a package.json with type=module.
+            Get-Content -LiteralPath $file -Raw | node --check --input-type=module
             if ($LASTEXITCODE -ne 0) { throw "JavaScript syntax check failed: $file" }
           }
           Write-Host ("JavaScript syntax checked: {0}" -f $files.Count)
