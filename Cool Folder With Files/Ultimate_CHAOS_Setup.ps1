@@ -397,18 +397,17 @@ try {
 function Confetti-And-Fanfare {
     SafeWrite "`n" Cyan
     $colors = [enum]::GetValues([ConsoleColor])
-    for ($r=0; $r -lt 9; $r++) {
-        $line = ""
-        for ($c=0; $c -lt ([Console]::WindowWidth / 2); $c++) {
-            $ch = (@('@','#','
+    for ($r = 0; $r -lt 9; $r++) {
+        $line = ''
+        for ($c = 0; $c -lt [math]::Max(1, [int]([Console]::WindowWidth / 2)); $c++) {
+            $ch = @('@', '#', '$', '%', '*', '+', '~', '!') | Get-Random
             $line += $ch
         }
-        [Console]::ForegroundColor = $colors[(Get-Random -Minimum 2 -Maximum ($colors.Length -1))]
+        [Console]::ForegroundColor = $colors[(Get-Random -Minimum 2 -Maximum $colors.Length)]
         Write-Host $line
         Start-Sleep -Milliseconds 90
     }
-    [Console]::ForegroundColor = "Gray"
-    # Beep melody
+    [Console]::ForegroundColor = 'Gray'
     $melody = @(440, 523, 659, 880)
     foreach ($n in $melody) { [Console]::Beep($n, 80); Start-Sleep -Milliseconds 60 }
 }
