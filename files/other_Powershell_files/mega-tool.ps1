@@ -1,7 +1,7 @@
 
-if (-not ([Security.Principal.WindowsPrincipal] 
+if (-not ([Security.Principal.WindowsPrincipal]::new(
     [Security.Principal.WindowsIdentity]::GetCurrent()
-).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+)).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
 
     Start-Process powershell `
         -ArgumentList "-ExecutionPolicy Bypass -File `"$PSCommandPath`"" `
