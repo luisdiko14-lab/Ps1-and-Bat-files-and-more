@@ -126,14 +126,14 @@ print('Hello from example.py')
 $pyScript | Out-File -FilePath (Join-Path $ProjectRoot "scripts\example.py") -Encoding UTF8
 
 # web assets
-@indexHtml = @"
+$indexHtml = @"
 <!doctype html>
 <html>
 <head><meta charset='utf-8'><title>CoolSetup Demo</title><link rel='stylesheet' href='style.css'></head>
 <body><h1>CoolSetup Demo</h1><script src='app.js'></script></body>
 </html>
 "@
-@indexHtml | Out-File -FilePath (Join-Path $ProjectRoot "assets\index.html") -Encoding UTF8
+$indexHtml | Out-File -FilePath (Join-Path $ProjectRoot "assets\index.html") -Encoding UTF8
 
 @"
 body { font-family: Segoe UI, Arial; background: #111; color: #eee; padding: 1rem; }
