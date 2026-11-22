@@ -332,7 +332,7 @@ function Run-CurrentFile {
         Set-Status "Started $fileName" 'Green'
     }
     catch {
-        Set-Status "Could not run $fileName: $($_.Exception.Message)" 'Red'
+        Set-Status "Could not run ${fileName}: $($_.Exception.Message)" 'Red'
     }
 }
 
