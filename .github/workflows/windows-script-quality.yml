@@ -21,7 +21,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: windows-script-quality
+  group: windows-script-quality-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -33,7 +33,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 2
           persist-credentials: false
 
       - name: Parse every PowerShell file
