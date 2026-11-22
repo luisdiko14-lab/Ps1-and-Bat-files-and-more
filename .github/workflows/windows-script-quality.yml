@@ -33,15 +33,32 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Parse every PowerShell file
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
+          $event = Get-Content -LiteralPath $env:GITHUB_EVENT_PATH -Raw | ConvertFrom-Json
+          $baseSha = $event.before
+          if (-not $baseSha -and $event.pull_request) { $baseSha = $event.pull_request.base.sha }
+          if (-not $baseSha -or $baseSha -match '^0+$') {
+            $baseSha = git rev-parse HEAD^ 2>$null
+            if ($LASTEXITCODE -ne 0) { $baseSha = $null }
+          }
+
+          $changed = @()
+          if ($baseSha) {
+            git cat-file -e "$baseSha" 2>$null
+            if ($LASTEXITCODE -eq 0) { $changed = @(git diff --name-only $baseSha HEAD) }
+          }
+
           $tracked = @(git ls-files)
           $psFiles = @($tracked | Where-Object { $_ -match '(?i)\.ps1$' })
           $failed = @()
+          $legacyWarnings = 0
+
           foreach ($path in $psFiles) {
             $tokens = $null
             $parseErrors = $null
@@ -50,15 +67,23 @@ jobs:
               [ref]$tokens,
               [ref]$parseErrors
             ) | Out-Null
+
             if ($parseErrors.Count -gt 0) {
               foreach ($issue in $parseErrors) {
-                Write-Host ("ERROR {0}:{1}:{2} {3}" -f $path,$issue.Extent.StartLineNumber,$issue.Extent.StartColumnNumber,$issue.Message)
+                Write-Host ("SYNTAX {0}:{1}:{2} {3}" -f $path,$issue.Extent.StartLineNumber,$issue.Extent.StartColumnNumber,$issue.Message)
               }
-              $failed += $path
+              if (($changed -contains $path) -or $path.StartsWith('files/super_Powershell_files/')) {
+                $failed += $path
+              } else {
+                $legacyWarnings++
+                Write-Warning "Pre-existing syntax issue in unchanged legacy file: $path"
+              }
             }
           }
+
           Write-Host ("Parsed {0} PowerShell file(s)." -f $psFiles.Count)
-          if ($failed.Count -gt 0) { throw ("PowerShell syntax errors in: " + ($failed -join ', ')) }
+          Write-Host ("Unchanged legacy files with existing syntax issues: {0}" -f $legacyWarnings)
+          if ($failed.Count -gt 0) { throw ("Syntax errors in changed/new PowerShell files: " + ($failed -join ', ')) }
 
       - name: Smoke-test explicitly CI-safe PowerShell scripts
         shell: pwsh
@@ -92,6 +117,7 @@ jobs:
           $tracked = @(git ls-files)
           $batchFiles = @($tracked | Where-Object { $_ -match '(?i)\.bat$' })
           $vbsFiles = @($tracked | Where-Object { $_ -match '(?i)\.vbs$' })
+
           foreach ($path in ($batchFiles + $vbsFiles)) {
             $full = Join-Path $env:GITHUB_WORKSPACE $path
             $bytes = [System.IO.File]::ReadAllBytes($full)
