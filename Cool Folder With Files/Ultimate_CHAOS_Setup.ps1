@@ -104,7 +104,7 @@ function Spinner-Animation {
     param([int]$DurationMs=1200)
     $icons = @('|','/','-','\')
     $start = Get-Date
-    while ((Get-Date) - $start).TotalMilliseconds -lt $DurationMs {
+    while (((Get-Date) - $start).TotalMilliseconds -lt $DurationMs) {
         foreach ($ic in $icons) {
             Write-Host -NoNewline "$ic`r"
             Start-Sleep -Milliseconds 80
@@ -249,7 +249,7 @@ function Run-Phase {
             $mb = ($toAdd / 1MB)
             $xpGain = [math]::Round($mb * $XPPerMB * (1 + ($rand.NextDouble() * 0.6)),2)
             Add-XP -amount $xpGain
-            Log ("$name: +$xpGain XP (iter $iteration)")
+            Log ("${name}: +$xpGain XP (iter $iteration)")
             # small chance of chaos event
             if ($rand.Next(0,100) -lt 18) { Chaos-Event -Intensity (Get-Random -Minimum 6 -Maximum 18) }
         }
@@ -316,7 +316,7 @@ for ($lvl=1; $lvl -le 12; $lvl++) {
         reward = "Reward_$($lvl)"
     }
     $desc | ConvertTo-Json | Out-File -FilePath (Join-Path $ProjectRoot ("levels\level_" + $lvl + ".json")) -Encoding UTF8
-    $createdFiles.Add(Join-Path $ProjectRoot ("levels\level_" + $lvl + ".json"))
+    $createdFiles.Add((Join-Path $ProjectRoot ("levels\level_" + $lvl + ".json")))
 }
 
 # Simulated installer wizard UI (console emphasis)
@@ -400,7 +400,39 @@ function Confetti-And-Fanfare {
     for ($r=0; $r -lt 9; $r++) {
         $line = ""
         for ($c=0; $c -lt ([Console]::WindowWidth / 2); $c++) {
-            $ch = @('@','#','$','%','*','+','~','!')[Get-Random -Minimum 0 -Maximum 7]
+            $ch = (@('@','#','
+            $line += $ch
+        }
+        [Console]::ForegroundColor = $colors[(Get-Random -Minimum 2 -Maximum ($colors.Length -1))]
+        Write-Host $line
+        Start-Sleep -Milliseconds 90
+    }
+    [Console]::ForegroundColor = "Gray"
+    # Beep melody
+    $melody = @(440, 523, 659, 880)
+    foreach ($n in $melody) { [Console]::Beep($n, 80); Start-Sleep -Milliseconds 60 }
+}
+Confetti-And-Fanfare
+
+# Open the summary and README (best-effort)
+try { Start-Process -FilePath $SummaryPath } catch {}
+try { Start-Process -FilePath (Join-Path $ProjectRoot "README.md") } catch {}
+
+# Final console summary
+SafeWrite "`n========================================" Magenta
+SafeWrite "ULTIMATE CHAOS SETUP COMPLETE!" Green
+Write-Host "Project root: $ProjectRoot"
+Write-Host "Files created: $($createdFiles.Count)"
+Write-Host "Level: $Level  XP: $([math]::Round($XP,2))"
+Write-Host "Achievements: $($Achievements.Count)"
+SafeWrite "========================================`n" Magenta
+
+Log "Ultimate CHAOS Setup finished. Files created: $($createdFiles.Count). Level: $Level XP: $([math]::Round($XP,2))."
+
+# End
+Show-OKBox -Text "Ultimate CHAOS setup finished successfully.`nVisit $ProjectRoot to view files." -Title "Ultimate CHAOS - Done"
+Write-Host "`nAll done — enjoy your chaos! 😈" -ForegroundColor Cyan
+,'%','*','+','~','!'))[(Get-Random -Minimum 0 -Maximum 8)]
             $line += $ch
         }
         [Console]::ForegroundColor = $colors[(Get-Random -Minimum 2 -Maximum ($colors.Length -1))]
