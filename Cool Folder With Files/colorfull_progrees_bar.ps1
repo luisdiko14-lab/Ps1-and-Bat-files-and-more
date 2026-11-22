@@ -1,30 +1,32 @@
-@echo off
-title Luis Toolkit - Colorful Progress Bar
-color 0a
+# Colorful PowerShell progress bar and folder setup
+$Host.UI.RawUI.WindowTitle = 'Luis Toolkit - Colorful Progress Bar'
 
-:: Ask for folder name
-set /p folderName=Enter the folder name to create: 
+$folderName = Read-Host 'Enter the folder name to create'
+if ([string]::IsNullOrWhiteSpace($folderName)) {
+    Write-Error 'A folder name is required.'
+    exit 1
+}
 
-:: Create folder
-mkdir "%folderName%"
-echo Folder "%folderName%" created.
+try {
+    $resolvedPath = [System.IO.Path]::GetFullPath((Join-Path (Get-Location) $folderName))
+    $basePath = [System.IO.Path]::GetFullPath((Get-Location).Path)
+    if (-not $resolvedPath.StartsWith($basePath, [System.StringComparison]::OrdinalIgnoreCase)) {
+        throw 'The folder must be created inside the current directory.'
+    }
+    New-Item -ItemType Directory -Path $resolvedPath -Force -ErrorAction Stop | Out-Null
+    $logFile = Join-Path $resolvedPath 'Log.txt'
+    'Log started' | Set-Content -Path $logFile -Encoding UTF8
 
-:: Create log file
-set logFile=%folderName%\Log.txt
-echo Log started > "%logFile%"
-
-:: Simulate a colorful progress bar
-set "progress="
-for /L %%i in (1,1,50) do (
-    set /a percent=%%i*2
-    set progress=!progress!#
-    cls
-    echo Creating files...
-    echo [%progress%] !percent!%%
-    timeout /t 1 >nul
-)
-
-echo Done!
-echo Log complete >> "%logFile%"
-echo Folder and log created successfully!
-pause
+    for ($i = 1; $i -le 50; $i++) {
+        $percent = $i * 2
+        Write-Progress -Activity 'Creating files...' -Status "$percent% complete" -PercentComplete $percent
+        Start-Sleep -Milliseconds 100
+    }
+    Write-Progress -Activity 'Creating files...' -Completed
+    'Log complete' | Add-Content -Path $logFile -Encoding UTF8
+    Write-Host "Folder and log created successfully: $resolvedPath" -ForegroundColor Green
+}
+catch {
+    Write-Error "Setup failed: $($_.Exception.Message)"
+    exit 1
+}
